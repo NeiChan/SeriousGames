@@ -5,12 +5,20 @@ window.addEventListener("load", function(){
 });
 
 class Main {
+    private player: Player;
+
     constructor() {
         this.createPlayer();
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
     createPlayer(): void {
-        let player = new Player();
-        window.onkeydown = player.playerInput;
+        this.player = new Player();
+    }
+
+    private gameLoop() {
+        this.player.moveplayer();
+
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 }
