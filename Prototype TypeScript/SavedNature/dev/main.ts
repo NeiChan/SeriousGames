@@ -1,5 +1,3 @@
-// <reference path="phaser.d.ts"/>
-
 window.addEventListener("load", function(){
     new Main();
 });
