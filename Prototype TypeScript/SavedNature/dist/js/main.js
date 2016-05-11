@@ -10,7 +10,7 @@ var Main = (function () {
         this.player = new Player();
     };
     Main.prototype.gameLoop = function () {
-        this.player.moveplayer();
+        this.player.movePlayer();
         requestAnimationFrame(this.gameLoop.bind(this));
     };
     return Main;
@@ -57,11 +57,7 @@ var Player = (function () {
                 break;
         }
     };
-    Player.prototype.getPositionY = function () {
-        var playerPosY = this.posY;
-        return playerPosY;
-    };
-    Player.prototype.moveplayer = function () {
+    Player.prototype.movePlayer = function () {
         this.posX = this.posX + this.runForce;
         this.posY = this.posY + this.jumpForce;
         this.player.style.left = this.posX + "px";
