@@ -1,20 +1,49 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+function createDiv(elementName) {
+    var el = document.createElement(elementName);
+    document.body.appendChild(el);
+    return el;
+}
 window.addEventListener("load", function () {
-    new Main();
+    new Game();
 });
-var Main = (function () {
-    function Main() {
-        this.createPlayer();
+var Game = (function () {
+    function Game() {
+        this.player = new Player();
         requestAnimationFrame(this.gameLoop.bind(this));
     }
-    Main.prototype.createPlayer = function () {
-        this.player = new Player();
-    };
-    Main.prototype.gameLoop = function () {
+    Game.prototype.gameLoop = function () {
         this.player.movePlayer();
         requestAnimationFrame(this.gameLoop.bind(this));
     };
-    return Main;
+    return Game;
 }());
+var GameObject = (function () {
+    function GameObject(pos_x, pos_y, speed_x, speed_y, objectName) {
+        this.div = createDiv(objectName);
+        this.position_x = pos_x;
+        this.position_y = pos_y;
+        this.speed_x = speed_x;
+        this.speed_y = speed_y;
+        this.div.style.transform = "translate(" + this.position_x + "," + this.position_y + ")";
+    }
+    GameObject.prototype.Draw = function () {
+    };
+    GameObject.prototype.Update = function () {
+    };
+    return GameObject;
+}());
+var Background = (function (_super) {
+    __extends(Background, _super);
+    function Background() {
+        _super.call(this, 10, 10, 5, 0, 'background');
+    }
+    return Background;
+}(GameObject));
 var Player = (function () {
     function Player() {
         this.runForce = 0;
