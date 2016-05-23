@@ -10,11 +10,11 @@ var Game = (function () {
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var bearImg = this.assets.polarbear;
-        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10 });
+        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {
-        this.bear.move();
+        this.bear.update();
         this.draw();
     };
     Game.prototype.draw = function () {
@@ -25,11 +25,6 @@ var Game = (function () {
     };
     return Game;
 }());
-function createDiv(elementName) {
-    var el = document.createElement(elementName);
-    document.body.appendChild(el);
-    return el;
-}
 window.addEventListener("load", function () {
     new Game();
 });
@@ -50,9 +45,6 @@ var GameObjects = (function () {
         this.timer = 0;
         this.init(source);
         this.createCanvasElement();
-        this.directionX = 0;
-        this.directionY = 0;
-        this.speed = 3;
     }
     GameObjects.prototype.init = function (source) {
         utils.CopyProperties(source, this);
@@ -71,6 +63,9 @@ var GameObjects = (function () {
     };
     GameObjects.prototype.changeX = function (int) {
         this.directionX = int;
+    };
+    GameObjects.prototype.updateY = function (int) {
+        this.y = this.y + int;
     };
     GameObjects.prototype.move = function () {
         this.x = this.x + this.speed * this.directionX;
@@ -102,6 +97,11 @@ var utils = (function () {
                 console.error("Cannot set undefined property: " + prop);
             }
         }
+    };
+    utils.prototype.createDiv = function (elementName) {
+        var el = document.createElement(elementName);
+        document.body.appendChild(el);
+        return el;
     };
     return utils;
 }());
@@ -287,12 +287,15 @@ var polarBear = (function (_super) {
     function polarBear(source) {
         var _this = this;
         _super.call(this, source);
+        this.isJumping = 0;
+        this.jumpUpTimer = 0;
+        this.jumpDownTimer = 0;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
     }
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
-            case 32:
+            case 39:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 1);
                 _super.prototype.changeAnimationY.call(this, 0);
@@ -301,6 +304,10 @@ var polarBear = (function (_super) {
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 1);
+                break;
+            case 32:
+                this.isJumping = 1;
+                this.jump();
                 break;
         }
     };
@@ -311,10 +318,12 @@ var polarBear = (function (_super) {
                 _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
-            case 32:
+            case 39:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);
+                break;
+            case 32:
                 break;
         }
     };
@@ -322,8 +331,37 @@ var polarBear = (function (_super) {
         _super.prototype.Draw.call(this);
     };
     polarBear.prototype.jump = function () {
+        if (this.isJumping === 1) {
+            var posY = 0;
+            this.jumpUpTimer += 0.01;
+            if (this.jumpUpTimer < 0.32) {
+                var velocity = 0 + 3.136 * this.jumpUpTimer;
+                var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
+                console.log("up" + posY);
+                _super.prototype.updateY.call(this, posY);
+            }
+            else if (this.jumpDownTimer < 0.32) {
+                this.jumpDownTimer += 0.01;
+                var velocity = 0 + 3.136 * this.jumpDownTimer;
+                var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
+                posY = posY - 0.1;
+                console.log("down" + posY);
+                _super.prototype.updateY.call(this, posY);
+            }
+            else {
+                this.isJumping = 0;
+                this.jumpUpTimer = 0;
+                this.jumpDownTimer = 0;
+            }
+        }
+        else {
+        }
     };
     polarBear.prototype.wait = function () {
+    };
+    polarBear.prototype.update = function () {
+        this.jump();
+        _super.prototype.move.call(this);
     };
     return polarBear;
 }(GameObjects));

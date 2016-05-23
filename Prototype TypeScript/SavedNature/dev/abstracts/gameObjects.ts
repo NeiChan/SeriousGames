@@ -28,39 +28,77 @@ abstract class GameObjects {
 	{
         this.init(source);
         
+        // Omdat er shit getekend moet worden op het scherm
 		this.createCanvasElement();
-        
-        this.directionX     = 0;
-        this.directionY     = 0;
-        this.speed          = 3;
     }
   
+    /**
+     * init
+     * 
+     * Assign all given variables inside the source variable to the Objects' private variables
+     */
     private init(source) : void {
         utils.CopyProperties(source,this);
     }
 	
+    /**
+     * CreateCanvasElement
+     * 
+     * Select canvasElement and create the image
+     */
     private createCanvasElement() : void {
+        // Selecteren van canvas, waar getekend wordt
         var canvas = document.getElementsByTagName("canvas")[0];
+        
+        // Soort context aan het canvasElement meegeven
         this.context = canvas.getContext('2d');
         
         this.image = new Image();   // Create new img element
-        // this.image.src = 'images/battleship.png'; // Set source path
-        this.image.src = this.imgSrc;
-        
+       
+        this.image.src = this.imgSrc; 
     }
     
+    /**
+     * changeY
+     * 
+     * Public function to change the Y-direction
+     */    
     public changeY(int) : void{
         this.directionY = int; 
     }
     
+    /**
+     * changeAnimationY
+     * 
+     * Public function to change the spritesheet row
+     */
     public changeAnimationY(int) : void{
         this.animationY = int; 
     }
     
+    /**
+     * changeY
+     * 
+     * Public function to change the x-directionSpeed
+     */
     public changeX(int) : void{
         this.directionX = int; 
     }
     
+    /**
+     * updateY
+     * 
+     * Public function for custom movement
+     */
+    public updateY(int) : void{
+        this.y = this.y + int; 
+    }
+    
+    /**
+     * move
+     * 
+     * Public function to perform the move operation
+     */   
     public move() : void {
         this.x = this.x + this.speed * this.directionX;
         this.y = this.y + this.speed * this.directionY;
@@ -80,6 +118,7 @@ abstract class GameObjects {
             dh	Destination height	Frame height
          */
         
+        // Defining the currentFrame during GameTime
         this.timer ++;
         if(this.timer % this.animationSpeed == 0) {
             this.currentFrame++;
@@ -102,8 +141,13 @@ abstract class GameObjects {
         );
 	}
 	
+    /**
+     * Update
+     * 
+     * Public function to do shit during every update when called
+     */
 	public Update() : void
 	{
-
+        
 	}
 }
