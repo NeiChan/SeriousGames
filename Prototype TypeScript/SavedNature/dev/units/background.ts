@@ -1,7 +1,8 @@
-class Background extends GameObject
+class Background extends GameObjects
 {
-    constructor()
+    
+    constructor(source)
     {
-        super(10,10, 5, 0, 'background');
+        super(source);
     }
 }
