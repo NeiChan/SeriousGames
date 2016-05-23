@@ -1,3 +1,3 @@
 class AssetsManager {
-    public static polarbear = "test";     
+    public polarbear = "test";     
 }

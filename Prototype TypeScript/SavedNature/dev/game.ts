@@ -1,5 +1,5 @@
 class Game {
-    private assets      : AssetsManager; 
+    private assets      : AssetsManager = new AssetsManager(); 
     
     // Get class player
     private player      : Player;
@@ -19,7 +19,7 @@ class Game {
         this.player = new Player();
         
         // Request animation, replaces an update() function so it can run at 60 fps
-        msRequestAnimationFrame(() => this.update());
+        requestAnimationFrame(() => this.update());
     }
 
     private update() : void {

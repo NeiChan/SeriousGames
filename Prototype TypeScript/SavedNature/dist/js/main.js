@@ -6,11 +6,12 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Game = (function () {
     function Game() {
         var _this = this;
+        this.assets = new AssetsManager();
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         console.log(this.assets.polarbear);
         this.player = new Player();
-        msRequestAnimationFrame(function () { return _this.update(); });
+        requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {
         this.player.movePlayer();
@@ -32,20 +33,6 @@ function createDiv(elementName) {
 window.addEventListener("load", function () {
     new Game();
 });
-var GameObject = (function () {
-    function GameObject(pos_x, pos_y, speed_x, speed_y, objectName) {
-        this.directionX = 0;
-        this.directionY = 0;
-        this.x = 0;
-        this.y = 0;
-        this.speed = 0;
-    }
-    GameObject.prototype.Draw = function () {
-    };
-    GameObject.prototype.Update = function () {
-    };
-    return GameObject;
-}());
 var GameObject = (function () {
     function GameObject() {
         this.directionX = 0;
@@ -72,8 +59,8 @@ var GameObject = (function () {
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
+        this.polarbear = "test";
     }
-    AssetsManager.polarbear = "test";
     return AssetsManager;
 }());
 var Background = (function (_super) {
