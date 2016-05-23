@@ -23,7 +23,6 @@ abstract class GameObjects {
     private timer:          number  = 0;
     
     private imgSrc: string;
-    private scale: number;
 	
 	constructor(source)
 	{

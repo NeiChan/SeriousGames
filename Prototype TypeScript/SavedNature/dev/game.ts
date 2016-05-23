@@ -23,7 +23,7 @@ class Game {
         this.context = this.canvas.getContext('2d');
         
         var bearImg = this.assets.polarbear;
-        this.bear = new polarBear({ imgSrc: bearImg, scale: 10, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10 });
+        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10 });
         // this.player = new Player();
         
         // Request animation, replaces an update() function so it can run at 60 fps

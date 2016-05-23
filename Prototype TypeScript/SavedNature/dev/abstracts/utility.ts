@@ -1,8 +1,8 @@
 class utils {
     public static CopyProperties(source:any, target:any):void {
         for(var prop in source){
-            // console.log(prop);
             if(prop !== undefined){
+                // console.log(source[prop]);    
                 target[prop] = source[prop];
             }
             else {

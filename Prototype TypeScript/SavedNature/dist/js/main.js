@@ -10,7 +10,7 @@ var Game = (function () {
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var bearImg = this.assets.polarbear;
-        this.bear = new polarBear({ imgSrc: bearImg, scale: 10, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10 });
+        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {

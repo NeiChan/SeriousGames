@@ -1,4 +1,5 @@
 class polarBear extends GameObjects{
+    
     constructor(source) {
         // extending from GameObjects
         super(source);
