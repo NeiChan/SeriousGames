@@ -1,5 +1,5 @@
 class Game {
-    private assets      : AssetsManager; 
+    private assets      : AssetsManager = new AssetsManager(); 
     
     // Get class player
     private player      : Player;

@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var Game = (function () {
     function Game() {
         var _this = this;
+        this.assets = new AssetsManager();
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         console.log(this.assets.polarbear);
@@ -72,8 +73,8 @@ var GameObject = (function () {
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
+        this.polarbear = "test";
     }
-    AssetsManager.polarbear = "test";
     return AssetsManager;
 }());
 var Background = (function (_super) {
