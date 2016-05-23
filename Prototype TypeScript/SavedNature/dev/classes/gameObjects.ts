@@ -1,24 +1,31 @@
-abstract class GameObject {
-	private div			: any;
+abstract class GameObject {	
+    private directionX: number = 0;
+    private directionY: number = 0;
+
+    private x: number = 0;
+    private y: number = 0;
 	
-	private position_x 	: number;
-	private position_y	: number;
+	private speed: number = 0;
 	
-	private speed_x		: number;
-	private speed_y		: number;
+	private context: CanvasRenderingContext2D;
+    private image: HTMLImageElement;
 	
-	constructor(pos_x: number, pos_y: number, speed_x: number, speed_y: number, objectName: string)
+	constructor()
 	{
-		this.div = createDiv(objectName);
-		
-		this.position_x = pos_x;
-		this.position_y = pos_y;
-		
-		this.speed_x	= speed_x;
-		this.speed_y	= speed_y;
-		
-		this.div.style.transform = "translate("+this.position_x+","+this.position_y+")"
+		this.createCanvasElement();
+        
+        this.directionX     = 0;
+        this.directionY     = 0;
+        this.speed          = 3;
 	}
+	
+	private createCanvasElement() : void {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        this.context = canvas.getContext('2d');
+
+        this.image = new Image();   // Create new img element
+        this.image.src = 'images/battleship.png'; // Set source path
+    }
 	
 	public Draw() : void
 	{

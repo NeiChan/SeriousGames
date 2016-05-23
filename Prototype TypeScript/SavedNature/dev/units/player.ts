@@ -92,4 +92,8 @@ class Player {
             this.jumpForce = 0;
         }
     }
+    
+    public draw()   : void {
+        
+    }
 }

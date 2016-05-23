@@ -3,6 +3,27 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Game = (function () {
+    function Game() {
+        var _this = this;
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
+        console.log(this.assets.polarbear);
+        this.player = new Player();
+        msRequestAnimationFrame(function () { return _this.update(); });
+    }
+    Game.prototype.update = function () {
+        this.player.movePlayer();
+        this.draw();
+    };
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.player.draw();
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    return Game;
+}());
 function createDiv(elementName) {
     var el = document.createElement(elementName);
     document.body.appendChild(el);
@@ -11,31 +32,49 @@ function createDiv(elementName) {
 window.addEventListener("load", function () {
     new Game();
 });
-var Game = (function () {
-    function Game() {
-        this.player = new Player();
-        requestAnimationFrame(this.gameLoop.bind(this));
-    }
-    Game.prototype.gameLoop = function () {
-        this.player.movePlayer();
-        requestAnimationFrame(this.gameLoop.bind(this));
-    };
-    return Game;
-}());
 var GameObject = (function () {
     function GameObject(pos_x, pos_y, speed_x, speed_y, objectName) {
-        this.div = createDiv(objectName);
-        this.position_x = pos_x;
-        this.position_y = pos_y;
-        this.speed_x = speed_x;
-        this.speed_y = speed_y;
-        this.div.style.transform = "translate(" + this.position_x + "," + this.position_y + ")";
+        this.directionX = 0;
+        this.directionY = 0;
+        this.x = 0;
+        this.y = 0;
+        this.speed = 0;
     }
     GameObject.prototype.Draw = function () {
     };
     GameObject.prototype.Update = function () {
     };
     return GameObject;
+}());
+var GameObject = (function () {
+    function GameObject() {
+        this.directionX = 0;
+        this.directionY = 0;
+        this.x = 0;
+        this.y = 0;
+        this.speed = 0;
+        this.createCanvasElement();
+        this.directionX = 0;
+        this.directionY = 0;
+        this.speed = 3;
+    }
+    GameObject.prototype.createCanvasElement = function () {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        this.context = canvas.getContext('2d');
+        this.image = new Image();
+        this.image.src = 'images/battleship.png';
+    };
+    GameObject.prototype.Draw = function () {
+    };
+    GameObject.prototype.Update = function () {
+    };
+    return GameObject;
+}());
+var AssetsManager = (function () {
+    function AssetsManager() {
+    }
+    AssetsManager.polarbear = "test";
+    return AssetsManager;
 }());
 var Background = (function (_super) {
     __extends(Background, _super);
@@ -99,6 +138,8 @@ var Player = (function () {
         else {
             this.jumpForce = 0;
         }
+    };
+    Player.prototype.draw = function () {
     };
     return Player;
 }());
