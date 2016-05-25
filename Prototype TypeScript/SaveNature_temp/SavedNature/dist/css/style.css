@@ -1,0 +1,72 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background: no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+button {
+    display: block;
+    min-width: 10%;
+    min-height: 50px;
+    border-radius: 10%;
+    border: 3px solid black;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+player {
+    position: absolute;
+    background-image: url(../images/fight1.png);
+    display: block;
+    background-repeat: no-repeat;
+    width: 100px; height: 100px;
+}
+
+#gameTitle {
+    background-repeat: no-repeat;
+    display: block;
+    margin: 0 auto;
+    width: 30%;
+    height: 100%;
+    padding: 65px;
+}
+
+#btnStart {
+    margin: auto;
+    margin-top: 5%;
+    width: 20%;
+    height: 60px;
+    font-size: 20px;
+    background-color: red;
+    color: white;
+}
+
+#btnClose,
+#btnHighscores {
+    margin: auto;
+    margin-top: 3%;
+    background-color: red;
+    color: white;
+}
+
+#btnStart:hover,
+#btnClose:hover,
+#btnHighscores:hover {
+    background-color: lightblue;
+    color: red;
+    font-weight: bolder;
+}
+
+.leaderboards,
+tr,
+td,
+th {
+    border: 1px solid black;
+}
