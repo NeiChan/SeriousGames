@@ -68,7 +68,6 @@ class polarBear extends GameObjects{
                        
             if(this.jumpUpTimer < 0.32){
                 
-                
                 var velocity = 0 + 3.136 * this.jumpUpTimer;
                 var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
                 console.log("up" + posY);
