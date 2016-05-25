@@ -3,13 +3,13 @@ abstract class GameObjects {
     private directionX: number = 0;
     private directionY: number = 0;
 
-    private x: number = 0;
-    private y: number = 0;
+    protected x: number = 0;
+    protected y: number = 0;
 	
 	private speed: number = 0;
 	
-	private context: CanvasRenderingContext2D;
-    private image: HTMLImageElement;
+	protected context: CanvasRenderingContext2D;
+    protected image: HTMLImageElement;
     
     private currentFrame:   number  = 0;
     private maxFrame:       number  = 0;
@@ -28,7 +28,7 @@ abstract class GameObjects {
 	{
         this.init(source);
         
-        // Omdat er shit getekend moet worden op het scherm
+        // Omdat er getekend moet worden op het scherm
 		this.createCanvasElement();
     }
   

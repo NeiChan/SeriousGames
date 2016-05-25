@@ -3,6 +3,7 @@ class Game {
     
     // Get class player
     private bear        : polarBear;
+    private bush        : testSubject;
         
     private context     : CanvasRenderingContext2D;
     private canvas      : HTMLCanvasElement;
@@ -15,9 +16,11 @@ class Game {
         
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
         var bearImg = this.assets.polarbear;
+        var bushImg = this.assets.desObjects.Bush1;
         
         // Aanmaken van een polarBear
         this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
+        this.bush = new testSubject({ imgSrc: bushImg, x: 100, y: 250 });
         
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
@@ -26,6 +29,7 @@ class Game {
     private update() : void {
         // Aanroepen van update function van het bear-object
         this.bear.update();
+        this.bush.update();
         
         this.draw();    
     }
@@ -34,6 +38,7 @@ class Game {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
         
         this.bear.draw();
+        this.bush.draw();
         
         requestAnimationFrame(() => this.update());
     }

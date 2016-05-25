@@ -10,24 +10,64 @@ var Game = (function () {
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var bearImg = this.assets.polarbear;
+        var bushImg = this.assets.desObjects.Bush1;
         this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
+        this.bush = new testSubject({ imgSrc: bushImg, x: 100, y: 250 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {
         this.bear.update();
+        this.bush.update();
         this.draw();
     };
     Game.prototype.draw = function () {
         var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.bear.draw();
+        this.bush.draw();
         requestAnimationFrame(function () { return _this.update(); });
     };
     return Game;
 }());
 window.addEventListener("load", function () {
-    new Game();
+    new Menu();
 });
+var Menu = (function () {
+    function Menu() {
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("click", this.removeMenu);
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboards.php";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
+        this.main = new Game();
+    };
+    return Menu;
+}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -364,5 +404,19 @@ var polarBear = (function (_super) {
         _super.prototype.move.call(this);
     };
     return polarBear;
+}(GameObjects));
+var testSubject = (function (_super) {
+    __extends(testSubject, _super);
+    function testSubject(source) {
+        _super.call(this, source);
+    }
+    testSubject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    testSubject.prototype.wait = function () {
+    };
+    testSubject.prototype.update = function () {
+    };
+    return testSubject;
 }(GameObjects));
 //# sourceMappingURL=main.js.map
