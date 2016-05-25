@@ -7,24 +7,31 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this.assets = new AssetsManager();
+        this.objectList = [];
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var bearImg = this.assets.polarbear;
         var bushImg = this.assets.desObjects.Bush1;
         this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
         this.bush = new testSubject({ imgSrc: bushImg, x: 100, y: 250 });
+        this.objectList.push(this.bear);
+        this.objectList.push(this.bush);
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {
-        this.bear.update();
-        this.bush.update();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
         this.draw();
     };
     Game.prototype.draw = function () {
         var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.bear.draw();
-        this.bush.draw();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
         requestAnimationFrame(function () { return _this.update(); });
     };
     return Game;
