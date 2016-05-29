@@ -24,12 +24,21 @@ abstract class GameObjects {
     
     private imgSrc: string;
 	
-	constructor(source)
+	constructor(source:any)
 	{
         this.init(source);
         
         // Omdat er getekend moet worden op het scherm
 		this.createCanvasElement();
+    }
+    
+    /**
+     * getBounds
+     * 
+     * Create a rectangle over the image itself for collision
+     */
+    public getBounds():Rectangle {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
   
     /**

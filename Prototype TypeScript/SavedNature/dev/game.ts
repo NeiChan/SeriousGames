@@ -1,7 +1,7 @@
 class Game {
     private assets      : AssetsManager = new AssetsManager(); 
     
-    public objectList = [];
+    public objectList:any = [];
     // Get class player
     private bear        : polarBear;
     private bush        : testSubject;
@@ -21,8 +21,8 @@ class Game {
         var bushImg = this.assets.desObjects.Bush1;
         
         // Aanmaken van een polarBear
-        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
-        this.bush = new testSubject({ imgSrc: bushImg, x: 100, y: 250 });
+        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 50, speed: 3 });
+        this.bush = new testSubject({ imgSrc: bushImg, x: 50, y: 250, frameHeight: 145, frameWidth: 88 });
         
         this.objectList.push(this.bear);
         this.objectList.push(this.bush);
@@ -36,6 +36,19 @@ class Game {
         
         for(var obj of this.objectList) {
             obj.update();
+        }
+        
+        // hier checken of de ball een paddle raakt
+        let polarBearBounds = this.bear.getBounds();
+        let bushBounds = this.bush.getBounds();
+        
+        
+        
+        let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
+        console.log(hit);
+        
+        if(hit){
+            console.log('Polarbear hit the bush');
         }
         
         this.draw();    
