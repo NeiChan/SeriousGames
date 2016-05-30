@@ -40,9 +40,6 @@ class Menu {
         // Add click events.
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
         this.btnStart.addEventListener("click", this.removeMenu);
-        this.btnMatter.addEventListener("click", this.startMatter);
-        this.btnPhysics.addEventListener("click", this.startPsysics2D);
-        this.btnDynamics.addEventListener("click", this.startDynamics);
 
         // Append to the body
         var content = document.getElementById('content');
@@ -76,44 +73,5 @@ class Menu {
         
         // Call function to create Game.
         this.main = new Game();
-    }
-    
-    private startMatter() : void{
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        // document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
-        
-        this.main = new matter();
-    }
-    
-    private startPsysics2D() : void{
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        // document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
-        
-        this.main = new physyics2d();
-    }
-    
-    private startDynamics() : void{
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        // document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
-        
-        this.main = new dynamic();
     }
 }

@@ -39,8 +39,10 @@ var Game = (function () {
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bush2 = new testSubject({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
         this.objectList.push(this._bush);
+        this.objectList.push(this._bush2);
         this.objectList.push(this._bear);
         requestAnimationFrame(function () { return _this.update(); });
     }
@@ -77,15 +79,7 @@ var Game = (function () {
             var obj = _a[_i];
             obj.update();
         }
-<<<<<<< HEAD
         this.checkCollisions();
-=======
-        var polarBearBounds = this.bear.getBounds();
-        var bushBounds = this.bush.getBounds();
-        var hit = polarBearBounds.hitsOtherRectangle(bushBounds);
-        if (hit) {
-        }
->>>>>>> bf6357a7eb99349ef90784eb5e7c85895a332a81
         this.draw();
     };
     Game.prototype.draw = function () {
@@ -148,9 +142,6 @@ var Menu = (function () {
         this.btnHighscores.innerHTML = "Highscores";
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
         this.btnStart.addEventListener("click", this.removeMenu);
-        this.btnMatter.addEventListener("click", this.startMatter);
-        this.btnPhysics.addEventListener("click", this.startPsysics2D);
-        this.btnDynamics.addEventListener("click", this.startDynamics);
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
@@ -175,69 +166,7 @@ var Menu = (function () {
         document.body.style.backgroundImage = "";
         this.main = new Game();
     };
-    Menu.prototype.startMatter = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new matter();
-    };
-    Menu.prototype.startPsysics2D = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new physyics2d();
-    };
-    Menu.prototype.startDynamics = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new dynamic();
-    };
     return Menu;
-}());
-var physyics2d = (function () {
-    function physyics2d() {
-        this.gravity = new PhysicsType2d.Vector2(0.0, -9.78);
-        this.world = new PhysicsType2d.Dynamics.World(this.gravity);
-        this.doSomething();
-    }
-    physyics2d.prototype.doSomething = function () {
-        console.log("Ola");
-        var groundDefinition = new PhysicsType2d.Dynamics.BodyDefinition();
-        groundDefinition.type = PhysicsType2d.Dynamics.BodyType.STATIC;
-        var ground = this.world.CreateBody(groundDefinition);
-        var groundShape = new PhysicsType2d.Collision.Shapes.EdgeShape();
-        groundShape.Set(new PhysicsType2d.Vector2(-50.0, 0.0), new PhysicsType2d.Vector2(50.0, 0.0));
-        ground.CreateFixture(groundShape, 0.0);
-        var boxShape = new PhysicsType2d.Collision.Shapes.PolygonShape();
-        boxShape.SetAsBoxAtOrigin(0.5, 0.5);
-        var bd = new PhysicsType2d.Dynamics.BodyDefinition();
-        bd.type = PhysicsType2d.Dynamics.BodyType.DYNAMIC;
-        bd.position = new PhysicsType2d.Vector2(0, 11);
-        var boxBody = this.world.CreateBody(bd);
-        var fd = new PhysicsType2d.Dynamics.FixtureDefinition();
-        fd.shape = boxShape;
-        fd.density = 1.0;
-        fd.friction = 0.3;
-        boxBody.CreateFixtureFromDefinition(fd);
-        var timeStep = 1 / 60;
-        var velocityIterations = 8;
-        var positionIterations = 3;
-        this.world.Step(timeStep, velocityIterations, positionIterations);
-    };
-    return physyics2d;
 }());
 var GameObjects = (function () {
     function GameObjects(source) {
@@ -581,18 +510,11 @@ var polarBear = (function (_super) {
     polarBear.prototype.jump = function () {
         if (this._isJumping === 1) {
             var posY = 0;
-<<<<<<< HEAD
             this._jumpUpTimer += 0.01;
             if (this._jumpUpTimer < 0.32) {
                 var velocity = 0 + 3.136 * this._jumpUpTimer;
                 var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
                 console.log("up" + posY);
-=======
-            this.jumpUpTimer += 0.01;
-            if (this.jumpUpTimer < 0.32) {
-                var velocity = 0 + 3.136 * this.jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
->>>>>>> bf6357a7eb99349ef90784eb5e7c85895a332a81
                 _super.prototype.updateY.call(this, posY);
             }
             else if (this._jumpDownTimer < 0.32) {

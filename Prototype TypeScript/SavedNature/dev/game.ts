@@ -9,6 +9,7 @@ class Game {
     private _background  : Background;
     private _bear        : polarBear;
     private _bush        : testSubject;
+    private _bush2        : testSubject;
         
     private context     : CanvasRenderingContext2D;
     private canvas      : HTMLCanvasElement;
@@ -29,9 +30,11 @@ class Game {
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bush2          = new testSubject({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
         
         this.objectList.push(this._background);
         this.objectList.push(this._bush);
+        this.objectList.push(this._bush2);
         this.objectList.push(this._bear);
         
         // Request animation, replaces an update() function so it can run at 60 fps
@@ -89,20 +92,11 @@ class Game {
         // let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
         // //console.log(hit);
         
-<<<<<<< HEAD
         // if(hit){
         //     console.log('Polarbear hit the bush');
         // }
         
         this.checkCollisions();
-=======
-        let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
-        // console.log(hit);
-        
-        if(hit){
-            // console.log('Polarbear hit the bush');
-        }
->>>>>>> bf6357a7eb99349ef90784eb5e7c85895a332a81
         
         this.draw();    
     }
