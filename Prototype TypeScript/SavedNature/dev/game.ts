@@ -1,3 +1,5 @@
+/// <reference path="../typings/matter-js.d.ts"/>
+
 class Game {
     private assets      : AssetsManager = new AssetsManager(); 
     
