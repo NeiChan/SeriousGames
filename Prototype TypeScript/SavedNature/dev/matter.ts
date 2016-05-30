@@ -1,72 +1,135 @@
 /// <reference path="../typings/matter-js.d.ts"/>
 
 class matter{
-    public _Engine = Matter.Engine;
-    public _World = Matter.World;
-    public _Body = Matter.Body;
-    public _Bodies = Matter.Bodies;
-    public _Composites = Matter.Composites;
-    public _Constraint = Matter.Constraint;
-    public _Events = Matter.Events;
-    public _Query = Matter.Query;
-    public _MouseConstraint = Matter.MouseConstraint;
+    private engine;
+    private render;
+    // private polarBear : polarBear;
     
-    public constructor(){
+    constructor(){
         // this._Engine = Matter.Engine;
         // this._World = Matter.World;
         // public Body : Matter.Body;
         // public Bodies : Matter.Bodies;
-        // public Composites : Matter.Composites;
+        
         // public Constraint : Matter.Constraint;
         // public Events : Matter.Events;
         // public Query : Matter.Query;
         
         // var engine = this._Engine.create();
-        this.makeTest();
+        // this.setupMatter();
+        // this.addElements();
+        
+        this.test2();
+        
     }
     
-    public makeTest() : void {
+    test2():void{
         
+        var canvas = document.getElementsByTagName('canvas')[0];
+        var context = canvas.getContext('2d');
         
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d');
+        var Engine = Matter.Engine;
+        var Render = Matter.Render;
+        var World = Matter.World;
+        var Bodies = Matter.Bodies;
+        var Body = Matter.Body;
+        var Composite = Matter.Composite;
+        var Composites = Matter.Composites;
+        var Constraint = Matter.Constraint;
+        var MouseConstraint = Matter.MouseConstraint;
+        // create a Matter.js engine
+        var engine = Engine.create();
 
-        canvas.width = 800;
-        canvas.height = 600;
+        // create a renderer
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                pixelRatio: 1,
+                background: '#fafafa',
+                wireframeBackground: '#222',
+                hasBounds: false,
+                enabled: true,
+                wireframes: true,
+                showSleeping: true,
+                showDebug: false,
+                showBroadphase: false,
+                showBounds: false,
+                showVelocity: false,
+                showCollisions: false,
+                showSeparations: false,
+                showAxes: false,
+                showPositions: false,
+                showAngleIndicator: false,
+                showIds: false,
+                showShadows: false,
+                showVertexNumbers: false,
+                showConvexHulls: false,
+                showInternalEdges: false,
+                showMousePosition: false
+            }
+        });
 
-        document.body.appendChild(canvas);
+        // create two boxes and a ground
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-        // this.render();
-       
+        // add all of the bodies to the world
+        World.add(engine.world, [boxA, boxB, ground]);
+
+        // run the engine
+        Engine.run(engine);
+
+        // run the renderer
+        Render.run(render);
+        
+        var bodies = Composite.allBodies(engine.world);
+
+        // window.requestAnimationFrame(render);
     }
     
-    // public render() : void{
+    // setupMatter(){
+    //     var body = document.querySelector("body");
+    //     this.engine = Engine.create();
+    //     // create a renderer
+    //     // this.render = Matter.Render.create({
+    //     //     engine: this.engine
+    //     // });
         
-    //         var bodies = this._Bodies(this._Engine.world);
+    //     this.render = Render.create({
+    //         element: document.body,           
+    //     });
 
-    //         window.requestAnimationFrame(render);
+    //     // this.addPhysicsObject(this.engine.world);
 
-    //         context.fillStyle = '#fff';
-    //         context.fillRect(0, 0, canvas.width, canvas.height);
 
-    //         context.beginPath();
+    //     // create two boxes and a ground
+    //     var boxA = Bodies.rectangle(400, 200, 80, 80);
+    //     var boxB = Bodies.rectangle(450, 50, 80, 80);
+    //     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-    //         for (var i = 0; i < bodies.length; i += 1) {
-    //             var vertices = bodies[i].vertices;
+    //     World.add(this.engine.world,[boxA, boxB, ground]);
+    //     // this.addPhysicsObject([boxA, boxB, ground]);
+    //     //this.addPhysicsObject(boxA);
+    //     //this.addPhysicsObject(boxB);
+        
 
-    //             context.moveTo(vertices[0].x, vertices[0].y);
+    //     // run the engine
+    //     Engine.run(this.engine);
 
-    //             for (var j = 1; j < vertices.length; j += 1) {
-    //                 context.lineTo(vertices[j].x, vertices[j].y);
-    //             }
-
-    //             context.lineTo(vertices[0].x, vertices[0].y);
-    //         }
-
-    //         context.lineWidth = 1;
-    //         context.strokeStyle = '#999';
-    //         context.stroke();
+    //     // run the renderer
+    //     // Render.bind(this.render);
     // }
-
     
-}
+    // public addPhysicsObject(arr):void {
+    //     World.add(this.engine.world, arr);
+    // }
+    
+    // addElements():void {
+    //     // this.polarBear = new polarBear(this);        
+    // }
+        
+} 

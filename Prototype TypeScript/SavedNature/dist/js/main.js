@@ -30,6 +30,7 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this.assets = new AssetsManager();
+        this.sounds = new SoundsManager();
         this.objectList = [];
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
@@ -69,27 +70,65 @@ window.addEventListener("load", function () {
 });
 var matter = (function () {
     function matter() {
-        this._Engine = Matter.Engine;
-        this._World = Matter.World;
-        this._Body = Matter.Body;
-        this._Bodies = Matter.Bodies;
-        this._Composites = Matter.Composites;
-        this._Constraint = Matter.Constraint;
-        this._Events = Matter.Events;
-        this._Query = Matter.Query;
-        this._MouseConstraint = Matter.MouseConstraint;
-        this.makeTest();
+        this.test2();
     }
-    matter.prototype.makeTest = function () {
-        var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
-        canvas.width = 800;
-        canvas.height = 600;
-        document.body.appendChild(canvas);
+    matter.prototype.test2 = function () {
+        var canvas = document.getElementsByTagName('canvas')[0];
+        var context = canvas.getContext('2d');
+        var Engine = Matter.Engine;
+        var Render = Matter.Render;
+        var World = Matter.World;
+        var Bodies = Matter.Bodies;
+        var Body = Matter.Body;
+        var Composite = Matter.Composite;
+        var Composites = Matter.Composites;
+        var Constraint = Matter.Constraint;
+        var MouseConstraint = Matter.MouseConstraint;
+        var engine = Engine.create();
+        var render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: 800,
+                height: 600,
+                pixelRatio: 1,
+                background: '#fafafa',
+                wireframeBackground: '#222',
+                hasBounds: false,
+                enabled: true,
+                wireframes: true,
+                showSleeping: true,
+                showDebug: false,
+                showBroadphase: false,
+                showBounds: false,
+                showVelocity: false,
+                showCollisions: false,
+                showSeparations: false,
+                showAxes: false,
+                showPositions: false,
+                showAngleIndicator: false,
+                showIds: false,
+                showShadows: false,
+                showVertexNumbers: false,
+                showConvexHulls: false,
+                showInternalEdges: false,
+                showMousePosition: false
+            }
+        });
+        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        var boxB = Bodies.rectangle(450, 50, 80, 80);
+        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+        World.add(engine.world, [boxA, boxB, ground]);
+        Engine.run(engine);
+        Render.run(render);
+        var bodies = Composite.allBodies(engine.world);
     };
     return matter;
 }());
 var Menu = (function () {
     function Menu() {
+        var _this = this;
+        this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
         this.btnMatter = document.createElement("button");
@@ -125,6 +164,9 @@ var Menu = (function () {
         content.appendChild(this.btnDynamics);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
+        this.soundTest = document.createElement("button");
+        this.soundTest.addEventListener('click', function () { return _this.soundmanager.play('new_highscore'); });
+        content.appendChild(this.soundTest);
     }
     Menu.prototype.showLeaderboards = function () {
         window.location.href = "leaderboards.php";
@@ -148,6 +190,7 @@ var Menu = (function () {
         document.getElementById("btnDynamics").remove();
         document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "none";
         this.main = new matter();
     };
     Menu.prototype.startPsysics2D = function () {
@@ -174,34 +217,7 @@ var Menu = (function () {
 }());
 var physyics2d = (function () {
     function physyics2d() {
-        this.gravity = new PhysicsType2d.Vector2(0.0, -9.78);
-        this.world = new PhysicsType2d.Dynamics.World(this.gravity);
-        this.doSomething();
     }
-    physyics2d.prototype.doSomething = function () {
-        console.log("Ola");
-        var groundDefinition = new PhysicsType2d.Dynamics.BodyDefinition();
-        groundDefinition.type = PhysicsType2d.Dynamics.BodyType.STATIC;
-        var ground = this.world.CreateBody(groundDefinition);
-        var groundShape = new PhysicsType2d.Collision.Shapes.EdgeShape();
-        groundShape.Set(new PhysicsType2d.Vector2(-50.0, 0.0), new PhysicsType2d.Vector2(50.0, 0.0));
-        ground.CreateFixture(groundShape, 0.0);
-        var boxShape = new PhysicsType2d.Collision.Shapes.PolygonShape();
-        boxShape.SetAsBoxAtOrigin(0.5, 0.5);
-        var bd = new PhysicsType2d.Dynamics.BodyDefinition();
-        bd.type = PhysicsType2d.Dynamics.BodyType.DYNAMIC;
-        bd.position = new PhysicsType2d.Vector2(0, 11);
-        var boxBody = this.world.CreateBody(bd);
-        var fd = new PhysicsType2d.Dynamics.FixtureDefinition();
-        fd.shape = boxShape;
-        fd.density = 1.0;
-        fd.friction = 0.3;
-        boxBody.CreateFixtureFromDefinition(fd);
-        var timeStep = 1 / 60;
-        var velocityIterations = 8;
-        var positionIterations = 3;
-        this.world.Step(timeStep, velocityIterations, positionIterations);
-    };
     return physyics2d;
 }());
 var GameObjects = (function () {
@@ -310,6 +326,65 @@ var Rectangle = (function () {
         return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
     };
     return Rectangle;
+}());
+var soundFile = (function () {
+    function soundFile(soundURL) {
+        var _this = this;
+        this.loadComplete = false;
+        this.onloadComplete = function (ev) {
+            _this.xhr = ev.currentTarget;
+            _this.context.decodeAudioData(_this.xhr.response, _this.decodeData);
+        };
+        this.decodeData = function (buffer) {
+            _this.buffer = buffer;
+            _this.loadComplete = true;
+        };
+        this.play = function (start_time, duration) {
+            if (_this.context == undefined) {
+                return;
+            }
+            if (_this.loadComplete == false) {
+                return;
+            }
+            _this.source = _this.context.createBufferSource();
+            _this.source.buffer = _this.buffer;
+            _this.source.connect(_this.context.destination);
+            _this.source.start(_this.context.currentTime, start_time, duration);
+        };
+        try {
+            this.context = new AudioContext();
+            this.loadFile(soundURL);
+        }
+        catch (e) {
+            console.log("no audio detected");
+        }
+    }
+    soundFile.prototype.loadFile = function (file_name) {
+        if (this.context == undefined) {
+            return;
+        }
+        this.xhr = new XMLHttpRequest();
+        this.xhr.open('GET', file_name, true);
+        this.xhr.responseType = 'arraybuffer';
+        this.xhr.onload = this.onloadComplete;
+        this.xhr.send();
+    };
+    return soundFile;
+}());
+var soundMarker = (function () {
+    function soundMarker(name, start, duration, volume, loop) {
+        this.name = "";
+        this.start = 0;
+        this.duration = 0;
+        this.volume = 1;
+        this.loop = false;
+        this.name = name;
+        this.start = start;
+        this.duration = duration;
+        this.volume = volume;
+        this.loop = loop;
+    }
+    return soundMarker;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
@@ -420,6 +495,77 @@ var AssetsManager = (function () {
         };
     }
     return AssetsManager;
+}());
+var SoundsManager = (function () {
+    function SoundsManager(sound_file) {
+        this.mute = false;
+        this.soundsLoaded = false;
+        this._jsonFileLoaded = false;
+        this._soundFileString = "";
+        this.soundMarkers = {};
+        this._soundFileString = sound_file;
+        this._loadMarkers(sound_file + '.json');
+    }
+    SoundsManager.prototype.mp3Enabled = function () {
+        var a = document.createElement('audio');
+        return !!(a.canPlayType && a.canPlayType('audio\ogg;').replace(/no/, ""));
+    };
+    SoundsManager.prototype.play = function (sound_name) {
+        if (this.mute) {
+            return;
+        }
+        var marker = this.soundMarkers[sound_name];
+        if (marker != null && marker != undefined) {
+            this._soundFile.play(marker.start, marker.duration);
+        }
+    };
+    SoundsManager.prototype._loadMarkers = function (jsonfile) {
+        var _this = this;
+        console.log("LOAD MARKERS");
+        var marker_xhr = new XMLHttpRequest();
+        console.log("ga dit laden: " + jsonfile);
+        marker_xhr.onreadystatechange = function () {
+            if (marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200) {
+                console.log("laden gelukt! ");
+                var obj = JSON.parse(marker_xhr.responseText);
+                _this.parseJsonSounds(obj);
+            }
+            else {
+            }
+        };
+        marker_xhr.open("GET", jsonfile, true);
+        marker_xhr.send();
+    };
+    SoundsManager.prototype.parseJsonSounds = function (data) {
+        console.log("onread aangeroepen");
+        for (var i = 0; i < data.markers.length; i++) {
+            var obj = data.markers[i];
+            console.log("marker name is " + obj.name);
+            var markers = obj;
+            this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
+            console.log("sound/" + obj.name + ".ogg");
+            var sf = new soundFile("sound/" + obj.name + ".ogg");
+        }
+        this._jsonFileLoaded = true;
+        if (this._soundFile.loadComplete == true) {
+            this.soundsLoaded = true;
+        }
+    };
+    SoundsManager.prototype.soundFileLoaded = function () {
+        if (this._jsonFileLoaded == true) {
+            this.soundsLoaded = true;
+        }
+    };
+    SoundsManager.prototype._onError = function (xhr) {
+        console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
+    };
+    SoundsManager.prototype.addMarker = function (sound_marker) {
+        this.soundMarkers[sound_marker.name] = sound_marker;
+    };
+    SoundsManager.prototype.removeMarker = function (marker_name) {
+        delete this.soundMarkers[marker_name];
+    };
+    return SoundsManager;
 }());
 var Background = (function (_super) {
     __extends(Background, _super);
@@ -537,29 +683,8 @@ var polarBear = (function (_super) {
         _super.prototype.Draw.call(this);
     };
     polarBear.prototype.jump = function () {
-        if (this.isJumping === 1) {
-            var posY = 0;
-            this.jumpUpTimer += 0.01;
-            if (this.jumpUpTimer < 0.32) {
-                var velocity = 0 + 3.136 * this.jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
-                _super.prototype.updateY.call(this, posY);
-            }
-            else if (this.jumpDownTimer < 0.32) {
-                this.jumpDownTimer += 0.01;
-                var velocity = 0 + 3.136 * this.jumpDownTimer;
-                var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
-                posY = posY - 0.1;
-                _super.prototype.updateY.call(this, posY);
-            }
-            else {
-                this.isJumping = 0;
-                this.jumpUpTimer = 0;
-                this.jumpDownTimer = 0;
-            }
-        }
-        else {
-        }
+        var self = this;
+        var posY = 0;
     };
     polarBear.prototype.wait = function () {
     };

@@ -55,40 +55,42 @@ class polarBear extends GameObjects{
     
     // weird partly physical jump function
     public jump() : void{ 
-        
+        var self = this;
         // Vertical Speed
         // D (distance) = (.5) * a (acceleration) * t (time)2 + V0 (initial velocity) * t time
         // (My distance, d = (.5) * (-9.81) * (.32)2 + 3.136 * (.32) = 0.5023 meters).
         
         // Horizontal Speed
         // V (velocity) = V0 (initial velocity) + a (acceleration) * t (time)
-        if(this.isJumping === 1){
+        // if(this.isJumping === 1){
+
             var posY = 0;
-            this.jumpUpTimer += 0.01;
+            // this.jumpUpTimer += 0.01;
                        
-            if(this.jumpUpTimer < 0.32){
+            // if(this.jumpUpTimer < 0.32){
+           
+                // console.log(dynamics.translateY);
+            //     var velocity = 0 + 3.136 * this.jumpUpTimer;
+            //     var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
+            //     console.log("up" + posY);
+                       
+            // } else if(this.jumpDownTimer < 0.32){
+                // this.jumpDownTimer += 0.01;
                 
-                var velocity = 0 + 3.136 * this.jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
-                // console.log("up" + posY);
-                super.updateY(posY);        
-            } else if(this.jumpDownTimer < 0.32){
-                this.jumpDownTimer += 0.01;
+                // var velocity = 0 + 3.136 * this.jumpDownTimer;
                 
-                var velocity = 0 + 3.136 * this.jumpDownTimer;
-                
-                var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
-                posY = posY - 0.1;
+                // var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
+                // posY = posY - 0.1;
                 // console.log("down" + posY);
-                super.updateY(posY);
-            } else {
-                this.isJumping = 0;
-                this.jumpUpTimer = 0;
-                this.jumpDownTimer = 0;
-            }
-        } else {
+                // super.updateY(posY);
+            // } else {
+                // this.isJumping = 0;
+                // this.jumpUpTimer = 0;
+                // this.jumpDownTimer = 0;
+            // }
+        // } else {
             
-        }
+        // }
     }
     
     public wait() : void{

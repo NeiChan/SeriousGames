@@ -6,9 +6,11 @@ class Menu {
     private btnPhysics: HTMLElement;
     private gameTitle: HTMLElement;
     private btnDynamics: HTMLElement;
+    private soundTest: HTMLElement;
     private main: any;
-    
+    private soundmanager: SoundsManager;
     constructor() {
+        this.soundmanager = new SoundsManager("soundfile");
         // Create the HTML elements.
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
@@ -55,6 +57,10 @@ class Menu {
         content.appendChild(this.btnDynamics);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
+        
+        this.soundTest = document.createElement("button");
+        this.soundTest.addEventListener('click', () => this.soundmanager.play('new_highscore'));
+        content.appendChild(this.soundTest);
     }
 
     showLeaderboards(): void {
@@ -84,7 +90,7 @@ class Menu {
         document.getElementById("btnDynamics").remove();
         document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
-        // document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
+        document.body.style.backgroundImage = "none";
         
         this.main = new matter();
     }

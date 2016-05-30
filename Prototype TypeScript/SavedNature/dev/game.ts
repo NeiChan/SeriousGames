@@ -1,5 +1,6 @@
 class Game {
-    private assets      : AssetsManager = new AssetsManager(); 
+    private assets      : AssetsManager = new AssetsManager();
+    private sounds      : SoundsManager = new SoundsManager(); 
     
     public objectList:any = [];
     // Get class player

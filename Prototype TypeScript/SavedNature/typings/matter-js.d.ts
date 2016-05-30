@@ -1858,7 +1858,7 @@ declare module Matter {
          * @method run
          * @param {engine} engine
          */
-        static run(enige: Engine): void;
+        static run(engine: Engine): void;
 
         /**
          * An instance of a broadphase controller. The default value is a `Matter.Grid` instance created by `Engine.create`.
