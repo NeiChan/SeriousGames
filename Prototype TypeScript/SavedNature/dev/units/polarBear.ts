@@ -83,8 +83,6 @@ class polarBear extends GameObjects implements ICollidable {
             this._jumpUpTimer += 0.01;
                        
             if(this._jumpUpTimer < 0.32){
-                
-                
                 var velocity = 0 + 3.136 * this._jumpUpTimer;
                 var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
                 console.log("up" + posY);
@@ -96,7 +94,7 @@ class polarBear extends GameObjects implements ICollidable {
                 
                 var posY = (-((-9.81 * 2) * (this._jumpDownTimer * this._jumpDownTimer) + (velocity * this._jumpDownTimer))) * 2;
                 posY = posY - 0.1;
-                console.log("down" + posY);
+                // console.log("down" + posY);
                 super.updateY(posY);
             } else {
                 this._isJumping = 0;

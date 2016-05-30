@@ -89,11 +89,20 @@ class Game {
         // let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
         // //console.log(hit);
         
+<<<<<<< HEAD
         // if(hit){
         //     console.log('Polarbear hit the bush');
         // }
         
         this.checkCollisions();
+=======
+        let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
+        // console.log(hit);
+        
+        if(hit){
+            // console.log('Polarbear hit the bush');
+        }
+>>>>>>> bf6357a7eb99349ef90784eb5e7c85895a332a81
         
         this.draw();    
     }

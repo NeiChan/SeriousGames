@@ -76,3 +76,21 @@ td,
 th {
     border: 1px solid black;
 }
+
+/* Test */
+
+.axis {
+  display: inline-block;
+  margin: 20px 40px 0px;
+  color: #fbfbfb;
+  max-width: 50%;
+}
+
+.dot{
+    float: left;
+    margin: 0px;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background: black;
+}
