@@ -3,171 +3,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var dynamic = (function () {
-    function dynamic() {
-        var dots = document.querySelectorAll('.dot');
-        var colors = ['#007EFF', '#FF3700', '#92FF00'];
-        function animateDots() {
-            for (var i = 0; i < dots.length; i++) {
-                dynamics.animate(dots[i], {
-                    translateY: -70,
-                    backgroundColor: colors[i]
-                }, {
-                    type: dynamics.forceWithGravity,
-                    bounciness: 800,
-                    elasticity: 200,
-                    duration: 2000,
-                    delay: i * 450
-                });
-            }
-            dynamics.setTimeout(animateDots, 2500);
-        }
-        animateDots();
-    }
-    return dynamic;
-}());
-var Game = (function () {
-    function Game() {
-        var _this = this;
-        this.assets = new AssetsManager();
-        this.objectList = [];
-        this.canvas = document.getElementsByTagName('canvas')[0];
-        this.context = this.canvas.getContext('2d');
-        var backgroundImg = this.assets.greenBG;
-        var bearImg = this.assets.polarbear;
-        var bushImg = this.assets.desObjects.Bush1;
-        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
-        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._bush2 = new testSubject({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
-        this.objectList.push(this._background);
-        this.objectList.push(this._bush);
-        this.objectList.push(this._bush2);
-        this.objectList.push(this._bear);
-        requestAnimationFrame(function () { return _this.update(); });
-    }
-    Game.prototype.checkCollisions = function () {
-        var GO_collidables = new Array();
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            if (obj.hasCollision) {
-                GO_collidables.push(obj);
-            }
-        }
-        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
-            var obj1 = GO_collidables_1[_b];
-            var hit = false;
-            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
-                var obj2 = GO_collidables_2[_c];
-                if (obj1 != obj2) {
-                    var obj1Bounds = obj1.getBounds();
-                    var obj2Bounds = obj2.getBounds();
-                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                        obj1.onCollision(obj2);
-                        obj2.onCollision(obj1);
-                        hit = true;
-                    }
-                }
-            }
-            if (hit) {
-                break;
-            }
-        }
-    };
-    Game.prototype.update = function () {
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.update();
-        }
-        this.checkCollisions();
-        this.draw();
-    };
-    Game.prototype.draw = function () {
-        var _this = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.draw();
-        }
-        requestAnimationFrame(function () { return _this.update(); });
-    };
-    return Game;
-}());
-window.addEventListener("load", function () {
-    new Menu();
-});
-var matter = (function () {
-    function matter() {
-        this._Engine = Matter.Engine;
-        this._World = Matter.World;
-        this._Body = Matter.Body;
-        this._Bodies = Matter.Bodies;
-        this._Composites = Matter.Composites;
-        this._Constraint = Matter.Constraint;
-        this._Events = Matter.Events;
-        this._Query = Matter.Query;
-        this._MouseConstraint = Matter.MouseConstraint;
-        this.makeTest();
-    }
-    matter.prototype.makeTest = function () {
-        var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
-        canvas.width = 800;
-        canvas.height = 600;
-        document.body.appendChild(canvas);
-    };
-    return matter;
-}());
-var Menu = (function () {
-    function Menu() {
-        this.gameTitle = document.createElement("DIV");
-        this.btnStart = document.createElement("button");
-        this.btnMatter = document.createElement("button");
-        this.btnPhysics = document.createElement("button");
-        this.btnDynamics = document.createElement("button");
-        this.btnClose = document.createElement("button");
-        this.btnHighscores = document.createElement("button");
-        this.gameTitle.setAttribute("id", "gameTitle");
-        this.btnStart.setAttribute("id", "btnStart");
-        this.btnMatter.setAttribute("id", "btnMatter");
-        this.btnPhysics.setAttribute("id", "btnPhysics");
-        this.btnDynamics.setAttribute("id", "btnDynamics");
-        this.btnClose.setAttribute("id", "btnClose");
-        this.btnHighscores.setAttribute("id", "btnHighscores");
-        this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
-        this.btnStart.innerHTML = "Start";
-        this.btnMatter.innerHTML = "Show Matter";
-        this.btnPhysics.innerHTML = "Show Physics";
-        this.btnDynamics.innerHTML = "Show Dynamics example";
-        this.btnClose.innerHTML = "Uitleg";
-        this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnStart.addEventListener("click", this.removeMenu);
-        var content = document.getElementById('content');
-        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
-        content.appendChild(this.gameTitle);
-        content.appendChild(this.btnStart);
-        content.appendChild(this.btnMatter);
-        content.appendChild(this.btnPhysics);
-        content.appendChild(this.btnDynamics);
-        content.appendChild(this.btnHighscores);
-        content.appendChild(this.btnClose);
-    }
-    Menu.prototype.showLeaderboards = function () {
-        window.location.href = "leaderboards.php";
-    };
-    Menu.prototype.removeMenu = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "";
-        this.main = new Game();
-    };
-    return Menu;
-}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -266,6 +101,171 @@ var Rectangle = (function () {
         return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
     };
     return Rectangle;
+}());
+var dynamic = (function () {
+    function dynamic() {
+        var dots = document.querySelectorAll('.dot');
+        var colors = ['#007EFF', '#FF3700', '#92FF00'];
+        function animateDots() {
+            for (var i = 0; i < dots.length; i++) {
+                dynamics.animate(dots[i], {
+                    translateY: -70,
+                    backgroundColor: colors[i]
+                }, {
+                    type: dynamics.forceWithGravity,
+                    bounciness: 800,
+                    elasticity: 200,
+                    duration: 2000,
+                    delay: i * 450
+                });
+            }
+            dynamics.setTimeout(animateDots, 2500);
+        }
+        animateDots();
+    }
+    return dynamic;
+}());
+var Game = (function () {
+    function Game() {
+        var _this = this;
+        this.assets = new AssetsManager();
+        this.objectList = [];
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
+        var backgroundImg = this.assets.greenBG;
+        var bearImg = this.assets.polarbear;
+        var bushImg = this.assets.desObjects.Bush1;
+        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
+        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
+        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._score = new Score({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
+        this.objectList.push(this._background);
+        this.objectList.push(this._bush);
+        this.objectList.push(this._score);
+        this.objectList.push(this._bear);
+        requestAnimationFrame(function () { return _this.update(); });
+    }
+    Game.prototype.checkCollisions = function () {
+        var GO_collidables = new Array();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj.hasCollision) {
+                GO_collidables.push(obj);
+            }
+        }
+        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
+            var obj1 = GO_collidables_1[_b];
+            var hit = false;
+            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
+                var obj2 = GO_collidables_2[_c];
+                if (obj1 != obj2) {
+                    var obj1Bounds = obj1.getBounds();
+                    var obj2Bounds = obj2.getBounds();
+                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                        obj1.onCollision(obj2);
+                        obj2.onCollision(obj1);
+                        hit = true;
+                    }
+                }
+            }
+            if (hit) {
+                break;
+            }
+        }
+    };
+    Game.prototype.update = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        this.checkCollisions();
+        this.draw();
+    };
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    return Game;
+}());
+window.addEventListener("load", function () {
+    new Menu();
+});
+var matter = (function () {
+    function matter() {
+        this._Engine = Matter.Engine;
+        this._World = Matter.World;
+        this._Body = Matter.Body;
+        this._Bodies = Matter.Bodies;
+        this._Composites = Matter.Composites;
+        this._Constraint = Matter.Constraint;
+        this._Events = Matter.Events;
+        this._Query = Matter.Query;
+        this._MouseConstraint = Matter.MouseConstraint;
+        this.makeTest();
+    }
+    matter.prototype.makeTest = function () {
+        var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+    };
+    return matter;
+}());
+var Menu = (function () {
+    function Menu() {
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnMatter = document.createElement("button");
+        this.btnPhysics = document.createElement("button");
+        this.btnDynamics = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnMatter.setAttribute("id", "btnMatter");
+        this.btnPhysics.setAttribute("id", "btnPhysics");
+        this.btnDynamics.setAttribute("id", "btnDynamics");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnMatter.innerHTML = "Show Matter";
+        this.btnPhysics.innerHTML = "Show Physics";
+        this.btnDynamics.innerHTML = "Show Dynamics example";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("click", this.removeMenu);
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnMatter);
+        content.appendChild(this.btnPhysics);
+        content.appendChild(this.btnDynamics);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboard.php";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "";
+        this.main = new Game();
+    };
+    return Menu;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
@@ -540,6 +540,26 @@ var polarBear = (function (_super) {
         _super.prototype.move.call(this);
     };
     return polarBear;
+}(GameObjects));
+var Score = (function (_super) {
+    __extends(Score, _super);
+    function Score(source) {
+        _super.call(this, source);
+        this.hasCollision = false;
+    }
+    Score.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    Score.prototype.onCollision = function (gameObject) {
+    };
+    Score.prototype.draw = function () {
+        console.log("I have been drawn");
+    };
+    Score.prototype.wait = function () {
+    };
+    Score.prototype.update = function () {
+    };
+    return Score;
 }(GameObjects));
 var testSubject = (function (_super) {
     __extends(testSubject, _super);

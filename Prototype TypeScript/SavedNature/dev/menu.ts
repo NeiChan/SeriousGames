@@ -7,7 +7,7 @@ class Menu {
     private gameTitle: HTMLElement;
     private btnDynamics: HTMLElement;
     private main: any;
-    
+
     constructor() {
         // Create the HTML elements.
         this.gameTitle = document.createElement("DIV");
@@ -29,7 +29,7 @@ class Menu {
 
         // Insert text and images into HTML elements.
         // this.gameTitle.innerHTML = "Save Nature!";
-        this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
         this.btnStart.innerHTML = "Start";
         this.btnMatter.innerHTML = "Show Matter";
         this.btnPhysics.innerHTML = "Show Physics";
@@ -43,8 +43,8 @@ class Menu {
 
         // Append to the body
         var content = document.getElementById('content');
-        
-        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')"; 
+
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnMatter);
@@ -55,7 +55,7 @@ class Menu {
     }
 
     showLeaderboards(): void {
-        window.location.href = "leaderboards.php";
+        window.location.href = "leaderboard.php";
     }
 
     removeMenu(): void {
@@ -70,7 +70,7 @@ class Menu {
         //document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
 
         document.body.style.backgroundImage = "";
-        
+
         // Call function to create Game.
         this.main = new Game();
     }
