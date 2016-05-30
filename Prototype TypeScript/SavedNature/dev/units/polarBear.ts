@@ -70,7 +70,7 @@ class polarBear extends GameObjects{
                 
                 var velocity = 0 + 3.136 * this.jumpUpTimer;
                 var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
-                console.log("up" + posY);
+                // console.log("up" + posY);
                 super.updateY(posY);        
             } else if(this.jumpDownTimer < 0.32){
                 this.jumpDownTimer += 0.01;
@@ -79,7 +79,7 @@ class polarBear extends GameObjects{
                 
                 var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
                 posY = posY - 0.1;
-                console.log("down" + posY);
+                // console.log("down" + posY);
                 super.updateY(posY);
             } else {
                 this.isJumping = 0;

@@ -3,6 +3,29 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var dynamic = (function () {
+    function dynamic() {
+        var dots = document.querySelectorAll('.dot');
+        var colors = ['#007EFF', '#FF3700', '#92FF00'];
+        function animateDots() {
+            for (var i = 0; i < dots.length; i++) {
+                dynamics.animate(dots[i], {
+                    translateY: -70,
+                    backgroundColor: colors[i]
+                }, {
+                    type: dynamics.forceWithGravity,
+                    bounciness: 800,
+                    elasticity: 200,
+                    duration: 2000,
+                    delay: i * 450
+                });
+            }
+            dynamics.setTimeout(animateDots, 2500);
+        }
+        animateDots();
+    }
+    return dynamic;
+}());
 var Game = (function () {
     function Game() {
         var _this = this;
@@ -26,9 +49,7 @@ var Game = (function () {
         var polarBearBounds = this.bear.getBounds();
         var bushBounds = this.bush.getBounds();
         var hit = polarBearBounds.hitsOtherRectangle(bushBounds);
-        console.log(hit);
         if (hit) {
-            console.log('Polarbear hit the bush');
         }
         this.draw();
     };
@@ -46,26 +67,62 @@ var Game = (function () {
 window.addEventListener("load", function () {
     new Menu();
 });
+var matter = (function () {
+    function matter() {
+        this._Engine = Matter.Engine;
+        this._World = Matter.World;
+        this._Body = Matter.Body;
+        this._Bodies = Matter.Bodies;
+        this._Composites = Matter.Composites;
+        this._Constraint = Matter.Constraint;
+        this._Events = Matter.Events;
+        this._Query = Matter.Query;
+        this._MouseConstraint = Matter.MouseConstraint;
+        this.makeTest();
+    }
+    matter.prototype.makeTest = function () {
+        var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+    };
+    return matter;
+}());
 var Menu = (function () {
     function Menu() {
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
+        this.btnMatter = document.createElement("button");
+        this.btnPhysics = document.createElement("button");
+        this.btnDynamics = document.createElement("button");
         this.btnClose = document.createElement("button");
         this.btnHighscores = document.createElement("button");
         this.gameTitle.setAttribute("id", "gameTitle");
         this.btnStart.setAttribute("id", "btnStart");
+        this.btnMatter.setAttribute("id", "btnMatter");
+        this.btnPhysics.setAttribute("id", "btnPhysics");
+        this.btnDynamics.setAttribute("id", "btnDynamics");
         this.btnClose.setAttribute("id", "btnClose");
         this.btnHighscores.setAttribute("id", "btnHighscores");
         this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
         this.btnStart.innerHTML = "Start";
+        this.btnMatter.innerHTML = "Show Matter";
+        this.btnPhysics.innerHTML = "Show Physics";
+        this.btnDynamics.innerHTML = "Show Dynamics example";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
         this.btnStart.addEventListener("click", this.removeMenu);
+        this.btnMatter.addEventListener("click", this.startMatter);
+        this.btnPhysics.addEventListener("click", this.startPsysics2D);
+        this.btnDynamics.addEventListener("click", this.startDynamics);
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
+        content.appendChild(this.btnMatter);
+        content.appendChild(this.btnPhysics);
+        content.appendChild(this.btnDynamics);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
     }
@@ -75,12 +132,77 @@ var Menu = (function () {
     Menu.prototype.removeMenu = function () {
         document.getElementById("gameTitle").remove();
         document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
         document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
         this.main = new Game();
     };
+    Menu.prototype.startMatter = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        this.main = new matter();
+    };
+    Menu.prototype.startPsysics2D = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        this.main = new physyics2d();
+    };
+    Menu.prototype.startDynamics = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        this.main = new dynamic();
+    };
     return Menu;
+}());
+var physyics2d = (function () {
+    function physyics2d() {
+        this.gravity = new PhysicsType2d.Vector2(0.0, -9.78);
+        this.world = new PhysicsType2d.Dynamics.World(this.gravity);
+        this.doSomething();
+    }
+    physyics2d.prototype.doSomething = function () {
+        console.log("Ola");
+        var groundDefinition = new PhysicsType2d.Dynamics.BodyDefinition();
+        groundDefinition.type = PhysicsType2d.Dynamics.BodyType.STATIC;
+        var ground = this.world.CreateBody(groundDefinition);
+        var groundShape = new PhysicsType2d.Collision.Shapes.EdgeShape();
+        groundShape.Set(new PhysicsType2d.Vector2(-50.0, 0.0), new PhysicsType2d.Vector2(50.0, 0.0));
+        ground.CreateFixture(groundShape, 0.0);
+        var boxShape = new PhysicsType2d.Collision.Shapes.PolygonShape();
+        boxShape.SetAsBoxAtOrigin(0.5, 0.5);
+        var bd = new PhysicsType2d.Dynamics.BodyDefinition();
+        bd.type = PhysicsType2d.Dynamics.BodyType.DYNAMIC;
+        bd.position = new PhysicsType2d.Vector2(0, 11);
+        var boxBody = this.world.CreateBody(bd);
+        var fd = new PhysicsType2d.Dynamics.FixtureDefinition();
+        fd.shape = boxShape;
+        fd.density = 1.0;
+        fd.friction = 0.3;
+        boxBody.CreateFixtureFromDefinition(fd);
+        var timeStep = 1 / 60;
+        var velocityIterations = 8;
+        var positionIterations = 3;
+        this.world.Step(timeStep, velocityIterations, positionIterations);
+    };
+    return physyics2d;
 }());
 var GameObjects = (function () {
     function GameObjects(source) {
@@ -421,7 +543,6 @@ var polarBear = (function (_super) {
             if (this.jumpUpTimer < 0.32) {
                 var velocity = 0 + 3.136 * this.jumpUpTimer;
                 var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
-                console.log("up" + posY);
                 _super.prototype.updateY.call(this, posY);
             }
             else if (this.jumpDownTimer < 0.32) {
@@ -429,7 +550,6 @@ var polarBear = (function (_super) {
                 var velocity = 0 + 3.136 * this.jumpDownTimer;
                 var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
                 posY = posY - 0.1;
-                console.log("down" + posY);
                 _super.prototype.updateY.call(this, posY);
             }
             else {

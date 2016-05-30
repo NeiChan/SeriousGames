@@ -1,5 +1,3 @@
-/// <reference path="../typings/matter-js.d.ts"/>
-
 class Game {
     private assets      : AssetsManager = new AssetsManager(); 
     
@@ -47,10 +45,10 @@ class Game {
         
         
         let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
-        console.log(hit);
+        // console.log(hit);
         
         if(hit){
-            console.log('Polarbear hit the bush');
+            // console.log('Polarbear hit the bush');
         }
         
         this.draw();    
