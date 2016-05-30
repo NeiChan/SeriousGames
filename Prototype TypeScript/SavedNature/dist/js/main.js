@@ -7,27 +7,81 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this.assets = new AssetsManager();
+        this.objectList = [];
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var bearImg = this.assets.polarbear;
-        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 50, y: 50, speed: 3 });
+        var bushImg = this.assets.desObjects.Bush1;
+        this.bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 50, speed: 3 });
+        this.bush = new testSubject({ imgSrc: bushImg, x: 50, y: 250, frameHeight: 145, frameWidth: 88 });
+        this.objectList.push(this.bear);
+        this.objectList.push(this.bush);
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.update = function () {
-        this.bear.update();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        var polarBearBounds = this.bear.getBounds();
+        var bushBounds = this.bush.getBounds();
+        var hit = polarBearBounds.hitsOtherRectangle(bushBounds);
+        console.log(hit);
+        if (hit) {
+            console.log('Polarbear hit the bush');
+        }
         this.draw();
     };
     Game.prototype.draw = function () {
         var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.bear.draw();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
         requestAnimationFrame(function () { return _this.update(); });
     };
     return Game;
 }());
 window.addEventListener("load", function () {
-    new Game();
+    new Menu();
 });
+var Menu = (function () {
+    function Menu() {
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("click", this.removeMenu);
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboards.php";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
+        this.main = new Game();
+    };
+    return Menu;
+}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -46,6 +100,9 @@ var GameObjects = (function () {
         this.init(source);
         this.createCanvasElement();
     }
+    GameObjects.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
     GameObjects.prototype.init = function (source) {
         utils.CopyProperties(source, this);
     };
@@ -104,6 +161,33 @@ var utils = (function () {
         return el;
     };
     return utils;
+}());
+var Rectangle = (function () {
+    function Rectangle(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+    }
+    Rectangle.prototype.hitsOtherRectangle = function (other) {
+        if (this.hasOverlap(other)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    Rectangle.prototype.isInside = function (posx, posy) {
+        var differencex = this.x - posx;
+        var differencey = this.y - posy;
+        return Math.abs(differencex) < this.width / 2 && Math.abs(differencey) < this.height / 2;
+    };
+    Rectangle.prototype.hasOverlap = function (rec) {
+        var differencex = this.x - rec.x;
+        var differencey = this.y - rec.y;
+        return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
+    };
+    return Rectangle;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
@@ -362,7 +446,26 @@ var polarBear = (function (_super) {
     polarBear.prototype.update = function () {
         this.jump();
         _super.prototype.move.call(this);
+        if (this.y > 300) {
+        }
+        else {
+            this.y += 5;
+        }
     };
     return polarBear;
+}(GameObjects));
+var testSubject = (function (_super) {
+    __extends(testSubject, _super);
+    function testSubject(source) {
+        _super.call(this, source);
+    }
+    testSubject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    testSubject.prototype.wait = function () {
+    };
+    testSubject.prototype.update = function () {
+    };
+    return testSubject;
 }(GameObjects));
 //# sourceMappingURL=main.js.map

@@ -99,5 +99,11 @@ class polarBear extends GameObjects{
         this.jump();
         
         super.move();
+        
+        if(this.y > 300){
+            
+        }else{
+            this.y += 5;
+        }
     }
 }

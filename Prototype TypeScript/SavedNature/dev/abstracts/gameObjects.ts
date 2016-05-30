@@ -3,13 +3,13 @@ abstract class GameObjects {
     private directionX: number = 0;
     private directionY: number = 0;
 
-    private x: number = 0;
-    private y: number = 0;
+    protected x: number = 0;
+    protected y: number = 0;
 	
 	private speed: number = 0;
 	
-	private context: CanvasRenderingContext2D;
-    private image: HTMLImageElement;
+	protected context: CanvasRenderingContext2D;
+    protected image: HTMLImageElement;
     
     private currentFrame:   number  = 0;
     private maxFrame:       number  = 0;
@@ -24,12 +24,21 @@ abstract class GameObjects {
     
     private imgSrc: string;
 	
-	constructor(source)
+	constructor(source:any)
 	{
         this.init(source);
         
-        // Omdat er shit getekend moet worden op het scherm
+        // Omdat er getekend moet worden op het scherm
 		this.createCanvasElement();
+    }
+    
+    /**
+     * getBounds
+     * 
+     * Create a rectangle over the image itself for collision
+     */
+    public getBounds():Rectangle {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
   
     /**
