@@ -8,7 +8,11 @@ class Menu {
     private btnDynamics: HTMLElement;
     private soundTest: HTMLElement;
     private main: any;
+<<<<<<< HEAD
     private soundmanager: SoundsManager;
+=======
+
+>>>>>>> 24ccf1be08f3c35e7f52ceb9b0928a0753ce440f
     constructor() {
         this.soundmanager = new SoundsManager("soundfile");
         // Create the HTML elements.
@@ -31,7 +35,7 @@ class Menu {
 
         // Insert text and images into HTML elements.
         // this.gameTitle.innerHTML = "Save Nature!";
-        this.gameTitle.style.backgroundImage = "url('images/title_screen.png')";
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
         this.btnStart.innerHTML = "Start";
         this.btnMatter.innerHTML = "Show Matter";
         this.btnPhysics.innerHTML = "Show Physics";
@@ -42,14 +46,11 @@ class Menu {
         // Add click events.
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
         this.btnStart.addEventListener("click", this.removeMenu);
-        this.btnMatter.addEventListener("click", this.startMatter);
-        this.btnPhysics.addEventListener("click", this.startPsysics2D);
-        this.btnDynamics.addEventListener("click", this.startDynamics);
 
         // Append to the body
         var content = document.getElementById('content');
-        
-        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')"; 
+
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnMatter);
@@ -64,7 +65,7 @@ class Menu {
     }
 
     showLeaderboards(): void {
-        window.location.href = "leaderboards.php";
+        window.location.href = "leaderboard.php";
     }
 
     removeMenu(): void {
@@ -76,11 +77,14 @@ class Menu {
         document.getElementById("btnDynamics").remove();
         document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
+        //document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
 
-        // Call function to create Player character.
+        document.body.style.backgroundImage = "";
+
+        // Call function to create Game.
         this.main = new Game();
     }
+<<<<<<< HEAD
     
     private startMatter() : void{
         document.getElementById("gameTitle").remove();
@@ -120,4 +124,6 @@ class Menu {
         
         this.main = new dynamic();
     }
+=======
+>>>>>>> 24ccf1be08f3c35e7f52ceb9b0928a0753ce440f
 }

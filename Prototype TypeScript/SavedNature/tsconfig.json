@@ -3,8 +3,8 @@
         "sourceMap":  true,
         "removeComments": true,
         "target":"es5",
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": false,
         "out": "dist/js/main.js"
     },
     "exclude": [

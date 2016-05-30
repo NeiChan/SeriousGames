@@ -1,14 +1,30 @@
-class polarBear extends GameObjects{
-    private isJumping: number = 0;
-    private jumpUpTimer: any = 0;
-    private jumpDownTimer: any = 0;
-    
+class polarBear extends GameObjects implements ICollidable {
+    private _isJumping: number = 0;
+    private _jumpUpTimer: any = 0;
+    private _jumpDownTimer: any = 0;
+    public  hasCollision:boolean = true;
     
     constructor(source) {
         // extending from GameObjects
         super(source);
         window.addEventListener("keydown", (e) => this.onKeyDown(e));
         window.addEventListener("keyup"  , (e) => this.onKeyUp(e));
+    }
+    
+    /**
+     * getBounds
+     * 
+     * Create a rectangle over the image itself for collision
+     */
+    getBounds():Rectangle {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    }
+    
+    onCollision(gameObject:ICollidable) {
+        // functie van ICollidable
+        // Doe iets wanneer er een collision is.
+        
+        this.x = 0;
     }
     
     private onKeyDown(event:KeyboardEvent):void {
@@ -24,7 +40,7 @@ class polarBear extends GameObjects{
                 super.changeAnimationY(1);
                 break;
             case 32:
-                this.isJumping = 1;
+                this._isJumping = 1;
                 this.jump();
                 break;
         }
@@ -62,33 +78,31 @@ class polarBear extends GameObjects{
         
         // Horizontal Speed
         // V (velocity) = V0 (initial velocity) + a (acceleration) * t (time)
-        // if(this.isJumping === 1){
 
+        if(this._isJumping === 1){
             var posY = 0;
-            // this.jumpUpTimer += 0.01;
+            this._jumpUpTimer += 0.01;
                        
-            // if(this.jumpUpTimer < 0.32){
-           
-                // console.log(dynamics.translateY);
-            //     var velocity = 0 + 3.136 * this.jumpUpTimer;
-            //     var posY = ((-9.81 * 2) * (this.jumpUpTimer * this.jumpUpTimer) + (velocity * this.jumpUpTimer)) * 2;
-            //     console.log("up" + posY);
-                       
-            // } else if(this.jumpDownTimer < 0.32){
-                // this.jumpDownTimer += 0.01;
+            if(this._jumpUpTimer < 0.32){
+                var velocity = 0 + 3.136 * this._jumpUpTimer;
+                var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
+                console.log("up" + posY);
+                super.updateY(posY);        
+            } else if(this._jumpDownTimer < 0.32){
+                this._jumpDownTimer += 0.01;
                 
-                // var velocity = 0 + 3.136 * this.jumpDownTimer;
+                var velocity = 0 + 3.136 * this._jumpDownTimer;
                 
-                // var posY = (-((-9.81 * 2) * (this.jumpDownTimer * this.jumpDownTimer) + (velocity * this.jumpDownTimer))) * 2;
-                // posY = posY - 0.1;
+                var posY = (-((-9.81 * 2) * (this._jumpDownTimer * this._jumpDownTimer) + (velocity * this._jumpDownTimer))) * 2;
+                posY = posY - 0.1;
                 // console.log("down" + posY);
-                // super.updateY(posY);
-            // } else {
-                // this.isJumping = 0;
-                // this.jumpUpTimer = 0;
-                // this.jumpDownTimer = 0;
-            // }
-        // } else {
+                super.updateY(posY);
+            } else {
+                this._isJumping = 0;
+                this._jumpUpTimer = 0;
+                this._jumpDownTimer = 0;
+            }
+        } else {
             
         // }
     }
@@ -101,11 +115,5 @@ class polarBear extends GameObjects{
         this.jump();
         
         super.move();
-        
-        if(this.y > 300){
-            
-        }else{
-            this.y += 5;
-        }
     }
 }

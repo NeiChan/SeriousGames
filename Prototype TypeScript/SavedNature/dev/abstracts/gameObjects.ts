@@ -14,8 +14,8 @@ abstract class GameObjects {
     private currentFrame:   number  = 0;
     private maxFrame:       number  = 0;
     
-    private frameWidth:     number  = 0;
-    private frameHeight:    number  = 0;
+    protected frameWidth:     number  = 0;
+    protected frameHeight:    number  = 0;
     
     private animationY:     number  = 0;
     private animationSpeed: number  = 0;
@@ -32,14 +32,14 @@ abstract class GameObjects {
 		this.createCanvasElement();
     }
     
-    /**
-     * getBounds
-     * 
-     * Create a rectangle over the image itself for collision
-     */
-    public getBounds():Rectangle {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    }
+    // /**
+    //  * getBounds
+    //  * 
+    //  * Create a rectangle over the image itself for collision
+    //  */
+    // public getBounds():Rectangle {
+    //     return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    // }
   
     /**
      * init
