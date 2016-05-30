@@ -4,7 +4,7 @@
         "removeComments": true,
         "target":"es5",
         "noImplicitAny": false,
-        "noImplicitReturns": true,
+        "noImplicitReturns": false,
         "out": "dist/js/main.js"
     },
     "exclude": [

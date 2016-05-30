@@ -15,13 +15,9 @@ class Rectangle {
         this.height = h;
     }
     
-    // hier komt de hit code - speedcourse
-    hitsOtherRectangle(other:Rectangle): boolean{
-        if(this.hasOverlap(other)){
-            return true; 
-        }else{
-            return false;
-        }
+    // kijk of twee rectangles elkaar raken
+    hitsOtherRectangle(rec: Rectangle): boolean {
+         return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);
     }
     
     isInside(posx:number, posy:number): boolean {

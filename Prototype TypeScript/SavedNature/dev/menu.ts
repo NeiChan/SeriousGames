@@ -49,9 +49,11 @@ class Menu {
         document.getElementById("btnStart").remove();
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
+        //document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
 
-        // Call function to create Player character.
+        document.body.style.backgroundImage = "";
+        
+        // Call function to create Game.
         this.main = new Game();
     }
 }

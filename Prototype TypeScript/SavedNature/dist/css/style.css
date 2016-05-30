@@ -11,6 +11,10 @@ body {
     background-size: cover;
 }
 
+/*body * {
+    border: 1px solid red;
+}*/
+
 button {
     display: block;
     min-width: 10%;
@@ -37,6 +41,8 @@ player {
     height: 100%;
     padding: 65px;
 }
+
+
 
 #btnStart {
     margin: auto;
