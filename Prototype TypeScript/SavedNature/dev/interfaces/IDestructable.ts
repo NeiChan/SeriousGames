@@ -1,0 +1,3 @@
+interface IDestructable {
+    hasDestructable:boolean;
+}

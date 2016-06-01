@@ -1,5 +1,6 @@
-class testSubject extends GameObjects implements ICollidable{
+class testSubject extends GameObjects implements ICollidable, IDestructable{
     public hasCollision:boolean = true;
+    public hasDestructable:boolean = true;
     
     constructor(source) {
         // extending from GameObjects

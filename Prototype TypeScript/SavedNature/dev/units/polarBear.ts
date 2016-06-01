@@ -54,12 +54,12 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeX(0);
                 super.changeAnimationY(0);
                 break;
-            case 39:
+            case 39: // RIGHT
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);
                 break;
-            case 32:
+            case 32: // SPACEBAR
                 break;
         }
     }

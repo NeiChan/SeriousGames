@@ -9,6 +9,7 @@ class Game {
 
     // Get class player
     private _background  : Background;
+    private _ui          : UI;
     private _bear        : polarBear;
     private _bush        : testSubject;
     // private _score       : Score;
@@ -30,13 +31,13 @@ class Game {
 
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
+        this._ui            = new UI({x: 50, y: 50});
         this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        // this._score          = new Score({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
 
         this.objectList.push(this._background);
+        this.objectList.push(this._ui);
         this.objectList.push(this._bush);
-        // this.objectList.push(this._score);
         this.objectList.push(this._bear);
         
         var content = document.getElementById('content');
@@ -47,6 +48,17 @@ class Game {
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
     }
+    
+    private draw()  : void {
+        this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
+
+        for(var obj of this.objectList) {
+            obj.draw();
+        }
+
+        requestAnimationFrame(() => this.update());
+    }
+    
 
     private update() : void {
         // Aanroepen van update function
@@ -60,16 +72,6 @@ class Game {
         this.draw();
     }
 
-    private draw()  : void {
-        this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
-
-        for(var obj of this.objectList) {
-            obj.draw();
-        }
-
-        requestAnimationFrame(() => this.update());
-    }
-    
     private checkCollisions() : void {
         let GO_collidables = new Array<ICollidable>();
 
@@ -97,6 +99,17 @@ class Game {
                     if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
+                        // if obj2 gelijk is aan objectList
+                        
+                        // check on hasDestructable
+                        var index = this.objectList.indexOf(obj1);
+                        if(index > -1) {
+                            this.objectList.splice(index, 1);
+                        } 
+                        // if hasDestructable
+                        // objectList.remove
+                        
+                        this._ui.updateScore(10);
                         hit = true;
                     }
                 }

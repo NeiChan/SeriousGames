@@ -8,21 +8,43 @@ var Game = (function () {
         var _this = this;
         this.assets = new AssetsManager();
         this.objectList = [];
+        Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var backgroundImg = this.assets.greenBG;
         var bearImg = this.assets.polarbear;
         var bushImg = this.assets.desObjects.Bush1;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
+        this._ui = new UI({ x: 50, y: 50 });
         this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        var obj = { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 };
-        utils.CopyProperties(obj, this._bear);
         this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
+        this.objectList.push(this._ui);
         this.objectList.push(this._bush);
         this.objectList.push(this._bear);
+        var content = document.getElementById('content');
+        var div = utility.createDiv('divver');
+        div = utility.addSoundEvent(div, 'game_over');
+        content.appendChild(div);
         requestAnimationFrame(function () { return _this.update(); });
     }
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    Game.prototype.update = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        this.checkCollisions();
+        this.draw();
+    };
     Game.prototype.checkCollisions = function () {
         var GO_collidables = new Array();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
@@ -42,6 +64,11 @@ var Game = (function () {
                     if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
+                        var index = this.objectList.indexOf(obj1);
+                        if (index > -1) {
+                            this.objectList.splice(index, 1);
+                        }
+                        this._ui.updateScore(10);
                         hit = true;
                     }
                 }
@@ -51,23 +78,6 @@ var Game = (function () {
             }
         }
     };
-    Game.prototype.update = function () {
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.update();
-        }
-        this.checkCollisions();
-        this.draw();
-    };
-    Game.prototype.draw = function () {
-        var _this = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.draw();
-        }
-        requestAnimationFrame(function () { return _this.update(); });
-    };
     return Game;
 }());
 window.addEventListener("load", function () {
@@ -75,27 +85,17 @@ window.addEventListener("load", function () {
 });
 var Menu = (function () {
     function Menu() {
-        var _this = this;
         this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
-        this.btnMatter = document.createElement("button");
-        this.btnPhysics = document.createElement("button");
-        this.btnDynamics = document.createElement("button");
         this.btnClose = document.createElement("button");
         this.btnHighscores = document.createElement("button");
         this.gameTitle.setAttribute("id", "gameTitle");
         this.btnStart.setAttribute("id", "btnStart");
-        this.btnMatter.setAttribute("id", "btnMatter");
-        this.btnPhysics.setAttribute("id", "btnPhysics");
-        this.btnDynamics.setAttribute("id", "btnDynamics");
         this.btnClose.setAttribute("id", "btnClose");
         this.btnHighscores.setAttribute("id", "btnHighscores");
         this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
         this.btnStart.innerHTML = "Start";
-        this.btnMatter.innerHTML = "Show Matter";
-        this.btnPhysics.innerHTML = "Show Physics";
-        this.btnDynamics.innerHTML = "Show Dynamics example";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
@@ -104,14 +104,8 @@ var Menu = (function () {
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
-        content.appendChild(this.btnMatter);
-        content.appendChild(this.btnPhysics);
-        content.appendChild(this.btnDynamics);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
-        this.soundTest = document.createElement("button");
-        this.soundTest.addEventListener('click', function () { return _this.soundmanager.play('new_highscore'); });
-        content.appendChild(this.soundTest);
     }
     Menu.prototype.showLeaderboards = function () {
         window.location.href = "leaderboard.php";
@@ -119,42 +113,10 @@ var Menu = (function () {
     Menu.prototype.removeMenu = function () {
         document.getElementById("gameTitle").remove();
         document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
         document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "";
         this.main = new Game();
-    };
-    Menu.prototype.startMatter = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "none";
-    };
-    Menu.prototype.startPsysics2D = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new physyics2d();
-    };
-    Menu.prototype.startDynamics = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
     };
     return Menu;
 }());
@@ -182,7 +144,7 @@ var GameObjects = (function () {
         this.createCanvasElement();
     }
     GameObjects.prototype.init = function (source) {
-        utils.CopyProperties(source, this);
+        utility.CopyProperties(source, this);
     };
     GameObjects.prototype.createCanvasElement = function () {
         var canvas = document.getElementsByTagName("canvas")[0];
@@ -220,10 +182,10 @@ var GameObjects = (function () {
     };
     return GameObjects;
 }());
-var utils = (function () {
-    function utils() {
+var utility = (function () {
+    function utility() {
     }
-    utils.CopyProperties = function (source, target) {
+    utility.CopyProperties = function (source, target) {
         for (var prop in source) {
             if (prop !== undefined) {
                 target[prop] = source[prop];
@@ -233,12 +195,16 @@ var utils = (function () {
             }
         }
     };
-    utils.prototype.createDiv = function (elementName) {
+    utility.createDiv = function (elementName) {
         var el = document.createElement(elementName);
         document.body.appendChild(el);
         return el;
     };
-    return utils;
+    utility.addSoundEvent = function (el, soundName) {
+        el.addEventListener('click', function () { return Game.soundmanager.play(soundName); });
+        return el;
+    };
+    return utility;
 }());
 var Rectangle = (function () {
     function Rectangle(x, y, w, h) {
@@ -678,6 +644,7 @@ var testSubject = (function (_super) {
     function testSubject(source) {
         _super.call(this, source);
         this.hasCollision = true;
+        this.hasDestructable = true;
     }
     testSubject.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
@@ -693,5 +660,27 @@ var testSubject = (function (_super) {
     testSubject.prototype.update = function () {
     };
     return testSubject;
+}(GameObjects));
+var UI = (function (_super) {
+    __extends(UI, _super);
+    function UI(source) {
+        _super.call(this, source);
+        this._font = "14px Arial";
+        this._counter = 0;
+        this.context.font = this._font;
+    }
+    UI.prototype.generateScore = function () {
+        this.context.fillText("Score :  ", this.x, this.y);
+        this.context.fillText(this._counter.toString(), this.x + 50, this.y);
+    };
+    UI.prototype.updateScore = function (score) {
+        this._counter += score;
+    };
+    UI.prototype.draw = function () {
+        this.generateScore();
+    };
+    UI.prototype.update = function () {
+    };
+    return UI;
 }(GameObjects));
 //# sourceMappingURL=main.js.map
