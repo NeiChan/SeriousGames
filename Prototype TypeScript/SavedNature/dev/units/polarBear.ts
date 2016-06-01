@@ -1,8 +1,8 @@
 class polarBear extends GameObjects implements ICollidable {
     private _isJumping: number = 0;
-    private _jumpUpTimer: any = 0;
-    private _jumpDownTimer: any = 0;
+    private _jumpTimer: number = 2.39645;
     public  hasCollision:boolean = true;
+    public myY:number = 0;
     
     constructor(source) {
         // extending from GameObjects
@@ -40,8 +40,13 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeAnimationY(1);
                 break;
             case 32:
-                this._isJumping = 1;
-                this.jump();
+                if(this._isJumping === 1){
+                    console.log('already jumping');
+                } else {
+                    this._isJumping = 1;
+                    this.myY = super.getY();
+                    console.log("Y before jump =" + super.getY());
+                }
                 break;
         }
     }
@@ -72,50 +77,33 @@ class polarBear extends GameObjects implements ICollidable {
     // weird partly physical jump function
     public jump() : void{ 
         var self = this;
-        // Vertical Speed
-        // D (distance) = (.5) * a (acceleration) * t (time)2 + V0 (initial velocity) * t time
-        // (My distance, d = (.5) * (-9.81) * (.32)2 + 3.136 * (.32) = 0.5023 meters).
-        
-        // Horizontal Speed
-        // V (velocity) = V0 (initial velocity) + a (acceleration) * t (time)
-        
+    
         // y = -((x-2.25)^2) + 5
+        // (‑((x-​2.25)^​2))+​5
         
+        this._jumpTimer += 0.1;
+        var posY = 0;
+        
+        posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
+        posY = -posY * 2;
 
-        if(this._isJumping === 1){
-            var posY = 0;
-            this._jumpUpTimer += 0.01;
-                       
-            if(this._jumpUpTimer < 0.32){
-                var velocity = 0 + 3.136 * this._jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
-                console.log("up" + posY);
-                super.updateY(posY);        
-            } else if(this._jumpDownTimer < 0.32){
-                this._jumpDownTimer += 0.01;
+        super.updateY(posY);
                 
-                var velocity = 0 + 3.136 * this._jumpDownTimer;
-                
-                var posY = (-((-9.81 * 2) * (this._jumpDownTimer * this._jumpDownTimer) + (velocity * this._jumpDownTimer))) * 2;
-                posY = posY - 0.1;
-                // console.log("down" + posY);
-                super.updateY(posY);
-            } else {
-                this._isJumping = 0;
-                this._jumpUpTimer = 0;
-                this._jumpDownTimer = 0;
-            }
-        } else {
-            
-        // }
-    }
+        if(this._jumpTimer >= 4.5){
+            this._isJumping = 0;
+            this._jumpTimer = 2.39645;
+            super.setY(this.myY);
+            console.log("y after jump =" + super.getY());
+        }                  
     }
     public wait() : void{
         
     }
     
     public update() : void{
-        this.jump();
+        if(this._isJumping === 1){
+            this.jump();
+        }
         
         super.move();
     }

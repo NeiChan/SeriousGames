@@ -104,6 +104,24 @@ abstract class GameObjects {
     }
     
     /**
+     * getY
+     * 
+     * Public function for retrieving object Y-position
+     */
+    public getY() : number{
+        return this.y; 
+    }
+    
+    /**
+     * setY
+     * 
+     * Public function for setting object Y-position
+     */
+    public setY(int) : void{
+        this.y = int; 
+    }
+    
+    /**
      * move
      * 
      * Public function to perform the move operation

@@ -120,11 +120,6 @@ var Menu = (function () {
     };
     return Menu;
 }());
-var physyics2d = (function () {
-    function physyics2d() {
-    }
-    return physyics2d;
-}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -163,6 +158,12 @@ var GameObjects = (function () {
     };
     GameObjects.prototype.updateY = function (int) {
         this.y = this.y + int;
+    };
+    GameObjects.prototype.getY = function () {
+        return this.y;
+    };
+    GameObjects.prototype.setY = function (int) {
+        this.y = int;
     };
     GameObjects.prototype.move = function () {
         this.x = this.x + this.speed * this.directionX;
@@ -555,9 +556,9 @@ var polarBear = (function (_super) {
         var _this = this;
         _super.call(this, source);
         this._isJumping = 0;
-        this._jumpUpTimer = 0;
-        this._jumpDownTimer = 0;
+        this._jumpTimer = 2.39645;
         this.hasCollision = true;
+        this.myY = 0;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
     }
@@ -580,8 +581,14 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 1);
                 break;
             case 32:
-                this._isJumping = 1;
-                this.jump();
+                if (this._isJumping === 1) {
+                    console.log('already jumping');
+                }
+                else {
+                    this._isJumping = 1;
+                    this.myY = _super.prototype.getY.call(this);
+                    console.log("Y before jump =" + _super.prototype.getY.call(this));
+                }
                 break;
         }
     };
@@ -606,35 +613,24 @@ var polarBear = (function (_super) {
     };
     polarBear.prototype.jump = function () {
         var self = this;
-        if (this._isJumping === 1) {
-            var posY = 0;
-            this._jumpUpTimer += 0.01;
-            if (this._jumpUpTimer < 0.32) {
-                var velocity = 0 + 3.136 * this._jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
-                console.log("up" + posY);
-                _super.prototype.updateY.call(this, posY);
-            }
-            else if (this._jumpDownTimer < 0.32) {
-                this._jumpDownTimer += 0.01;
-                var velocity = 0 + 3.136 * this._jumpDownTimer;
-                var posY = (-((-9.81 * 2) * (this._jumpDownTimer * this._jumpDownTimer) + (velocity * this._jumpDownTimer))) * 2;
-                posY = posY - 0.1;
-                _super.prototype.updateY.call(this, posY);
-            }
-            else {
-                this._isJumping = 0;
-                this._jumpUpTimer = 0;
-                this._jumpDownTimer = 0;
-            }
-        }
-        else {
+        this._jumpTimer += 0.1;
+        var posY = 0;
+        posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
+        posY = -posY * 2;
+        _super.prototype.updateY.call(this, posY);
+        if (this._jumpTimer >= 4.5) {
+            this._isJumping = 0;
+            this._jumpTimer = 2.39645;
+            _super.prototype.setY.call(this, this.myY);
+            console.log("y after jump =" + _super.prototype.getY.call(this));
         }
     };
     polarBear.prototype.wait = function () {
     };
     polarBear.prototype.update = function () {
-        this.jump();
+        if (this._isJumping === 1) {
+            this.jump();
+        }
         _super.prototype.move.call(this);
     };
     return polarBear;
