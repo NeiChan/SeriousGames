@@ -14,13 +14,16 @@ var Game = (function () {
         var backgroundImg = this.assets.greenBG;
         var bearImg = this.assets.polarbear;
         var bushImg = this.assets.desObjects.Bush1;
+        var platformImg = this.assets.desObjects.Crate;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
         this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._platform = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 });
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
         this.objectList.push(this._bush);
+        this.objectList.push(this._platform);
         this.objectList.push(this._bear);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
@@ -490,6 +493,27 @@ var Background = (function (_super) {
     };
     return Background;
 }(GameObjects));
+var platform = (function (_super) {
+    __extends(platform, _super);
+    function platform(source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+    }
+    platform.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    platform.prototype.onCollision = function (gameObject) {
+        console.log("Doe iets onCollision voor platform");
+    };
+    platform.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    platform.prototype.wait = function () {
+    };
+    platform.prototype.update = function () {
+    };
+    return platform;
+}(GameObjects));
 var Player = (function () {
     function Player() {
         this.runForce = 0;
@@ -566,7 +590,6 @@ var polarBear = (function (_super) {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     polarBear.prototype.onCollision = function (gameObject) {
-        this.x = 0;
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {

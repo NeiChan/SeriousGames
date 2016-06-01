@@ -12,6 +12,7 @@ class Game {
     private _ui          : UI;
     private _bear        : polarBear;
     private _bush        : testSubject;
+    private _platform    : platform;
     // private _score       : Score;
 
     private context     : CanvasRenderingContext2D;
@@ -28,16 +29,19 @@ class Game {
         var backgroundImg   = this.assets.greenBG;
         var bearImg         = this.assets.polarbear;
         var bushImg         = this.assets.desObjects.Bush1;
+        var platformImg     = this.assets.desObjects.Crate;
 
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
         this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-
+        this._platform      = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 })
+        
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
         this.objectList.push(this._bush);
+        this.objectList.push(this._platform);
         this.objectList.push(this._bear);
         
         var content = document.getElementById('content');
