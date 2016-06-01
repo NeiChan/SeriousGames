@@ -8,6 +8,7 @@ var Game = (function () {
         var _this = this;
         this.assets = new AssetsManager();
         this.objectList = [];
+        Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         var backgroundImg = this.assets.greenBG;
@@ -15,14 +16,33 @@ var Game = (function () {
         var bushImg = this.assets.desObjects.Bush1;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        var obj = { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 };
-        utils.CopyProperties(obj, this._bear);
         this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
         this.objectList.push(this._bush);
         this.objectList.push(this._bear);
+        var content = document.getElementById('content');
+        var div = utility.createDiv('divver');
+        div = utility.addSoundEvent(div, 'game_over');
+        content.appendChild(div);
         requestAnimationFrame(function () { return _this.update(); });
     }
+    Game.prototype.update = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        this.checkCollisions();
+        this.draw();
+    };
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
+        requestAnimationFrame(function () { return _this.update(); });
+    };
     Game.prototype.checkCollisions = function () {
         var GO_collidables = new Array();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
@@ -51,23 +71,6 @@ var Game = (function () {
             }
         }
     };
-    Game.prototype.update = function () {
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.update();
-        }
-        this.checkCollisions();
-        this.draw();
-    };
-    Game.prototype.draw = function () {
-        var _this = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.draw();
-        }
-        requestAnimationFrame(function () { return _this.update(); });
-    };
     return Game;
 }());
 window.addEventListener("load", function () {
@@ -79,23 +82,14 @@ var Menu = (function () {
         this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
-        this.btnMatter = document.createElement("button");
-        this.btnPhysics = document.createElement("button");
-        this.btnDynamics = document.createElement("button");
         this.btnClose = document.createElement("button");
         this.btnHighscores = document.createElement("button");
         this.gameTitle.setAttribute("id", "gameTitle");
         this.btnStart.setAttribute("id", "btnStart");
-        this.btnMatter.setAttribute("id", "btnMatter");
-        this.btnPhysics.setAttribute("id", "btnPhysics");
-        this.btnDynamics.setAttribute("id", "btnDynamics");
         this.btnClose.setAttribute("id", "btnClose");
         this.btnHighscores.setAttribute("id", "btnHighscores");
         this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
         this.btnStart.innerHTML = "Start";
-        this.btnMatter.innerHTML = "Show Matter";
-        this.btnPhysics.innerHTML = "Show Physics";
-        this.btnDynamics.innerHTML = "Show Dynamics example";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
@@ -104,9 +98,6 @@ var Menu = (function () {
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
-        content.appendChild(this.btnMatter);
-        content.appendChild(this.btnPhysics);
-        content.appendChild(this.btnDynamics);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
         this.soundTest = document.createElement("button");
@@ -119,49 +110,12 @@ var Menu = (function () {
     Menu.prototype.removeMenu = function () {
         document.getElementById("gameTitle").remove();
         document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
         document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "";
         this.main = new Game();
     };
-    Menu.prototype.startMatter = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "none";
-    };
-    Menu.prototype.startPsysics2D = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new physyics2d();
-    };
-    Menu.prototype.startDynamics = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-    };
     return Menu;
-}());
-var physyics2d = (function () {
-    function physyics2d() {
-    }
-    return physyics2d;
 }());
 var GameObjects = (function () {
     function GameObjects(source) {
@@ -182,7 +136,7 @@ var GameObjects = (function () {
         this.createCanvasElement();
     }
     GameObjects.prototype.init = function (source) {
-        utils.CopyProperties(source, this);
+        utility.CopyProperties(source, this);
     };
     GameObjects.prototype.createCanvasElement = function () {
         var canvas = document.getElementsByTagName("canvas")[0];
@@ -202,6 +156,12 @@ var GameObjects = (function () {
     GameObjects.prototype.updateY = function (int) {
         this.y = this.y + int;
     };
+    GameObjects.prototype.getY = function () {
+        return this.y;
+    };
+    GameObjects.prototype.setY = function (int) {
+        this.y = int;
+    };
     GameObjects.prototype.move = function () {
         this.x = this.x + this.speed * this.directionX;
         this.y = this.y + this.speed * this.directionY;
@@ -220,10 +180,10 @@ var GameObjects = (function () {
     };
     return GameObjects;
 }());
-var utils = (function () {
-    function utils() {
+var utility = (function () {
+    function utility() {
     }
-    utils.CopyProperties = function (source, target) {
+    utility.CopyProperties = function (source, target) {
         for (var prop in source) {
             if (prop !== undefined) {
                 target[prop] = source[prop];
@@ -233,12 +193,16 @@ var utils = (function () {
             }
         }
     };
-    utils.prototype.createDiv = function (elementName) {
+    utility.createDiv = function (elementName) {
         var el = document.createElement(elementName);
         document.body.appendChild(el);
         return el;
     };
-    return utils;
+    utility.addSoundEvent = function (el, soundName) {
+        el.addEventListener('click', function () { return Game.soundmanager.play(soundName); });
+        return el;
+    };
+    return utility;
 }());
 var Rectangle = (function () {
     function Rectangle(x, y, w, h) {
@@ -589,9 +553,9 @@ var polarBear = (function (_super) {
         var _this = this;
         _super.call(this, source);
         this._isJumping = 0;
-        this._jumpUpTimer = 0;
-        this._jumpDownTimer = 0;
+        this._jumpTimer = 2.39645;
         this.hasCollision = true;
+        this.myY = 0;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
     }
@@ -614,8 +578,14 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 1);
                 break;
             case 32:
-                this._isJumping = 1;
-                this.jump();
+                if (this._isJumping === 1) {
+                    console.log('already jumping');
+                }
+                else {
+                    this._isJumping = 1;
+                    this.myY = _super.prototype.getY.call(this);
+                    console.log("Y before jump =" + _super.prototype.getY.call(this));
+                }
                 break;
         }
     };
@@ -640,35 +610,24 @@ var polarBear = (function (_super) {
     };
     polarBear.prototype.jump = function () {
         var self = this;
-        if (this._isJumping === 1) {
-            var posY = 0;
-            this._jumpUpTimer += 0.01;
-            if (this._jumpUpTimer < 0.32) {
-                var velocity = 0 + 3.136 * this._jumpUpTimer;
-                var posY = ((-9.81 * 2) * (this._jumpUpTimer * this._jumpUpTimer) + (velocity * this._jumpUpTimer)) * 2;
-                console.log("up" + posY);
-                _super.prototype.updateY.call(this, posY);
-            }
-            else if (this._jumpDownTimer < 0.32) {
-                this._jumpDownTimer += 0.01;
-                var velocity = 0 + 3.136 * this._jumpDownTimer;
-                var posY = (-((-9.81 * 2) * (this._jumpDownTimer * this._jumpDownTimer) + (velocity * this._jumpDownTimer))) * 2;
-                posY = posY - 0.1;
-                _super.prototype.updateY.call(this, posY);
-            }
-            else {
-                this._isJumping = 0;
-                this._jumpUpTimer = 0;
-                this._jumpDownTimer = 0;
-            }
-        }
-        else {
+        this._jumpTimer += 0.1;
+        var posY = 0;
+        posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
+        posY = -posY * 2;
+        _super.prototype.updateY.call(this, posY);
+        if (this._jumpTimer >= 4.5) {
+            this._isJumping = 0;
+            this._jumpTimer = 2.39645;
+            _super.prototype.setY.call(this, this.myY);
+            console.log("y after jump =" + _super.prototype.getY.call(this));
         }
     };
     polarBear.prototype.wait = function () {
     };
     polarBear.prototype.update = function () {
-        this.jump();
+        if (this._isJumping === 1) {
+            this.jump();
+        }
         _super.prototype.move.call(this);
     };
     return polarBear;
