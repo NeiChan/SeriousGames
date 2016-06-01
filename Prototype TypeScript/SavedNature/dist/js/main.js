@@ -17,18 +17,16 @@ var Game = (function () {
         var platformImg = this.assets.desObjects.Crate;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
-        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
+        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: Game.ground, speed: 3 });
         this._generator = new JunkGenerator(this.objectList);
-        this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: Game.ground, frameHeight: 145, frameWidth: 80 });
+        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: Game.ground, frameHeight: 145, frameWidth: 80 });
+        this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: Game.ground, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
         this.objectList.push(this._dObject);
-        this.objectList.push(this._bObject);
-        this.objectList.push(this._cObject);
         this.objectList.push(this._bear);
-        this._platform = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 });
+        this._platform = new platform({ imgSrc: platformImg, x: 550, y: Game.ground, frameHeight: 101, frameWidth: 101 });
         this.objectList.push(this._platform);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
@@ -77,6 +75,10 @@ var Game = (function () {
                         this._ui.updateScore(10);
                         hit = true;
                     }
+                    else {
+                        obj1.onCollisionExit();
+                        obj2.onCollisionExit();
+                    }
                 }
             }
             if (hit) {
@@ -93,6 +95,7 @@ var Game = (function () {
             }
         }
     };
+    Game.ground = 500;
     return Game;
 }());
 window.addEventListener("load", function () {
@@ -421,7 +424,6 @@ var JunkGenerator = (function () {
         this.counter = 0;
         this.updateTimout = 60;
         this.objectList = objList;
-        console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
         var random = Math.floor(Math.random() * 6) + 1;
@@ -433,20 +435,15 @@ var JunkGenerator = (function () {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
             switch (random) {
                 case 1:
-                    console.log("Case 1 - Destructable Object");
                     this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: 150, y: 530, frameHeight: 145, frameWidth: 80 }));
                     break;
                 case 2:
-                    console.log("Case 2 - Background Object");
                     break;
                 case 3:
-                    console.log("Case 3");
                     break;
                 case 4:
-                    console.log("Case 4");
                     break;
             }
-            console.log("JunkGenerator Updater....");
             this.counter = 0;
         }
     };
@@ -567,6 +564,8 @@ var CollidableObject = (function (_super) {
     };
     CollidableObject.prototype.setY = function (number) {
     };
+    CollidableObject.prototype.onCollisionExit = function () {
+    };
     CollidableObject.prototype.onCollision = function (gameObject) {
         console.log("Doe iets onCollision voor testSubject");
     };
@@ -591,6 +590,8 @@ var DestructableObject = (function (_super) {
     };
     DestructableObject.prototype.setY = function (number) {
     };
+    DestructableObject.prototype.onCollisionExit = function () {
+    };
     DestructableObject.prototype.onCollision = function (gameObject) {
         console.log("Doe iets onCollision voor testSubject");
     };
@@ -613,6 +614,8 @@ var platform = (function (_super) {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     platform.prototype.setY = function (number) {
+    };
+    platform.prototype.onCollisionExit = function () {
     };
     platform.prototype.onCollision = function (gameObject) {
         gameObject.setY(_super.prototype.getY.call(this));
@@ -696,6 +699,8 @@ var polarBear = (function (_super) {
         this._jumpTimer = 2.39645;
         this.hasCollision = true;
         this.myY = 0;
+        this.colliding = false;
+        this.didSetY = false;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
     }
@@ -704,15 +709,33 @@ var polarBear = (function (_super) {
     };
     polarBear.prototype.onCollision = function (gameObject) {
     };
+    polarBear.prototype.onCollisionExit = function () {
+        if (this._isJumping === 1) {
+            console.log("nog in een jump");
+        }
+        else {
+            this.colliding = false;
+            this.didSetY = false;
+            console.log('called exit');
+            _super.prototype.setY.call(this, Game.ground);
+        }
+    };
     polarBear.prototype.setY = function (number) {
-        console.log(number);
-        _super.prototype.setY.call(this, number - 40);
+        if (this.didSetY === false) {
+            this.didSetY = true;
+            _super.prototype.setY.call(this, number - 40);
+        }
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
             case 39:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 1);
+                _super.prototype.changeAnimationY.call(this, 0);
+                break;
+            case 37:
+                _super.prototype.changeY.call(this, 0);
+                _super.prototype.changeX.call(this, -1);
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
             case 88:
@@ -740,6 +763,11 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
             case 39:
+                _super.prototype.changeY.call(this, 0);
+                _super.prototype.changeX.call(this, 0);
+                _super.prototype.changeAnimationY.call(this, 0);
+                break;
+            case 37:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);

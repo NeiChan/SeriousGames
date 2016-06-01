@@ -19,6 +19,10 @@ class CollidableObject extends GameObjects implements ICollidable{
         
     }
     
+    onCollisionExit():void{
+        
+    }
+    
     onCollision(gameObject:ICollidable) {
         // functie van ICollidable
         // Doe iets wanneer er een collision is.

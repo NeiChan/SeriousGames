@@ -3,6 +3,8 @@ class polarBear extends GameObjects implements ICollidable {
     private _jumpTimer: number = 2.39645;
     public  hasCollision:boolean = true;
     public myY:number = 0;
+    private colliding:boolean = false;
+    private didSetY:boolean = false;
     
     constructor(source) {
         // extending from GameObjects
@@ -27,9 +29,27 @@ class polarBear extends GameObjects implements ICollidable {
         //this.x = 0;
     }
     
+    onCollisionExit() : void {
+        if(this._isJumping === 1){
+            console.log("nog in een jump");
+        } else {
+            this.colliding = false;
+            this.didSetY = false;
+            // functie van ICollidable
+            // Doe iets wanneer er een collision is.
+            
+            //this.x = 0;
+        
+            console.log('called exit');
+            super.setY(Game.ground);
+        }
+    }
+    
     setY(number){
-        console.log(number);
-        super.setY(number - 40);
+        if(this.didSetY === false){
+            this.didSetY = true;
+            super.setY(number - 40);
+        }
     }
     
     private onKeyDown(event:KeyboardEvent):void {
@@ -37,6 +57,11 @@ class polarBear extends GameObjects implements ICollidable {
             case 39: //UP
                 super.changeY(0);
                 super.changeX(1);
+                super.changeAnimationY(0);
+                break;
+            case 37: //UP
+                super.changeY(0);
+                super.changeX(-1);
                 super.changeAnimationY(0);
                 break;
             case 88:
@@ -65,6 +90,11 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeAnimationY(0);
                 break;
             case 39: // RIGHT
+                super.changeY(0);
+                super.changeX(0);
+                super.changeAnimationY(0);
+                break;
+            case 37: // LEFT
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);

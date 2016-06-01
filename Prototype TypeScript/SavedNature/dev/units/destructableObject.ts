@@ -20,6 +20,10 @@ class DestructableObject extends GameObjects implements ICollidable, IDestructab
         
     }
     
+    onCollisionExit() : void{
+        
+    }
+    
     onCollision(gameObject:ICollidable) {
         // functie van ICollidable
         // Doe iets wanneer er een collision is.
