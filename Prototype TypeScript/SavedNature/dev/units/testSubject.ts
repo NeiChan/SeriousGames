@@ -1,5 +1,6 @@
-class platform extends GameObjects implements ICollidable{
+class testSubject extends GameObjects implements ICollidable, IDestructable{
     public hasCollision:boolean = true;
+    public hasDestructable:boolean = true;
     
     constructor(source) {
         // extending from GameObjects
@@ -15,20 +16,11 @@ class platform extends GameObjects implements ICollidable{
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
     
-    setY(number){
-        
-    }
-    
-    onCollisionExit() : void{
-        
-    }
-    
     onCollision(gameObject:ICollidable) {
         // functie van ICollidable
         // Doe iets wanneer er een collision is.
-        gameObject.setY(super.getY());
         
-        console.log("Doe iets onCollision voor platform");
+        console.log("Doe iets onCollision voor testSubject");
         
     }
 

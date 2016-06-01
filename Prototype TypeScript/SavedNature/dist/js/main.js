@@ -3,141 +3,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Game = (function () {
-    function Game() {
-        var _this = this;
-        this.assets = new AssetsManager();
-        this.objectList = [];
-        Game.soundmanager = new SoundsManager('soundfile');
-        this.canvas = document.getElementsByTagName('canvas')[0];
-        this.context = this.canvas.getContext('2d');
-        var backgroundImg = this.assets.greenBG;
-        var bearImg = this.assets.polarbear;
-        var bushImg = this.assets.desObjects.Bush1;
-        var platformImg = this.assets.desObjects.Crate;
-        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
-        this._ui = new UI({ x: 50, y: 50 });
-        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: Game.ground, speed: 3 });
-        this._generator = new JunkGenerator(this.objectList);
-        this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: Game.ground, frameHeight: 145, frameWidth: 80 });
-        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: Game.ground, frameHeight: 145, frameWidth: 80 });
-        this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: Game.ground, frameHeight: 145, frameWidth: 80 });
-        this.objectList.push(this._background);
-        this.objectList.push(this._ui);
-        this.objectList.push(this._dObject);
-        this.objectList.push(this._bear);
-        this._platform = new platform({ imgSrc: platformImg, x: 550, y: Game.ground, frameHeight: 101, frameWidth: 101 });
-        this.objectList.push(this._platform);
-        var content = document.getElementById('content');
-        var div = utility.createDiv('divver');
-        div = utility.addSoundEvent(div, 'game_over');
-        content.appendChild(div);
-        requestAnimationFrame(function () { return _this.update(); });
-    }
-    Game.prototype.draw = function () {
-        var _this = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.draw();
-        }
-        requestAnimationFrame(function () { return _this.update(); });
-    };
-    Game.prototype.update = function () {
-        this._generator.generateJunk();
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.update();
-        }
-        this.checkCollisions();
-        this.draw();
-    };
-    Game.prototype.checkCollisions = function () {
-        var GO_collidables = new Array();
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            if (obj.hasCollision) {
-                GO_collidables.push(obj);
-            }
-        }
-        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
-            var obj1 = GO_collidables_1[_b];
-            var hit = false;
-            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
-                var obj2 = GO_collidables_2[_c];
-                if (obj1 != obj2) {
-                    var obj1Bounds = obj1.getBounds();
-                    var obj2Bounds = obj2.getBounds();
-                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                        obj1.onCollision(obj2);
-                        obj2.onCollision(obj1);
-                        this.checkDestructable(obj1, this.objectList);
-                        this._ui.updateScore(10);
-                        hit = true;
-                    }
-                    else {
-                        obj1.onCollisionExit();
-                        obj2.onCollisionExit();
-                    }
-                }
-            }
-            if (hit) {
-                break;
-            }
-        }
-    };
-    Game.prototype.checkDestructable = function (currentObj, listObjects) {
-        var index = listObjects.indexOf(currentObj);
-        var hasDestructable = listObjects[index].hasDestructable;
-        if (hasDestructable) {
-            if (index > -1) {
-                return listObjects.splice(index, 1);
-            }
-        }
-    };
-    Game.ground = 500;
-    return Game;
-}());
-window.addEventListener("load", function () {
-    new Menu();
-});
-var Menu = (function () {
-    function Menu() {
-        this.soundmanager = new SoundsManager("soundfile");
-        this.gameTitle = document.createElement("DIV");
-        this.btnStart = document.createElement("button");
-        this.btnClose = document.createElement("button");
-        this.btnHighscores = document.createElement("button");
-        this.gameTitle.setAttribute("id", "gameTitle");
-        this.btnStart.setAttribute("id", "btnStart");
-        this.btnClose.setAttribute("id", "btnClose");
-        this.btnHighscores.setAttribute("id", "btnHighscores");
-        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
-        this.btnStart.innerHTML = "Start";
-        this.btnClose.innerHTML = "Uitleg";
-        this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnStart.addEventListener("click", this.removeMenu);
-        var content = document.getElementById('content');
-        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
-        content.appendChild(this.gameTitle);
-        content.appendChild(this.btnStart);
-        content.appendChild(this.btnHighscores);
-        content.appendChild(this.btnClose);
-    }
-    Menu.prototype.showLeaderboards = function () {
-        window.location.href = "leaderboard.php";
-    };
-    Menu.prototype.removeMenu = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "";
-        this.main = new Game();
-    };
-    return Menu;
-}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -306,12 +171,136 @@ var soundMarker = (function () {
     }
     return soundMarker;
 }());
+var Game = (function () {
+    function Game() {
+        var _this = this;
+        this.assets = new AssetsManager();
+        this.objectList = [];
+        Game.soundmanager = new SoundsManager('soundfile');
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
+        this.context.save();
+        this.context.scale(1.8, 1.8);
+        var backgroundImg = this.assets.greenBG;
+        var bearImg = this.assets.polarbear;
+        var bushImg = this.assets.desObjects.Bush1;
+        var goldCoinImg = this.assets.collectables.goldCoin;
+        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
+        this._ui = new UI({ x: 50, y: 50 });
+        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
+        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
+        this._goldCoin = new Coin({ imgSrc: goldCoinImg, x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
+        this.objectList.push(this._background);
+        this.objectList.push(this._ui);
+        this.objectList.push(this._bush);
+        this.objectList.push(this._goldCoin);
+        this.objectList.push(this._bear);
+        var content = document.getElementById('content');
+        var div = utility.createDiv('divver');
+        div = utility.addSoundEvent(div, 'game_over');
+        content.appendChild(div);
+        requestAnimationFrame(function () { return _this.update(); });
+    }
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    Game.prototype.update = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        this.checkCollisions();
+        this.draw();
+    };
+    Game.prototype.checkCollisions = function () {
+        var GO_collidables = new Array();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj.hasCollision) {
+                GO_collidables.push(obj);
+            }
+        }
+        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
+            var obj1 = GO_collidables_1[_b];
+            var hit = false;
+            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
+                var obj2 = GO_collidables_2[_c];
+                if (obj1 != obj2) {
+                    var obj1Bounds = obj1.getBounds();
+                    var obj2Bounds = obj2.getBounds();
+                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                        obj1.onCollision(obj2);
+                        obj2.onCollision(obj1);
+                        var index = this.objectList.indexOf(obj1);
+                        if (index > -1) {
+                            this.objectList.splice(index, 1);
+                        }
+                        this._ui.updateScore(10);
+                        hit = true;
+                    }
+                }
+            }
+            if (hit) {
+                break;
+            }
+        }
+    };
+    return Game;
+}());
+window.addEventListener("load", function () {
+    new Menu();
+});
+var Menu = (function () {
+    function Menu() {
+        this.soundmanager = new SoundsManager("soundfile");
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("click", this.removeMenu);
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboard.php";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "";
+        this.main = new Game();
+    };
+    return Menu;
+}());
 var AssetsManager = (function () {
     function AssetsManager() {
         this.polarbear = "images/polarbear/spritesheet.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
+        this.collectBase = "images/collectables/";
+        this.collectCoins = this.collectBase + "coins/";
         this.desBG = this.desertBase + "BG.png";
         this.desTiles = [
             this.desertBase + "Tiles/1.png",
@@ -346,7 +335,7 @@ var AssetsManager = (function () {
             Stone: this.desertBase + "Objects/Stone.png",
             StoneBlock: this.desertBase + "Objects/StoneBlock.png",
         };
-        this.greenBG = this.greenBase + "BG.png";
+        this.greenBG = this.greenBase + "BG2.png";
         this.greenTiles = [
             this.greenBase + "Tiles/1.png",
             this.greenBase + "Tiles/2.png",
@@ -413,41 +402,11 @@ var AssetsManager = (function () {
             Sign1: this.winterBase + "Objects/Sign_1.png",
             Sign2: this.winterBase + "Objects/Sign_2.png",
         };
+        this.collectables = {
+            goldCoin: this.collectCoins + "goldCoin.png"
+        };
     }
     return AssetsManager;
-}());
-var JunkGenerator = (function () {
-    function JunkGenerator(objList) {
-        this.assets = new AssetsManager();
-        this.minNumber = 1;
-        this.maxNumber = 4;
-        this.counter = 0;
-        this.updateTimout = 60;
-        this.objectList = objList;
-    }
-    JunkGenerator.prototype.getRandomNumber = function (min, max) {
-        var random = Math.floor(Math.random() * 6) + 1;
-        return random;
-    };
-    JunkGenerator.prototype.generateJunk = function () {
-        this.counter++;
-        if (this.counter > this.updateTimout) {
-            var random = this.getRandomNumber(this.minNumber, this.maxNumber);
-            switch (random) {
-                case 1:
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: 150, y: 530, frameHeight: 145, frameWidth: 80 }));
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-            }
-            this.counter = 0;
-        }
-    };
-    return JunkGenerator;
 }());
 var SoundsManager = (function () {
     function SoundsManager(sound_file) {
@@ -468,6 +427,7 @@ var SoundsManager = (function () {
             return;
         }
         var marker = this.soundMarkers[sound_name];
+        console.log(marker);
         var sf = new soundFile("sound/" + marker.name + ".ogg");
         if (marker != null && marker != undefined) {
             sf.play(marker.start, marker.duration);
@@ -482,9 +442,12 @@ var SoundsManager = (function () {
     };
     SoundsManager.prototype._loadMarkers = function (jsonfile) {
         var _this = this;
+        console.log("LOAD MARKERS");
         var marker_xhr = new XMLHttpRequest();
+        console.log("ga dit laden: " + jsonfile);
         marker_xhr.onreadystatechange = function () {
             if (marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200) {
+                console.log("laden gelukt! ");
                 var obj = JSON.parse(marker_xhr.responseText);
                 _this.parseJsonSounds(obj);
             }
@@ -495,10 +458,13 @@ var SoundsManager = (function () {
         marker_xhr.send();
     };
     SoundsManager.prototype.parseJsonSounds = function (data) {
+        console.log("onread aangeroepen");
         for (var i = 0; i < data.markers.length; i++) {
             var obj = data.markers[i];
+            console.log("marker name is " + obj.name);
             var markers = obj;
             this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
+            console.log("sound/" + obj.name + ".ogg");
         }
         this._jsonFileLoaded = true;
         this.soundsLoaded = true;
@@ -509,6 +475,7 @@ var SoundsManager = (function () {
         }
     };
     SoundsManager.prototype._onError = function (xhr) {
+        console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
     };
     SoundsManager.prototype.addMarker = function (sound_marker) {
         this.soundMarkers[sound_marker.name] = sound_marker;
@@ -533,102 +500,23 @@ var Background = (function (_super) {
     };
     return Background;
 }(GameObjects));
-var BackgroundObject = (function (_super) {
-    __extends(BackgroundObject, _super);
-    function BackgroundObject(source) {
-        _super.call(this, source);
-    }
-    BackgroundObject.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    BackgroundObject.prototype.onCollision = function (gameObject) {
-        console.log("Doe iets onCollision voor testSubject");
-    };
-    BackgroundObject.prototype.draw = function () {
-        this.context.drawImage(this.image, this.x, this.y);
-    };
-    BackgroundObject.prototype.wait = function () {
-    };
-    BackgroundObject.prototype.update = function () {
-    };
-    return BackgroundObject;
-}(GameObjects));
-var CollidableObject = (function (_super) {
-    __extends(CollidableObject, _super);
-    function CollidableObject(source) {
+var Coin = (function (_super) {
+    __extends(Coin, _super);
+    function Coin(source) {
         _super.call(this, source);
         this.hasCollision = true;
     }
-    CollidableObject.prototype.getBounds = function () {
+    Coin.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
-    CollidableObject.prototype.setY = function (number) {
+    Coin.prototype.onCollision = function (gameObject) {
     };
-    CollidableObject.prototype.onCollisionExit = function () {
+    Coin.prototype.draw = function () {
+        _super.prototype.Draw.call(this);
     };
-    CollidableObject.prototype.onCollision = function (gameObject) {
-        console.log("Doe iets onCollision voor testSubject");
+    Coin.prototype.update = function () {
     };
-    CollidableObject.prototype.draw = function () {
-        this.context.drawImage(this.image, this.x, this.y);
-    };
-    CollidableObject.prototype.wait = function () {
-    };
-    CollidableObject.prototype.update = function () {
-    };
-    return CollidableObject;
-}(GameObjects));
-var DestructableObject = (function (_super) {
-    __extends(DestructableObject, _super);
-    function DestructableObject(source) {
-        _super.call(this, source);
-        this.hasCollision = true;
-        this.hasDestructable = true;
-    }
-    DestructableObject.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    DestructableObject.prototype.setY = function (number) {
-    };
-    DestructableObject.prototype.onCollisionExit = function () {
-    };
-    DestructableObject.prototype.onCollision = function (gameObject) {
-        console.log("Doe iets onCollision voor testSubject");
-    };
-    DestructableObject.prototype.draw = function () {
-        this.context.drawImage(this.image, this.x, this.y);
-    };
-    DestructableObject.prototype.wait = function () {
-    };
-    DestructableObject.prototype.update = function () {
-    };
-    return DestructableObject;
-}(GameObjects));
-var platform = (function (_super) {
-    __extends(platform, _super);
-    function platform(source) {
-        _super.call(this, source);
-        this.hasCollision = true;
-    }
-    platform.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    platform.prototype.setY = function (number) {
-    };
-    platform.prototype.onCollisionExit = function () {
-    };
-    platform.prototype.onCollision = function (gameObject) {
-        gameObject.setY(_super.prototype.getY.call(this));
-        console.log("Doe iets onCollision voor platform");
-    };
-    platform.prototype.draw = function () {
-        this.context.drawImage(this.image, this.x, this.y);
-    };
-    platform.prototype.wait = function () {
-    };
-    platform.prototype.update = function () {
-    };
-    return platform;
+    return Coin;
 }(GameObjects));
 var Player = (function () {
     function Player() {
@@ -699,8 +587,6 @@ var polarBear = (function (_super) {
         this._jumpTimer = 2.39645;
         this.hasCollision = true;
         this.myY = 0;
-        this.colliding = false;
-        this.didSetY = false;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
     }
@@ -708,34 +594,13 @@ var polarBear = (function (_super) {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     polarBear.prototype.onCollision = function (gameObject) {
-    };
-    polarBear.prototype.onCollisionExit = function () {
-        if (this._isJumping === 1) {
-            console.log("nog in een jump");
-        }
-        else {
-            this.colliding = false;
-            this.didSetY = false;
-            console.log('called exit');
-            _super.prototype.setY.call(this, Game.ground);
-        }
-    };
-    polarBear.prototype.setY = function (number) {
-        if (this.didSetY === false) {
-            this.didSetY = true;
-            _super.prototype.setY.call(this, number - 40);
-        }
+        this.x = 0;
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
             case 39:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 1);
-                _super.prototype.changeAnimationY.call(this, 0);
-                break;
-            case 37:
-                _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, -1);
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
             case 88:
@@ -763,11 +628,6 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
             case 39:
-                _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 0);
-                _super.prototype.changeAnimationY.call(this, 0);
-                break;
-            case 37:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);
@@ -802,6 +662,28 @@ var polarBear = (function (_super) {
         _super.prototype.move.call(this);
     };
     return polarBear;
+}(GameObjects));
+var testSubject = (function (_super) {
+    __extends(testSubject, _super);
+    function testSubject(source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+        this.hasDestructable = true;
+    }
+    testSubject.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    testSubject.prototype.onCollision = function (gameObject) {
+        console.log("Doe iets onCollision voor testSubject");
+    };
+    testSubject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    testSubject.prototype.wait = function () {
+    };
+    testSubject.prototype.update = function () {
+    };
+    return testSubject;
 }(GameObjects));
 var UI = (function (_super) {
     __extends(UI, _super);

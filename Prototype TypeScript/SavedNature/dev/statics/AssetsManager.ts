@@ -1,15 +1,19 @@
 class AssetsManager {
     // players
     public polarbear = "images/polarbear/spritesheet.png";
-    
-    //*****************  Levels
+
+    // ***************** Levels
     private desertBase = "images/levels/desert/";
     private greenBase = "images/levels/green/";
     private winterBase = "images/levels/winter/";
-    
+
+    // ***************** Collectables
+    private collectBase = "images/collectables/";
+    private collectCoins = this.collectBase + "coins/";
+
     // Desert level
-    public desBG = this.desertBase + "BG.png"; 
-    
+    public desBG = this.desertBase + "BG.png";
+
     public desTiles = [
         this.desertBase + "Tiles/1.png",
         this.desertBase + "Tiles/2.png",
@@ -28,7 +32,7 @@ class AssetsManager {
         this.desertBase + "Tiles/15.png",
         this.desertBase + "Tiles/16.png",
     ];
-    
+
     public desObjects = {
         Bush1 : this.desertBase + "Objects/Bush1.png",
         Bush2 : this.desertBase + "Objects/Bush2.png",
@@ -44,10 +48,10 @@ class AssetsManager {
         Stone : this.desertBase + "Objects/Stone.png",
         StoneBlock : this.desertBase + "Objects/StoneBlock.png",
     };
-    
+
     // Green level
-    public greenBG = this.greenBase + "BG.png"; 
-    
+    public greenBG = this.greenBase + "BG2.png";
+
     public greenTiles = [
         this.greenBase + "Tiles/1.png",
         this.greenBase + "Tiles/2.png",
@@ -68,7 +72,7 @@ class AssetsManager {
         this.greenBase + "Tiles/17.png",
         this.greenBase + "Tiles/18.png",
     ];
-    
+
     public greenObjects = {
         Bush1 : this.greenBase + "Objects/Bush1.png",
         Bush2 : this.greenBase + "Objects/Bush2.png",
@@ -82,11 +86,11 @@ class AssetsManager {
         Sign2 : this.greenBase + "Objects/Sign_2.png",
         Stone : this.greenBase + "Objects/Stone.png",
     };
-    
-    
+
+
     // Winter level
-    public winterBG = this.winterBase + "BG.png"; 
-    
+    public winterBG = this.winterBase + "BG.png";
+
     public winterTiles = [
         this.winterBase + "Tiles/1.png",
         this.winterBase + "Tiles/2.png",
@@ -107,7 +111,7 @@ class AssetsManager {
         this.winterBase + "Tiles/17.png",
         this.winterBase + "Tiles/18.png",
     ];
-    
+
     public winterObjects = {
         Crystal : this.winterBase + "Objects/Crystal.png",
         Crate : this.winterBase + "Objects/Crate.png",
@@ -120,5 +124,9 @@ class AssetsManager {
         Sign1 : this.winterBase + "Objects/Sign_1.png",
         Sign2 : this.winterBase + "Objects/Sign_2.png",
     };
-     
+
+    // Collectables
+    public collectables = {
+        goldCoin : this.collectCoins + "goldCoin.png"
+    };
 }

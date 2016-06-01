@@ -1,25 +1,19 @@
 /// <reference path="interfaces/ICollidable.ts"/>
-/// <reference path="interfaces/IDestructable.ts"/>
 
 class Game {
     private assets      : AssetsManager = new AssetsManager();
-    static ground : number = 500;
-    static soundmanager      : SoundsManager; 
-    
+
+    static soundmanager      : SoundsManager;
+
     public objectList:any = [];
 
     // Get class player
     private _background  : Background;
     private _ui          : UI;
     private _bear        : polarBear;
-    private _platform    : platform;
+    private _bush        : testSubject;
+    private _goldCoin    : Coin;
     // private _score       : Score;
-
-    private _generator   : JunkGenerator;
-    
-    private _dObject        : DestructableObject;
-    private _cObject        : CollidableObject;
-    private _bObject        : BackgroundObject;
 
     private context     : CanvasRenderingContext2D;
     private canvas      : HTMLCanvasElement;
@@ -30,35 +24,29 @@ class Game {
         Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
+        this.context.save();
+        // Enlarge screen by 1.8x
+        this.context.scale(1.8, 1.8);
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
-        var backgroundImg   = this.assets.greenBG;
-        var bearImg         = this.assets.polarbear;
-        var bushImg         = this.assets.desObjects.Bush1;
-        var platformImg     = this.assets.desObjects.Crate;
+        let backgroundImg   = this.assets.greenBG;
+        let bearImg         = this.assets.polarbear;
+        let bushImg         = this.assets.desObjects.Bush1;
+        let goldCoinImg     = this.assets.collectables.goldCoin;
 
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
-        this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: Game.ground, speed: 3 });
-
-        this._generator     = new JunkGenerator(this.objectList);
-        
-        this._dObject       = new DestructableObject({ imgSrc: bushImg, x: 150, y: Game.ground, frameHeight: 145, frameWidth: 80 });
-        this._bObject       = new BackgroundObject({ imgSrc: bushImg, x: 250, y: Game.ground, frameHeight: 145, frameWidth: 80 });
-        this._cObject       = new CollidableObject({ imgSrc: bushImg, x: 450, y: Game.ground, frameHeight: 145, frameWidth: 80 });
+        this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
+        this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
+        this._goldCoin      = new Coin({imgSrc: goldCoinImg,  x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10});
 
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
-        this.objectList.push(this._dObject);
-        // this.objectList.push(this._bObject);
-        // this.objectList.push(this._cObject);
-
+        this.objectList.push(this._bush);
+        this.objectList.push(this._goldCoin);
         this.objectList.push(this._bear);
-        
-        this._platform      = new platform({ imgSrc: platformImg, x: 550, y: Game.ground, frameHeight: 101, frameWidth: 101 })
-        this.objectList.push(this._platform);
-        
+
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
@@ -67,7 +55,7 @@ class Game {
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
     }
-    
+
     private draw()  : void {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
 
@@ -77,18 +65,17 @@ class Game {
 
         requestAnimationFrame(() => this.update());
     }
-    
+
 
     private update() : void {
         // Aanroepen van update function
 
-        this._generator.generateJunk();
-        
         for(var obj of this.objectList) {
             obj.update();
         }
 
         this.checkCollisions();
+
         this.draw();
     }
 
@@ -119,16 +106,18 @@ class Game {
                     if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
-                        
+                        // if obj2 gelijk is aan objectList
+
                         // check on hasDestructable
-                        this.checkDestructable(obj1, this.objectList);
-                        
-                        
+                        var index = this.objectList.indexOf(obj1);
+                        if(index > -1) {
+                            this.objectList.splice(index, 1);
+                        }
+                        // if hasDestructable
+                        // objectList.remove
+
                         this._ui.updateScore(10);
                         hit = true;
-                    } else {
-                        obj1.onCollisionExit();
-                        obj2.onCollisionExit();
                     }
                 }
             }
@@ -136,17 +125,6 @@ class Game {
             if(hit){
                 break;
             }
-        }
-    }
-    
-    private checkDestructable(currentObj, listObjects) : void {
-        let index = listObjects.indexOf(currentObj);
-        let hasDestructable = listObjects[index].hasDestructable;
-        
-        if(hasDestructable){
-            if(index > -1) {
-                return listObjects.splice(index, 1);
-            } 
         }
     }
 }
