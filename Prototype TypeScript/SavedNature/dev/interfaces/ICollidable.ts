@@ -3,4 +3,5 @@ interface ICollidable {
     
     onCollision(gameObject: ICollidable);
     getBounds():Rectangle;
+    setY(int: number);
 }

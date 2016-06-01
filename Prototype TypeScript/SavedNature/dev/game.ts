@@ -56,8 +56,9 @@ class Game {
 
         this.objectList.push(this._bear);
         
-        // this._platform      = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 })
-        // this.objectList.push(this._platform);
+        this._platform      = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 })
+        this.objectList.push(this._platform);
+        
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');

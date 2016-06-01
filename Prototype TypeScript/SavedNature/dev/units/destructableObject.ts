@@ -16,6 +16,10 @@ class DestructableObject extends GameObjects implements ICollidable, IDestructab
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
     
+    setY(number){
+        
+    }
+    
     onCollision(gameObject:ICollidable) {
         // functie van ICollidable
         // Doe iets wanneer er een collision is.

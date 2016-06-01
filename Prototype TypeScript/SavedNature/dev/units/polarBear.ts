@@ -24,7 +24,12 @@ class polarBear extends GameObjects implements ICollidable {
         // functie van ICollidable
         // Doe iets wanneer er een collision is.
         
-        // this.x = 0;
+        //this.x = 0;
+    }
+    
+    setY(number){
+        console.log(number);
+        super.setY(number - 40);
     }
     
     private onKeyDown(event:KeyboardEvent):void {
