@@ -1,6 +1,7 @@
-class Coin extends GameObjects implements ICollidable {
-        public  hasCollision:boolean = true;
-
+class Coin extends GameObjects implements ICollidable, IDestructable {
+        public hasCollision:boolean     = true;
+        public hasDestructable:boolean  = true;
+        
         constructor(source) {
             super(source);
         }

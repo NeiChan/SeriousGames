@@ -53,9 +53,8 @@ class Game {
         this._goldCoin      = new Coin({imgSrc: goldCoinImg,  x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10});
 
         this.objectList.push(this._background);
-        this.objectList.push(this._ui);
-        this.objectList.push(this._bush);
         this.objectList.push(this._goldCoin);
+        this.objectList.push(this._bush);
         this.objectList.push(this._bear);
 
         var content = document.getElementById('content');
@@ -82,10 +81,10 @@ class Game {
 
     private update() : void {
         // Aanroepen van update function
-
         for(var obj of this.objectList) {
             obj.update();
         }
+        this._generator.generateJunk();
         
         this._ui.update();
 

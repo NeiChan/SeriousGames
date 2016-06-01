@@ -7,8 +7,8 @@ class JunkGenerator {
     private counter         = 0;
     private updateTimout    = 60;
     
-    private minPositionY    = 200;
-    private maxPositionY    = 500;
+    private minPositionY    = 185;
+    private maxPositionY    = 215;
     
     private minPositionX    = 1100;
     private maxPositionX    = 1150;
@@ -22,7 +22,7 @@ class JunkGenerator {
     }
     
     private getRandomNumber(min, max) {
-        let random = Math.floor(Math.random() * max) + min;
+        let random = Math.floor(Math.random() * (max - min + 1) + min);
         return random;
     }
     
@@ -34,31 +34,33 @@ class JunkGenerator {
             let randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             let randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             
+            console.log(randomY);
+            
             // console.log("randomX junk =" + randomX);
             // console.log("randomY junk =" + randomY);
             
             switch(random){
                 case 1:
-                    console.log("Case 1 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    console.log("Case 1 - Background Object");
+                    this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                 break;
                 
                 case 2:
                     console.log("Case 2 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 }));
                     // console.log("Case 2 - Background Object");
                     // this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                 break;
                 
                 case 3:
                     console.log("Case 3 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                     console.log("Case 3");
                 break;
                 
                 case 4:
                     console.log("Case 4 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 }));
                     console.log("Case 4");
                 break;
             }
