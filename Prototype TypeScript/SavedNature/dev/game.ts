@@ -1,10 +1,9 @@
-/// <reference path="../typings/matter-js.d.ts"/>
 /// <reference path="interfaces/ICollidable.ts"/>
 
 class Game {
     private assets      : AssetsManager = new AssetsManager();
 
-    // private sounds      : SoundsManager = new SoundsManager(); 
+    static soundmanager      : SoundsManager; 
     
     public objectList:any = [];
 
@@ -12,7 +11,7 @@ class Game {
     private _background  : Background;
     private _bear        : polarBear;
     private _bush        : testSubject;
-    private _score       : Score;
+    // private _score       : Score;
 
     private context     : CanvasRenderingContext2D;
     private canvas      : HTMLCanvasElement;
@@ -20,7 +19,7 @@ class Game {
     // constructor for Main
     constructor() {
         // call createPlayer() function
-
+        Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
 
@@ -33,17 +32,44 @@ class Game {
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._score          = new Score({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
+        // this._score          = new Score({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
 
         this.objectList.push(this._background);
         this.objectList.push(this._bush);
-        this.objectList.push(this._score);
+        // this.objectList.push(this._score);
         this.objectList.push(this._bear);
+        
+        var content = document.getElementById('content');
+        var div = utility.createDiv('divver');
+        div = utility.addSoundEvent(div, 'game_over');
+        content.appendChild(div);
 
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
     }
 
+    private update() : void {
+        // Aanroepen van update function
+
+        for(var obj of this.objectList) {
+            obj.update();
+        }
+
+        this.checkCollisions();
+
+        this.draw();
+    }
+
+    private draw()  : void {
+        this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
+
+        for(var obj of this.objectList) {
+            obj.draw();
+        }
+
+        requestAnimationFrame(() => this.update());
+    }
+    
     private checkCollisions() : void {
         let GO_collidables = new Array<ICollidable>();
 
@@ -80,37 +106,5 @@ class Game {
                 break;
             }
         }
-    }
-
-    private update() : void {
-        // Aanroepen van update function
-
-        for(var obj of this.objectList) {
-            obj.update();
-        }
-
-        // let polarBearBounds = this.bear.getBounds();
-        // let bushBounds = this.bush.getBounds();
-
-        // let hit = polarBearBounds.hitsOtherRectangle(bushBounds);
-        // //console.log(hit);
-
-        // if(hit){
-        //     console.log('Polarbear hit the bush');
-        // }
-
-        this.checkCollisions();
-
-        this.draw();
-    }
-
-    private draw()  : void {
-        this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
-
-        for(var obj of this.objectList) {
-            obj.draw();
-        }
-
-        requestAnimationFrame(() => this.update());
     }
 }

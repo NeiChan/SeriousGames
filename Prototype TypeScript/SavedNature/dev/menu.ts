@@ -8,11 +8,8 @@ class Menu {
     private btnDynamics: HTMLElement;
     private soundTest: HTMLElement;
     private main: any;
-<<<<<<< HEAD
     private soundmanager: SoundsManager;
-=======
-
->>>>>>> 24ccf1be08f3c35e7f52ceb9b0928a0753ce440f
+    
     constructor() {
         this.soundmanager = new SoundsManager("soundfile");
         // Create the HTML elements.
@@ -84,7 +81,6 @@ class Menu {
         // Call function to create Game.
         this.main = new Game();
     }
-<<<<<<< HEAD
     
     private startMatter() : void{
         document.getElementById("gameTitle").remove();
@@ -96,7 +92,7 @@ class Menu {
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "none";
         
-        this.main = new matter();
+        // this.main = new matter();
     }
     
     private startPsysics2D() : void{
@@ -122,8 +118,6 @@ class Menu {
         document.getElementById("btnHighscores").remove();
         // document.body.style.backgroundImage = "url('images/backgrounds/snowBackground.jpg')";
         
-        this.main = new dynamic();
+        // this.main = new dynamic();
     }
-=======
->>>>>>> 24ccf1be08f3c35e7f52ceb9b0928a0753ce440f
 }

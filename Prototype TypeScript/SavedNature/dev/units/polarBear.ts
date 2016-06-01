@@ -78,6 +78,9 @@ class polarBear extends GameObjects implements ICollidable {
         
         // Horizontal Speed
         // V (velocity) = V0 (initial velocity) + a (acceleration) * t (time)
+        
+        // y = -((x-2.25)^2) + 5
+        
 
         if(this._isJumping === 1){
             var posY = 0;
@@ -106,7 +109,7 @@ class polarBear extends GameObjects implements ICollidable {
             
         // }
     }
-    
+    }
     public wait() : void{
         
     }

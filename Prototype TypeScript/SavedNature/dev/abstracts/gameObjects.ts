@@ -24,12 +24,21 @@ abstract class GameObjects {
     
     private imgSrc: string;
 	
-	constructor(source:any)
+	constructor(source:Object)
 	{
         this.init(source);
         
         // Omdat er getekend moet worden op het scherm
 		this.createCanvasElement();
+    }
+    
+     /**
+     * init
+     * 
+     * Assign all given variables inside the source variable to the Objects' private variables
+     */
+    private init(source) : void {
+        utility.CopyProperties(source,this);
     }
     
     // /**
@@ -40,15 +49,6 @@ abstract class GameObjects {
     // public getBounds():Rectangle {
     //     return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     // }
-  
-    /**
-     * init
-     * 
-     * Assign all given variables inside the source variable to the Objects' private variables
-     */
-    private init(source) : void {
-        utils.CopyProperties(source,this);
-    }
 	
     /**
      * CreateCanvasElement

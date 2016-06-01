@@ -3,6 +3,166 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Game = (function () {
+    function Game() {
+        var _this = this;
+        this.assets = new AssetsManager();
+        this.objectList = [];
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
+        var backgroundImg = this.assets.greenBG;
+        var bearImg = this.assets.polarbear;
+        var bushImg = this.assets.desObjects.Bush1;
+        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
+        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
+        var obj = { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 };
+        utils.CopyProperties(obj, this._bear);
+        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this.objectList.push(this._background);
+        this.objectList.push(this._bush);
+        this.objectList.push(this._bear);
+        requestAnimationFrame(function () { return _this.update(); });
+    }
+    Game.prototype.checkCollisions = function () {
+        var GO_collidables = new Array();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj.hasCollision) {
+                GO_collidables.push(obj);
+            }
+        }
+        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
+            var obj1 = GO_collidables_1[_b];
+            var hit = false;
+            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
+                var obj2 = GO_collidables_2[_c];
+                if (obj1 != obj2) {
+                    var obj1Bounds = obj1.getBounds();
+                    var obj2Bounds = obj2.getBounds();
+                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                        obj1.onCollision(obj2);
+                        obj2.onCollision(obj1);
+                        hit = true;
+                    }
+                }
+            }
+            if (hit) {
+                break;
+            }
+        }
+    };
+    Game.prototype.update = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.update();
+        }
+        this.checkCollisions();
+        this.draw();
+    };
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
+        }
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    return Game;
+}());
+window.addEventListener("load", function () {
+    new Menu();
+});
+var Menu = (function () {
+    function Menu() {
+        var _this = this;
+        this.soundmanager = new SoundsManager("soundfile");
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnMatter = document.createElement("button");
+        this.btnPhysics = document.createElement("button");
+        this.btnDynamics = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnMatter.setAttribute("id", "btnMatter");
+        this.btnPhysics.setAttribute("id", "btnPhysics");
+        this.btnDynamics.setAttribute("id", "btnDynamics");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnMatter.innerHTML = "Show Matter";
+        this.btnPhysics.innerHTML = "Show Physics";
+        this.btnDynamics.innerHTML = "Show Dynamics example";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("click", this.removeMenu);
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnMatter);
+        content.appendChild(this.btnPhysics);
+        content.appendChild(this.btnDynamics);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+        this.soundTest = document.createElement("button");
+        this.soundTest.addEventListener('click', function () { return _this.soundmanager.play('new_highscore'); });
+        content.appendChild(this.soundTest);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboard.php";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "";
+        this.main = new Game();
+    };
+    Menu.prototype.startMatter = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "none";
+    };
+    Menu.prototype.startPsysics2D = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+        this.main = new physyics2d();
+    };
+    Menu.prototype.startDynamics = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnMatter").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnDynamics").remove();
+        document.getElementById("btnPhysics").remove();
+        document.getElementById("btnHighscores").remove();
+    };
+    return Menu;
+}());
+var physyics2d = (function () {
+    function physyics2d() {
+    }
+    return physyics2d;
+}());
 var GameObjects = (function () {
     function GameObjects(source) {
         this.assets = new AssetsManager();
@@ -89,356 +249,6 @@ var Rectangle = (function () {
     }
     Rectangle.prototype.hitsOtherRectangle = function (rec) {
         return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);
-    };
-    Rectangle.prototype.isInside = function (posx, posy) {
-        var differencex = this.x - posx;
-        var differencey = this.y - posy;
-        return Math.abs(differencex) < this.width / 2 && Math.abs(differencey) < this.height / 2;
-    };
-    Rectangle.prototype.hasOverlap = function (rec) {
-        var differencex = this.x - rec.x;
-        var differencey = this.y - rec.y;
-        return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
-    };
-    return Rectangle;
-}());
-var dynamic = (function () {
-    function dynamic() {
-        var dots = document.querySelectorAll('.dot');
-        var colors = ['#007EFF', '#FF3700', '#92FF00'];
-        function animateDots() {
-            for (var i = 0; i < dots.length; i++) {
-                dynamics.animate(dots[i], {
-                    translateY: -70,
-                    backgroundColor: colors[i]
-                }, {
-                    type: dynamics.forceWithGravity,
-                    bounciness: 800,
-                    elasticity: 200,
-                    duration: 2000,
-                    delay: i * 450
-                });
-            }
-            dynamics.setTimeout(animateDots, 2500);
-        }
-        animateDots();
-    }
-    return dynamic;
-}());
-var Game = (function () {
-    function Game() {
-        var _this = this;
-        this.assets = new AssetsManager();
-        this.sounds = new SoundsManager();
-        this.objectList = [];
-        this.canvas = document.getElementsByTagName('canvas')[0];
-        this.context = this.canvas.getContext('2d');
-        var backgroundImg = this.assets.greenBG;
-        var bearImg = this.assets.polarbear;
-        var bushImg = this.assets.desObjects.Bush1;
-        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
-        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._score = new Score({ imgSrc: bushImg, x: 350, y: 530, frameHeight: 145, frameWidth: 80 });
-        this.objectList.push(this._background);
-        this.objectList.push(this._bush);
-        this.objectList.push(this._score);
-        this.objectList.push(this._bear);
-        requestAnimationFrame(function () { return _this.update(); });
-    }
-    Game.prototype.checkCollisions = function () {
-        var GO_collidables = new Array();
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            if (obj.hasCollision) {
-                GO_collidables.push(obj);
-            }
-        }
-        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
-            var obj1 = GO_collidables_1[_b];
-            var hit = false;
-            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
-                var obj2 = GO_collidables_2[_c];
-                if (obj1 != obj2) {
-                    var obj1Bounds = obj1.getBounds();
-                    var obj2Bounds = obj2.getBounds();
-                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                        obj1.onCollision(obj2);
-                        obj2.onCollision(obj1);
-                        hit = true;
-                    }
-                }
-            }
-            if (hit) {
-                break;
-            }
-        }
-    };
-    Game.prototype.update = function () {
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.update();
-        }
-        this.checkCollisions();
-        this.draw();
-    };
-    Game.prototype.draw = function () {
-        var _this = this;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.draw();
-        }
-        requestAnimationFrame(function () { return _this.update(); });
-    };
-    return Game;
-}());
-window.addEventListener("load", function () {
-    new Menu();
-});
-var matter = (function () {
-    function matter() {
-        this.test2();
-    }
-    matter.prototype.test2 = function () {
-        var canvas = document.getElementsByTagName('canvas')[0];
-        var context = canvas.getContext('2d');
-        var Engine = Matter.Engine;
-        var Render = Matter.Render;
-        var World = Matter.World;
-        var Bodies = Matter.Bodies;
-        var Body = Matter.Body;
-        var Composite = Matter.Composite;
-        var Composites = Matter.Composites;
-        var Constraint = Matter.Constraint;
-        var MouseConstraint = Matter.MouseConstraint;
-        var engine = Engine.create();
-        var render = Render.create({
-            element: document.body,
-            engine: engine,
-            options: {
-                width: 800,
-                height: 600,
-                pixelRatio: 1,
-                background: '#fafafa',
-                wireframeBackground: '#222',
-                hasBounds: false,
-                enabled: true,
-                wireframes: true,
-                showSleeping: true,
-                showDebug: false,
-                showBroadphase: false,
-                showBounds: false,
-                showVelocity: false,
-                showCollisions: false,
-                showSeparations: false,
-                showAxes: false,
-                showPositions: false,
-                showAngleIndicator: false,
-                showIds: false,
-                showShadows: false,
-                showVertexNumbers: false,
-                showConvexHulls: false,
-                showInternalEdges: false,
-                showMousePosition: false
-            }
-        });
-        var boxA = Bodies.rectangle(400, 200, 80, 80);
-        var boxB = Bodies.rectangle(450, 50, 80, 80);
-        var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-        World.add(engine.world, [boxA, boxB, ground]);
-        Engine.run(engine);
-        Render.run(render);
-        var bodies = Composite.allBodies(engine.world);
-    };
-    return matter;
-}());
-var Menu = (function () {
-    function Menu() {
-        var _this = this;
-        this.soundmanager = new SoundsManager("soundfile");
-        this.gameTitle = document.createElement("DIV");
-        this.btnStart = document.createElement("button");
-        this.btnMatter = document.createElement("button");
-        this.btnPhysics = document.createElement("button");
-        this.btnDynamics = document.createElement("button");
-        this.btnClose = document.createElement("button");
-        this.btnHighscores = document.createElement("button");
-        this.gameTitle.setAttribute("id", "gameTitle");
-        this.btnStart.setAttribute("id", "btnStart");
-        this.btnMatter.setAttribute("id", "btnMatter");
-        this.btnPhysics.setAttribute("id", "btnPhysics");
-        this.btnDynamics.setAttribute("id", "btnDynamics");
-        this.btnClose.setAttribute("id", "btnClose");
-        this.btnHighscores.setAttribute("id", "btnHighscores");
-        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
-        this.btnStart.innerHTML = "Start";
-        this.btnMatter.innerHTML = "Show Matter";
-        this.btnPhysics.innerHTML = "Show Physics";
-        this.btnDynamics.innerHTML = "Show Dynamics example";
-        this.btnClose.innerHTML = "Uitleg";
-        this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnStart.addEventListener("click", this.removeMenu);
-        var content = document.getElementById('content');
-        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
-        content.appendChild(this.gameTitle);
-        content.appendChild(this.btnStart);
-        content.appendChild(this.btnMatter);
-        content.appendChild(this.btnPhysics);
-        content.appendChild(this.btnDynamics);
-        content.appendChild(this.btnHighscores);
-        content.appendChild(this.btnClose);
-        this.soundTest = document.createElement("button");
-        this.soundTest.addEventListener('click', function () { return _this.soundmanager.play('new_highscore'); });
-        content.appendChild(this.soundTest);
-    }
-    Menu.prototype.showLeaderboards = function () {
-        window.location.href = "leaderboard.php";
-    };
-    Menu.prototype.removeMenu = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "";
-        this.main = new Game();
-    };
-    Menu.prototype.startMatter = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        document.body.style.backgroundImage = "none";
-        this.main = new matter();
-    };
-    Menu.prototype.startPsysics2D = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new physyics2d();
-    };
-    Menu.prototype.startDynamics = function () {
-        document.getElementById("gameTitle").remove();
-        document.getElementById("btnStart").remove();
-        document.getElementById("btnMatter").remove();
-        document.getElementById("btnClose").remove();
-        document.getElementById("btnDynamics").remove();
-        document.getElementById("btnPhysics").remove();
-        document.getElementById("btnHighscores").remove();
-        this.main = new dynamic();
-    };
-    return Menu;
-}());
-var physyics2d = (function () {
-    function physyics2d() {
-    }
-    return physyics2d;
-}());
-var GameObjects = (function () {
-    function GameObjects(source) {
-        this.assets = new AssetsManager();
-        this.directionX = 0;
-        this.directionY = 0;
-        this.x = 0;
-        this.y = 0;
-        this.speed = 0;
-        this.currentFrame = 0;
-        this.maxFrame = 0;
-        this.frameWidth = 0;
-        this.frameHeight = 0;
-        this.animationY = 0;
-        this.animationSpeed = 0;
-        this.timer = 0;
-        this.init(source);
-        this.createCanvasElement();
-    }
-    GameObjects.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    GameObjects.prototype.init = function (source) {
-        utils.CopyProperties(source, this);
-    };
-    GameObjects.prototype.createCanvasElement = function () {
-        var canvas = document.getElementsByTagName("canvas")[0];
-        this.context = canvas.getContext('2d');
-        this.image = new Image();
-        this.image.src = this.imgSrc;
-    };
-    GameObjects.prototype.changeY = function (int) {
-        this.directionY = int;
-    };
-    GameObjects.prototype.changeAnimationY = function (int) {
-        this.animationY = int;
-    };
-    GameObjects.prototype.changeX = function (int) {
-        this.directionX = int;
-    };
-    GameObjects.prototype.updateY = function (int) {
-        this.y = this.y + int;
-    };
-    GameObjects.prototype.move = function () {
-        this.x = this.x + this.speed * this.directionX;
-        this.y = this.y + this.speed * this.directionY;
-    };
-    GameObjects.prototype.Draw = function () {
-        this.timer++;
-        if (this.timer % this.animationSpeed == 0) {
-            this.currentFrame++;
-        }
-        if (this.currentFrame > this.maxFrame) {
-            this.currentFrame = 0;
-        }
-        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    GameObjects.prototype.Update = function () {
-    };
-    return GameObjects;
-}());
-var utils = (function () {
-    function utils() {
-    }
-    utils.CopyProperties = function (source, target) {
-        for (var prop in source) {
-            if (prop !== undefined) {
-                target[prop] = source[prop];
-            }
-            else {
-                console.error("Cannot set undefined property: " + prop);
-            }
-        }
-    };
-    utils.prototype.createDiv = function (elementName) {
-        var el = document.createElement(elementName);
-        document.body.appendChild(el);
-        return el;
-    };
-    return utils;
-}());
-var Rectangle = (function () {
-    function Rectangle(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
-    }
-    Rectangle.prototype.hitsOtherRectangle = function (other) {
-        if (this.hasOverlap(other)) {
-            return true;
-        }
-        else {
-            return false;
-        }
     };
     Rectangle.prototype.isInside = function (posx, posy) {
         var differencex = this.x - posx;
@@ -640,8 +450,17 @@ var SoundsManager = (function () {
             return;
         }
         var marker = this.soundMarkers[sound_name];
+        console.log(marker);
+        var sf = new soundFile("sound/" + marker.name + ".ogg");
         if (marker != null && marker != undefined) {
-            this._soundFile.play(marker.start, marker.duration);
+            sf.play(marker.start, marker.duration);
+            var sound = new Howl({
+                urls: ["sound/" + marker.name + ".ogg"],
+                sprite: {
+                    blast: [0, 2000],
+                }
+            });
+            sound.play('blast');
         }
     };
     SoundsManager.prototype._loadMarkers = function (jsonfile) {
@@ -669,12 +488,9 @@ var SoundsManager = (function () {
             var markers = obj;
             this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
             console.log("sound/" + obj.name + ".ogg");
-            var sf = new soundFile("sound/" + obj.name + ".ogg");
         }
         this._jsonFileLoaded = true;
-        if (this._soundFile.loadComplete == true) {
-            this.soundsLoaded = true;
-        }
+        this.soundsLoaded = true;
     };
     SoundsManager.prototype.soundFileLoaded = function () {
         if (this._jsonFileLoaded == true) {
@@ -823,7 +639,7 @@ var polarBear = (function (_super) {
         _super.prototype.Draw.call(this);
     };
     polarBear.prototype.jump = function () {
-
+        var self = this;
         if (this._isJumping === 1) {
             var posY = 0;
             this._jumpUpTimer += 0.01;
@@ -856,26 +672,6 @@ var polarBear = (function (_super) {
         _super.prototype.move.call(this);
     };
     return polarBear;
-}(GameObjects));
-var Score = (function (_super) {
-    __extends(Score, _super);
-    function Score(source) {
-        _super.call(this, source);
-        this.hasCollision = false;
-    }
-    Score.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    Score.prototype.onCollision = function (gameObject) {
-    };
-    Score.prototype.draw = function () {
-        console.log("I have been drawn");
-    };
-    Score.prototype.wait = function () {
-    };
-    Score.prototype.update = function () {
-    };
-    return Score;
 }(GameObjects));
 var testSubject = (function (_super) {
     __extends(testSubject, _super);

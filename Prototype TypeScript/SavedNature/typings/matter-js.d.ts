@@ -2,6 +2,7 @@
 // Project: https://github.com/liabru/matter-js
 // Definitions by: Ivane Gegia <https://twitter.com/ivanegegia>,
 //                 David Asmuth <https://github.com/piranha771/>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 declare module 'matter-js' {
     export = Matter;
@@ -1858,7 +1859,7 @@ declare module Matter {
          * @method run
          * @param {engine} engine
          */
-        static run(engine: Engine): void;
+        static run(enige: Engine): void;
 
         /**
          * An instance of a broadphase controller. The default value is a `Matter.Grid` instance created by `Engine.create`.

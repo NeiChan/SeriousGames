@@ -1,3 +1,4 @@
+/// <reference path="../../typings/howler.d.ts"/>
 class SoundsManager{
     // public static SINGLETON: SoundsManager = null;
     
@@ -33,14 +34,27 @@ class SoundsManager{
     }
     
     public play(sound_name: string):void {
+        
         if(this.mute){
             return;
         }
-        
+        // console.log(sound_name);
         var marker: soundMarker = this.soundMarkers[sound_name];
+        console.log(marker);
+        
+        let sf = new soundFile("sound/" + marker.name + ".ogg");
         
         if(marker != null && marker != undefined){
-            this._soundFile.play(marker.start, marker.duration);
+            // console.log("yeye");
+            sf.play(marker.start, marker.duration);
+            var sound = new Howl({
+                urls: ["sound/" +marker.name + ".ogg"],
+                sprite: {
+                    blast: [0, 2000],
+                }
+            });
+            
+            sound.play('blast');
         }
     }
     
@@ -77,7 +91,7 @@ class SoundsManager{
             // sound maken voor elke json entry
             console.log("sound/" + obj.name + ".ogg");
             
-            let sf = new soundFile("sound/" + obj.name + ".ogg");
+            
             
             // howler JS //
             // var sound = new Howl();
@@ -87,9 +101,9 @@ class SoundsManager{
         
         this._jsonFileLoaded = true;
         
-        if(this._soundFile.loadComplete == true){
+        // if(this._soundFile.loadComplete == true){
             this.soundsLoaded = true;
-        }
+        // }
         
         
     }
