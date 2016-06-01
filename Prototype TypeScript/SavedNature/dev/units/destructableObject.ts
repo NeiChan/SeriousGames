@@ -1,4 +1,4 @@
-class testSubject extends GameObjects implements ICollidable, IDestructable{
+class DestructableObject extends GameObjects implements ICollidable, IDestructable{
     public hasCollision:boolean = true;
     public hasDestructable:boolean = true;
     

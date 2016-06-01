@@ -17,10 +17,15 @@ var Game = (function () {
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
         this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._generator = new JunkGenerator(this.objectList);
+        this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
-        this.objectList.push(this._bush);
+        this.objectList.push(this._dObject);
+        this.objectList.push(this._bObject);
+        this.objectList.push(this._cObject);
         this.objectList.push(this._bear);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
@@ -38,6 +43,7 @@ var Game = (function () {
         requestAnimationFrame(function () { return _this.update(); });
     };
     Game.prototype.update = function () {
+        this._generator.generateJunk();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
             var obj = _a[_i];
             obj.update();
@@ -64,10 +70,7 @@ var Game = (function () {
                     if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
-                        var index = this.objectList.indexOf(obj1);
-                        if (index > -1) {
-                            this.objectList.splice(index, 1);
-                        }
+                        this.checkDestructable(obj1, this.objectList);
                         this._ui.updateScore(10);
                         hit = true;
                     }
@@ -75,6 +78,15 @@ var Game = (function () {
             }
             if (hit) {
                 break;
+            }
+        }
+    };
+    Game.prototype.checkDestructable = function (currentObj, listObjects) {
+        var index = listObjects.indexOf(currentObj);
+        var hasDestructable = listObjects[index].hasDestructable;
+        if (hasDestructable) {
+            if (index > -1) {
+                return listObjects.splice(index, 1);
             }
         }
     };
@@ -398,6 +410,45 @@ var AssetsManager = (function () {
     }
     return AssetsManager;
 }());
+var JunkGenerator = (function () {
+    function JunkGenerator(objList) {
+        this.assets = new AssetsManager();
+        this.minNumber = 1;
+        this.maxNumber = 4;
+        this.counter = 0;
+        this.updateTimout = 60;
+        this.objectList = objList;
+        console.log("JunkGenerator is activated...");
+    }
+    JunkGenerator.prototype.getRandomNumber = function (min, max) {
+        var random = Math.floor(Math.random() * 6) + 1;
+        return random;
+    };
+    JunkGenerator.prototype.generateJunk = function () {
+        this.counter++;
+        if (this.counter > this.updateTimout) {
+            var random = this.getRandomNumber(this.minNumber, this.maxNumber);
+            switch (random) {
+                case 1:
+                    console.log("Case 1 - Destructable Object");
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: 150, y: 530, frameHeight: 145, frameWidth: 80 }));
+                    break;
+                case 2:
+                    console.log("Case 2 - Background Object");
+                    break;
+                case 3:
+                    console.log("Case 3");
+                    break;
+                case 4:
+                    console.log("Case 4");
+                    break;
+            }
+            console.log("JunkGenerator Updater....");
+            this.counter = 0;
+        }
+    };
+    return JunkGenerator;
+}());
 var SoundsManager = (function () {
     function SoundsManager(sound_file) {
         this.mute = false;
@@ -417,7 +468,6 @@ var SoundsManager = (function () {
             return;
         }
         var marker = this.soundMarkers[sound_name];
-        console.log(marker);
         var sf = new soundFile("sound/" + marker.name + ".ogg");
         if (marker != null && marker != undefined) {
             sf.play(marker.start, marker.duration);
@@ -432,12 +482,9 @@ var SoundsManager = (function () {
     };
     SoundsManager.prototype._loadMarkers = function (jsonfile) {
         var _this = this;
-        console.log("LOAD MARKERS");
         var marker_xhr = new XMLHttpRequest();
-        console.log("ga dit laden: " + jsonfile);
         marker_xhr.onreadystatechange = function () {
             if (marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200) {
-                console.log("laden gelukt! ");
                 var obj = JSON.parse(marker_xhr.responseText);
                 _this.parseJsonSounds(obj);
             }
@@ -448,13 +495,10 @@ var SoundsManager = (function () {
         marker_xhr.send();
     };
     SoundsManager.prototype.parseJsonSounds = function (data) {
-        console.log("onread aangeroepen");
         for (var i = 0; i < data.markers.length; i++) {
             var obj = data.markers[i];
-            console.log("marker name is " + obj.name);
             var markers = obj;
             this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
-            console.log("sound/" + obj.name + ".ogg");
         }
         this._jsonFileLoaded = true;
         this.soundsLoaded = true;
@@ -465,7 +509,6 @@ var SoundsManager = (function () {
         }
     };
     SoundsManager.prototype._onError = function (xhr) {
-        console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
     };
     SoundsManager.prototype.addMarker = function (sound_marker) {
         this.soundMarkers[sound_marker.name] = sound_marker;
@@ -489,6 +532,69 @@ var Background = (function (_super) {
         }
     };
     return Background;
+}(GameObjects));
+var BackgroundObject = (function (_super) {
+    __extends(BackgroundObject, _super);
+    function BackgroundObject(source) {
+        _super.call(this, source);
+    }
+    BackgroundObject.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    BackgroundObject.prototype.onCollision = function (gameObject) {
+        console.log("Doe iets onCollision voor testSubject");
+    };
+    BackgroundObject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    BackgroundObject.prototype.wait = function () {
+    };
+    BackgroundObject.prototype.update = function () {
+    };
+    return BackgroundObject;
+}(GameObjects));
+var CollidableObject = (function (_super) {
+    __extends(CollidableObject, _super);
+    function CollidableObject(source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+    }
+    CollidableObject.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    CollidableObject.prototype.onCollision = function (gameObject) {
+        console.log("Doe iets onCollision voor testSubject");
+    };
+    CollidableObject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    CollidableObject.prototype.wait = function () {
+    };
+    CollidableObject.prototype.update = function () {
+    };
+    return CollidableObject;
+}(GameObjects));
+var DestructableObject = (function (_super) {
+    __extends(DestructableObject, _super);
+    function DestructableObject(source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+        this.hasDestructable = true;
+    }
+    DestructableObject.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    DestructableObject.prototype.onCollision = function (gameObject) {
+        console.log("Doe iets onCollision voor testSubject");
+    };
+    DestructableObject.prototype.draw = function () {
+        this.context.drawImage(this.image, this.x, this.y);
+    };
+    DestructableObject.prototype.wait = function () {
+    };
+    DestructableObject.prototype.update = function () {
+    };
+    return DestructableObject;
 }(GameObjects));
 var Player = (function () {
     function Player() {
@@ -634,28 +740,6 @@ var polarBear = (function (_super) {
         _super.prototype.move.call(this);
     };
     return polarBear;
-}(GameObjects));
-var testSubject = (function (_super) {
-    __extends(testSubject, _super);
-    function testSubject(source) {
-        _super.call(this, source);
-        this.hasCollision = true;
-        this.hasDestructable = true;
-    }
-    testSubject.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    testSubject.prototype.onCollision = function (gameObject) {
-        console.log("Doe iets onCollision voor testSubject");
-    };
-    testSubject.prototype.draw = function () {
-        this.context.drawImage(this.image, this.x, this.y);
-    };
-    testSubject.prototype.wait = function () {
-    };
-    testSubject.prototype.update = function () {
-    };
-    return testSubject;
 }(GameObjects));
 var UI = (function (_super) {
     __extends(UI, _super);
