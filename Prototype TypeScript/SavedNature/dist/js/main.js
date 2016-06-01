@@ -16,16 +16,14 @@ var Game = (function () {
         var bushImg = this.assets.desObjects.Bush1;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
-        this._bear = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
+        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._generator = new JunkGenerator(this.objectList);
         this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
         this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
         this.objectList.push(this._background);
-        this.objectList.push(this._ui);
         this.objectList.push(this._dObject);
         this.objectList.push(this._bObject);
-        this.objectList.push(this._cObject);
         this.objectList.push(this._bear);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
@@ -40,6 +38,7 @@ var Game = (function () {
             var obj = _a[_i];
             obj.draw();
         }
+        this._ui.draw();
         requestAnimationFrame(function () { return _this.update(); });
     };
     Game.prototype.update = function () {
@@ -48,6 +47,7 @@ var Game = (function () {
             var obj = _a[_i];
             obj.update();
         }
+        this._ui.update();
         this.checkCollisions();
         this.draw();
     };
@@ -71,7 +71,7 @@ var Game = (function () {
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
                         this.checkDestructable(obj1, this.objectList);
-                        this._ui.updateScore(10);
+                        this.checkDestructable(obj2, this.objectList);
                         hit = true;
                     }
                 }
@@ -176,6 +176,9 @@ var GameObjects = (function () {
     };
     GameObjects.prototype.setY = function (int) {
         this.y = int;
+    };
+    GameObjects.prototype.changeMovementX = function (int) {
+        this.x = this.x + this.speed * this.directionX + int;
     };
     GameObjects.prototype.move = function () {
         this.x = this.x + this.speed * this.directionX;
@@ -417,33 +420,43 @@ var JunkGenerator = (function () {
         this.maxNumber = 4;
         this.counter = 0;
         this.updateTimout = 60;
+        this.minPositionY = 200;
+        this.maxPositionY = 500;
+        this.minPositionX = 1100;
+        this.maxPositionX = 1150;
         this.objectList = objList;
         console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
-        var random = Math.floor(Math.random() * 6) + 1;
+        var random = Math.floor(Math.random() * max) + min;
         return random;
     };
     JunkGenerator.prototype.generateJunk = function () {
         this.counter++;
         if (this.counter > this.updateTimout) {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
+            var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
+            var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             switch (random) {
                 case 1:
                     console.log("Case 1 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: 150, y: 530, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                     break;
                 case 2:
-                    console.log("Case 2 - Background Object");
+                    console.log("Case 2 - Destructable Object");
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                     break;
                 case 3:
+                    console.log("Case 3 - Destructable Object");
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                     console.log("Case 3");
                     break;
                 case 4:
+                    console.log("Case 4 - Destructable Object");
+                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                     console.log("Case 4");
                     break;
             }
-            console.log("JunkGenerator Updater....");
             this.counter = 0;
         }
     };
@@ -563,7 +576,6 @@ var CollidableObject = (function (_super) {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     CollidableObject.prototype.onCollision = function (gameObject) {
-        console.log("Doe iets onCollision voor testSubject");
     };
     CollidableObject.prototype.draw = function () {
         this.context.drawImage(this.image, this.x, this.y);
@@ -658,7 +670,7 @@ var Player = (function () {
 }());
 var polarBear = (function (_super) {
     __extends(polarBear, _super);
-    function polarBear(source) {
+    function polarBear(game, source) {
         var _this = this;
         _super.call(this, source);
         this._isJumping = 0;
@@ -667,19 +679,20 @@ var polarBear = (function (_super) {
         this.myY = 0;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
+        this._game = game;
     }
     polarBear.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     polarBear.prototype.onCollision = function (gameObject) {
-        this.x = 0;
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
             case 39:
                 _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 1);
                 _super.prototype.changeAnimationY.call(this, 0);
+                this.updateUIScore(10);
+                this.changeAllObjectsMovementX(-10);
                 break;
             case 88:
                 _super.prototype.changeY.call(this, 0);
@@ -738,6 +751,17 @@ var polarBear = (function (_super) {
             this.jump();
         }
         _super.prototype.move.call(this);
+    };
+    polarBear.prototype.updateUIScore = function (points) {
+        this._game._ui.updateScore(points);
+    };
+    polarBear.prototype.changeAllObjectsMovementX = function (speedX) {
+        for (var _i = 0, _a = this._game.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj != this) {
+                obj.changeMovementX(speedX);
+            }
+        }
     };
     return polarBear;
 }(GameObjects));

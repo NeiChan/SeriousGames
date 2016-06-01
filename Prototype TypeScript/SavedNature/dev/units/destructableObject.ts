@@ -34,6 +34,6 @@ class DestructableObject extends GameObjects implements ICollidable, IDestructab
     }
     
     public update() : void{
-        
+        // this.x -= 10;
     }
 }

@@ -19,7 +19,7 @@ class CollidableObject extends GameObjects implements ICollidable{
         // functie van ICollidable
         // Doe iets wanneer er een collision is.
         
-        console.log("Doe iets onCollision voor testSubject");
+        //console.log("Doe iets onCollision voor testSubject");
         
     }
 

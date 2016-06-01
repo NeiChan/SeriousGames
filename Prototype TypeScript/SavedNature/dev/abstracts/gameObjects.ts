@@ -122,6 +122,16 @@ abstract class GameObjects {
     }
     
     /**
+     * changeMovementX
+     * 
+     * Public function for setting object X-position
+     */
+    public changeMovementX(int) : void{
+        this.x = this.x + this.speed * this.directionX + int;
+    }
+    
+    
+    /**
      * move
      * 
      * Public function to perform the move operation

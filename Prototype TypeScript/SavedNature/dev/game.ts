@@ -10,7 +10,7 @@ class Game {
 
     // Get class player
     private _background  : Background;
-    private _ui          : UI;
+    public _ui          : UI;
     private _bear        : polarBear;
     private _generator   : JunkGenerator;
     
@@ -36,7 +36,7 @@ class Game {
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
-        this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
+        this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
         this._generator     = new JunkGenerator(this.objectList);
         
         this._dObject       = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
@@ -44,10 +44,9 @@ class Game {
         this._cObject       = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
 
         this.objectList.push(this._background);
-        this.objectList.push(this._ui);
         this.objectList.push(this._dObject);
         this.objectList.push(this._bObject);
-        this.objectList.push(this._cObject);
+        // this.objectList.push(this._cObject);
         this.objectList.push(this._bear);
         
         var content = document.getElementById('content');
@@ -61,10 +60,12 @@ class Game {
     
     private draw()  : void {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
-
+        
         for(var obj of this.objectList) {
             obj.draw();
         }
+        
+        this._ui.draw();
 
         requestAnimationFrame(() => this.update());
     }
@@ -78,6 +79,8 @@ class Game {
         for(var obj of this.objectList) {
             obj.update();
         }
+        
+        this._ui.update();
 
         this.checkCollisions();
         this.draw();
@@ -113,9 +116,7 @@ class Game {
                         
                         // check on hasDestructable
                         this.checkDestructable(obj1, this.objectList);
-                        
-                        
-                        this._ui.updateScore(10);
+                        this.checkDestructable(obj2, this.objectList);
                         hit = true;
                     }
                 }
