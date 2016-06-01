@@ -1,4 +1,5 @@
 /// <reference path="interfaces/ICollidable.ts"/>
+/// <reference path="interfaces/IDestructable.ts"/>
 
 class Game {
     private assets      : AssetsManager = new AssetsManager();
@@ -11,9 +12,14 @@ class Game {
     private _background  : Background;
     private _ui          : UI;
     private _bear        : polarBear;
-    private _bush        : testSubject;
     private _platform    : platform;
     // private _score       : Score;
+
+    private _generator   : JunkGenerator;
+    
+    private _dObject        : DestructableObject;
+    private _cObject        : CollidableObject;
+    private _bObject        : BackgroundObject;
 
     private context     : CanvasRenderingContext2D;
     private canvas      : HTMLCanvasElement;
@@ -35,15 +41,23 @@ class Game {
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
         this._bear          = new polarBear({ imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 80, y: 500, speed: 3 });
-        this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
-        this._platform      = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 })
+
+        this._generator     = new JunkGenerator(this.objectList);
         
+        this._dObject       = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bObject       = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._cObject       = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
+
         this.objectList.push(this._background);
         this.objectList.push(this._ui);
-        this.objectList.push(this._bush);
-        this.objectList.push(this._platform);
+        this.objectList.push(this._dObject);
+        this.objectList.push(this._bObject);
+        this.objectList.push(this._cObject);
+
         this.objectList.push(this._bear);
         
+        // this._platform      = new platform({ imgSrc: platformImg, x: 550, y: 530, frameHeight: 101, frameWidth: 101 })
+        // this.objectList.push(this._platform);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
@@ -67,12 +81,13 @@ class Game {
     private update() : void {
         // Aanroepen van update function
 
+        this._generator.generateJunk();
+        
         for(var obj of this.objectList) {
             obj.update();
         }
 
         this.checkCollisions();
-
         this.draw();
     }
 
@@ -103,15 +118,10 @@ class Game {
                     if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
                         obj1.onCollision(obj2);
                         obj2.onCollision(obj1);
-                        // if obj2 gelijk is aan objectList
                         
                         // check on hasDestructable
-                        var index = this.objectList.indexOf(obj1);
-                        if(index > -1) {
-                            this.objectList.splice(index, 1);
-                        } 
-                        // if hasDestructable
-                        // objectList.remove
+                        this.checkDestructable(obj1, this.objectList);
+                        
                         
                         this._ui.updateScore(10);
                         hit = true;
@@ -122,6 +132,17 @@ class Game {
             if(hit){
                 break;
             }
+        }
+    }
+    
+    private checkDestructable(currentObj, listObjects) : void {
+        let index = listObjects.indexOf(currentObj);
+        let hasDestructable = listObjects[index].hasDestructable;
+        
+        if(hasDestructable){
+            if(index > -1) {
+                return listObjects.splice(index, 1);
+            } 
         }
     }
 }

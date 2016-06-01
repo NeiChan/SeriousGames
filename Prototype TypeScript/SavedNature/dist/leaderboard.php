@@ -18,7 +18,7 @@
         <title>Save Nature Prototype 2.0</title>
         <link rel="stylesheet" type="text/css" href="css/style.css">
     </head>
-    <body>
+    <body id = "leaderboardBody">
         <div class="wrapper">
             <div class="wrapperLeaderboard">
                 <img src="images/interface/leaderboard/savedNatureLeaderboard.png" alt="" />

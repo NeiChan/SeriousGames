@@ -40,7 +40,7 @@ class SoundsManager{
         }
         // console.log(sound_name);
         var marker: soundMarker = this.soundMarkers[sound_name];
-        console.log(marker);
+        // console.log(marker);
         
         let sf = new soundFile("sound/" + marker.name + ".ogg");
         
@@ -59,12 +59,12 @@ class SoundsManager{
     }
     
     private _loadMarkers(jsonfile: string):void {
-        console.log("LOAD MARKERS");
+        // console.log("LOAD MARKERS");
         var marker_xhr = new XMLHttpRequest();
-        console.log("ga dit laden: " + jsonfile);
+        // console.log("ga dit laden: " + jsonfile);
         marker_xhr.onreadystatechange = () => {
             if(marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200){
-                console.log("laden gelukt! ");
+                // console.log("laden gelukt! ");
                 let obj = JSON.parse(marker_xhr.responseText);
                 this.parseJsonSounds(obj);
             }
@@ -79,17 +79,17 @@ class SoundsManager{
     }
     
     protected parseJsonSounds(data: any) {
-        console.log("onread aangeroepen");
+        // console.log("onread aangeroepen");
         
         for (let i = 0;i<data.markers.length;i++){
             var obj = data.markers[i];
-            console.log("marker name is " + obj.name);
+            // console.log("marker name is " + obj.name);
                         
             var markers:any = obj;
             this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
             
             // sound maken voor elke json entry
-            console.log("sound/" + obj.name + ".ogg");
+            // console.log("sound/" + obj.name + ".ogg");
             
             
             
@@ -115,7 +115,7 @@ class SoundsManager{
     }
     
     protected _onError(xhr: XMLHttpRequest) : void {
-        console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
+        // console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
     }
     
     public addMarker(sound_marker: soundMarker):void {
