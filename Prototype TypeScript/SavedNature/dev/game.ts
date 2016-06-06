@@ -15,6 +15,8 @@ class Game {
     private _dObject     : DestructableObject;
     private _bObject     : BackgroundObject;
     private _cObject     : CollidableObject;
+    private _hardobj     : crate;
+    private _hardobj2     : crate;
     
     private _bush        : testSubject;
     private _goldCoin    : Coin;
@@ -38,23 +40,28 @@ class Game {
         let bearImg         = this.assets.polarbear;
         let bushImg         = this.assets.desObjects.Bush1;
         let goldCoinImg     = this.assets.collectables.goldCoin;
+        let crateImg        = this.assets.desObjects.Crate;
 
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList);
         
+        this._hardobj       = new crate(this, { imgSrc: crateImg, x: 150, y: 215, frameHeight: 101, frameWidth: 101 });
+        this._hardobj2       = new crate(this, { imgSrc: crateImg, x: 450, y: 215, frameHeight: 101, frameWidth: 101 });
         this._dObject       = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bObject       = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
         this._cObject       = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
 
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
-        this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
+        this._bush          = new testSubject({ imgSrc: bushImg, x: 350, y: 215, frameHeight: 145, frameWidth: 80 });
         this._goldCoin      = new Coin(this, {imgSrc: goldCoinImg,  x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10});
 
         this.objectList.push(this._background);
         this.objectList.push(this._goldCoin);
         this.objectList.push(this._bush);
+        this.objectList.push(this._hardobj);
+        this.objectList.push(this._hardobj2);
         this.objectList.push(this._bear);
 
         var content = document.getElementById('content');

@@ -17,18 +17,23 @@ var Game = (function () {
         var bearImg = this.assets.polarbear;
         var bushImg = this.assets.desObjects.Bush1;
         var goldCoinImg = this.assets.collectables.goldCoin;
+        var crateImg = this.assets.desObjects.Crate;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
         this._generator = new JunkGenerator(this, this.objectList);
+        this._hardobj = new crate(this, { imgSrc: crateImg, x: 150, y: 215, frameHeight: 101, frameWidth: 101 });
+        this._hardobj2 = new crate(this, { imgSrc: crateImg, x: 450, y: 215, frameHeight: 101, frameWidth: 101 });
         this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
         this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
-        this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
+        this._bush = new testSubject({ imgSrc: bushImg, x: 350, y: 215, frameHeight: 145, frameWidth: 80 });
         this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
         this.objectList.push(this._background);
         this.objectList.push(this._goldCoin);
         this.objectList.push(this._bush);
+        this.objectList.push(this._hardobj);
+        this.objectList.push(this._hardobj2);
         this.objectList.push(this._bear);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
@@ -181,11 +186,17 @@ var GameObjects = (function () {
     GameObjects.prototype.getY = function () {
         return this.y;
     };
+    GameObjects.prototype.getX = function () {
+        return this.x;
+    };
     GameObjects.prototype.setY = function (int) {
         this.y = int;
     };
     GameObjects.prototype.changeMovementX = function (int) {
         this.x = this.x + this.speed * this.directionX + int;
+    };
+    GameObjects.prototype.getFrameWidth = function () {
+        return this.frameWidth;
     };
     GameObjects.prototype.move = function () {
         this.x = this.x + this.speed * this.directionX;
@@ -450,27 +461,20 @@ var JunkGenerator = (function () {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
             var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
-            console.log(randomY);
             var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 });
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
             switch (random) {
                 case 1:
-                    console.log("Case 1 - Background Object");
                     this.objectList.push(bush);
                     break;
                 case 2:
-                    console.log("Case 2 - Coin Object");
                     this.objectList.push(coin);
                     break;
                 case 3:
-                    console.log("Case 3 - Destructable Object");
                     this.objectList.push(bush);
-                    console.log("Case 3");
                     break;
                 case 4:
-                    console.log("Case 4 - Coin Object");
                     this.objectList.push(coin);
-                    console.log("Case 4");
                     break;
             }
             this.counter = 0;
@@ -497,7 +501,6 @@ var SoundsManager = (function () {
             return;
         }
         var marker = this.soundMarkers[sound_name];
-        console.log(marker);
         var sf = new soundFile("sound/" + marker.name + ".ogg");
         if (marker != null && marker != undefined) {
             sf.play(marker.start, marker.duration);
@@ -512,12 +515,9 @@ var SoundsManager = (function () {
     };
     SoundsManager.prototype._loadMarkers = function (jsonfile) {
         var _this = this;
-        console.log("LOAD MARKERS");
         var marker_xhr = new XMLHttpRequest();
-        console.log("ga dit laden: " + jsonfile);
         marker_xhr.onreadystatechange = function () {
             if (marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200) {
-                console.log("laden gelukt! ");
                 var obj = JSON.parse(marker_xhr.responseText);
                 _this.parseJsonSounds(obj);
             }
@@ -528,13 +528,10 @@ var SoundsManager = (function () {
         marker_xhr.send();
     };
     SoundsManager.prototype.parseJsonSounds = function (data) {
-        console.log("onread aangeroepen");
         for (var i = 0; i < data.markers.length; i++) {
             var obj = data.markers[i];
-            console.log("marker name is " + obj.name);
             var markers = obj;
             this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
-            console.log("sound/" + obj.name + ".ogg");
         }
         this._jsonFileLoaded = true;
         this.soundsLoaded = true;
@@ -625,6 +622,40 @@ var CollidableObject = (function (_super) {
     };
     return CollidableObject;
 }(GameObjects));
+var crate = (function (_super) {
+    __extends(crate, _super);
+    function crate(game, source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+        this.startCollisionPos = 0;
+        this.endCollisionPos = 0;
+    }
+    crate.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    crate.prototype.onCollision = function (gameObject) {
+        this.hasCollision = true;
+        this.onCollisionEnter(gameObject);
+    };
+    crate.prototype.getY = function () {
+        return _super.prototype.getY.call(this);
+    };
+    crate.prototype.getObjectWidth = function () {
+        return _super.prototype.getFrameWidth.call(this);
+    };
+    crate.prototype.onCollisionEnter = function (gameObject) {
+    };
+    crate.prototype.onCollisionExit = function () {
+        this.hasCollision = false;
+    };
+    crate.prototype.update = function () {
+        _super.prototype.Update.call(this);
+    };
+    crate.prototype.draw = function () {
+        _super.prototype.Draw.call(this);
+    };
+    return crate;
+}(GameObjects));
 var DestructableObject = (function (_super) {
     __extends(DestructableObject, _super);
     function DestructableObject(source) {
@@ -714,15 +745,44 @@ var polarBear = (function (_super) {
         this._isJumping = 0;
         this._jumpTimer = 2.39645;
         this.hasCollision = true;
+        this.startCollisionPos = 0;
+        this.endCollisionPos = 0;
         this.myY = 0;
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
         this._game = game;
+        console.log(game.objectList);
     }
     polarBear.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     polarBear.prototype.onCollision = function (gameObject) {
+        this.hasCollision = true;
+        if (this.startCollisionPos === 0) {
+            this.startCollisionPos = gameObject.getX();
+            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
+        }
+        if (gameObject instanceof crate) {
+            this.onCollisionEnter(gameObject);
+        }
+    };
+    polarBear.prototype.onCollisionEnter = function (gameObject) {
+        var y = gameObject.getY();
+        var newY = y - 45;
+        _super.prototype.setY.call(this, newY);
+    };
+    polarBear.prototype.onCollisionExit = function () {
+        _super.prototype.setY.call(this, 260);
+        this.hasCollision = false;
+    };
+    polarBear.prototype.getY = function () {
+        return _super.prototype.getY.call(this);
+    };
+    polarBear.prototype.getX = function () {
+        return _super.prototype.getX.call(this);
+    };
+    polarBear.prototype.getObjectWidth = function () {
+        return _super.prototype.getFrameWidth.call(this);
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
@@ -789,6 +849,18 @@ var polarBear = (function (_super) {
     polarBear.prototype.update = function () {
         if (this._isJumping === 1) {
             this.jump();
+        }
+        else {
+            for (var _i = 0, _a = this._game.objectList; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                if (obj != this) {
+                    if (obj instanceof crate) {
+                        if (obj.getX() <= -75) {
+                            _super.prototype.setY.call(this, 260);
+                        }
+                    }
+                }
+            }
         }
         _super.prototype.move.call(this);
     };
