@@ -7,6 +7,7 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
     public startCollisionPos : number = 0;
     public endCollisionPos : number = 0;
     public  myY:number = 0;
+    private isMoving:boolean = false;
     private _game:Game;
     
     // private _ui : UI;
@@ -75,12 +76,13 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
         switch(event.keyCode){
             case 39: // RIGHT
                 super.changeY(0);
-                // super.changeX(1);
+                super.changeX(1);
                 super.changeAnimationY(0);
+                this.isMoving = true;
                 // Update the Score from the UI in game
-                this.updateUIScore(10);
-                // Update all movements that exist in the gameObject list in the game
-                this.changeAllObjectsMovementX(-10);
+                // this.updateUIScore(10);
+                // // // Update all movements that exist in the gameObject list in the game
+                // this.changeAllObjectsMovementX(-10);
                 
                 break;
             case 88: // UP
@@ -109,15 +111,18 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);
+                this.isMoving = false;
                 break;
             case 39: // RIGHT
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);
+                this.isMoving = false;
                 break;
             case 32: // SPACEBAR
                 break;
             default:
+                
                 break;    
         }
         
@@ -189,6 +194,10 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
     
     private updateUIScore(points):void{
         this._game._ui.updateScore(points);
+    }
+    
+    public getMoving() {
+        return this.isMoving;
     }
     
     private changeAllObjectsMovementX(speedX) : void {

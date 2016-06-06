@@ -14,6 +14,10 @@ class UI extends GameObjects
         this.context.fillText(this._counter.toString(), this.x + 50, this.y);
     }
     
+    public getScore(): number {
+        return this._counter;
+    }
+    
     public updateScore(score) : void {
         this._counter += score;
     } 

@@ -64,6 +64,7 @@ class Game {
         this.objectList.push(this._hardobj2);
         this.objectList.push(this._bear);
 
+
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
@@ -84,6 +85,8 @@ class Game {
         
         this._ui.draw();
 
+        this._bear.draw();
+        
         requestAnimationFrame(() => this.update());
     }
 
@@ -99,10 +102,27 @@ class Game {
         this._generator.generateJunk();
         
         this._ui.update();
+        
+        this._bear.draw();
 
         this.checkCollisions();
-
+        this.moveWorld();
+        
+        if(this._ui.getScore() > 250){
+            this._background.changeBackground(this.assets.desBG);
+        }
+        
         this.draw();
+    }
+    
+    private moveWorld(): void {
+        if(this._bear.getMoving()){
+            for(var obj of this.objectList) {
+                obj.changeMovementX(-5);
+            }
+            
+            this._ui.updateScore(1);
+        }
     }
 
     private checkCollisions() : void {
