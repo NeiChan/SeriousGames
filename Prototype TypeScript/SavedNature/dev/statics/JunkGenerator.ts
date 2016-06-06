@@ -35,7 +35,7 @@ class JunkGenerator {
             let randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             let randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             
-            console.log(randomY);
+            // console.log(randomY);
             
             // console.log("randomX junk =" + randomX);
             // console.log("randomY junk =" + randomY);
@@ -44,27 +44,25 @@ class JunkGenerator {
             
             switch(random){
                 case 1:
-                    console.log("Case 1 - Background Object");
+                    // console.log("Case 1 - Background Object");
                     this.objectList.push(bush);
                 break;
                 
                 case 2:
-                    console.log("Case 2 - Coin Object");
+                    // console.log("Case 2 - Coin Object");
                     this.objectList.push(coin);
                     // console.log("Case 2 - Background Object");
                     // this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                 break;
                 
                 case 3:
-                    console.log("Case 3 - Destructable Object");
+                    // console.log("Case 3 - Destructable Object");
                     this.objectList.push(bush);
-                    console.log("Case 3");
                 break;
                 
                 case 4:
-                    console.log("Case 4 - Coin Object");
+                    // console.log("Case 4 - Coin Object");
                     this.objectList.push(coin);
-                    console.log("Case 4");
                 break;
             }
             
