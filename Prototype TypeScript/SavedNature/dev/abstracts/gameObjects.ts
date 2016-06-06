@@ -66,6 +66,10 @@ abstract class GameObjects {
 
         this.image.src = this.imgSrc;
     }
+    
+    public newImage(img): void{
+        this.image.src = img;
+    }
 
     /**
      * changeY
@@ -111,6 +115,15 @@ abstract class GameObjects {
     public getY() : number{
         return this.y;
     }
+    
+    /**
+     * getY
+     *
+     * Public function for retrieving object X-position
+     */
+    public getX() : number{
+        return this.x;
+    }
 
     /**
      * setY
@@ -128,6 +141,15 @@ abstract class GameObjects {
      */
     public changeMovementX(int) : void{
         this.x = this.x + this.speed * this.directionX + int;
+    }
+    
+    /**
+     * getFrameWidth
+     * 
+     * Public function for getting object width for collision detection
+     */
+    public getFrameWidth() : number{
+        return this.frameWidth;
     }
     
     

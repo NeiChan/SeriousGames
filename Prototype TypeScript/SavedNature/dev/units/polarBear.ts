@@ -1,10 +1,13 @@
 /// <reference path="../game.ts"/>
 
-class polarBear extends GameObjects implements ICollidable {
+class polarBear extends GameObjects implements ICollidable, IHardObject {
     private _isJumping: number = 0;
     private _jumpTimer: number = 2.39645;
     public  hasCollision:boolean = true;
+    public startCollisionPos : number = 0;
+    public endCollisionPos : number = 0;
     public  myY:number = 0;
+    private isMoving:boolean = false;
     private _game:Game;
     
     // private _ui : UI;
@@ -15,6 +18,7 @@ class polarBear extends GameObjects implements ICollidable {
         window.addEventListener("keydown", (e) => this.onKeyDown(e));
         window.addEventListener("keyup"  , (e) => this.onKeyUp(e));
         this._game = game;
+        console.log(game.objectList);
     }
 
     /**
@@ -26,26 +30,59 @@ class polarBear extends GameObjects implements ICollidable {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
 
-    onCollision(gameObject:ICollidable) {
-        // functie van ICollidable
-        // Doe iets wanneer er een collision is.
+    onCollision(gameObject:IHardObject) {
         
-        //this._ui.updateScore(10);
+        this.hasCollision = true;
         
-        //this.x = 0;
-
+        if(this.startCollisionPos === 0){
+            this.startCollisionPos = gameObject.getX();
+            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
+            // console.log(this.endCollisionPos);
+        }
+        
+        if(gameObject instanceof crate){
+            this.onCollisionEnter(gameObject);
+            // console.log("done"); 
+        } 
     }
-
+    
+    public onCollisionEnter(gameObject: IHardObject) :void{
+        var y = gameObject.getY();
+        // console.log(y);
+        
+        var newY = y - 45;
+        super.setY(newY);          
+    }
+    
+    public onCollisionExit() : void{
+        super.setY(260);
+        this.hasCollision = false;
+        // console.log("not done");
+    }
+    
+    public getY():number{
+        return super.getY();
+    }
+    
+    public getX():number{
+        return super.getX();
+    }
+    
+    public getObjectWidth() : number{
+        return super.getFrameWidth();
+    }
+    
     private onKeyDown(event:KeyboardEvent):void {
         switch(event.keyCode){
             case 39: // RIGHT
                 super.changeY(0);
-                // super.changeX(1);
+                super.changeX(1);
                 super.changeAnimationY(0);
+                this.isMoving = true;
                 // Update the Score from the UI in game
-                this.updateUIScore(10);
-                // Update all movements that exist in the gameObject list in the game
-                this.changeAllObjectsMovementX(-10);
+                // this.updateUIScore(10);
+                // // // Update all movements that exist in the gameObject list in the game
+                // this.changeAllObjectsMovementX(-10);
                 
                 break;
             case 88: // UP
@@ -74,14 +111,19 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);
+                this.isMoving = false;
                 break;
             case 39: // RIGHT
                 super.changeY(0);
                 super.changeX(0);
                 super.changeAnimationY(0);
+                this.isMoving = false;
                 break;
             case 32: // SPACEBAR
                 break;
+            default:
+                
+                break;    
         }
         
         // requestAnimationFrame( () => this.onKeyUp(event));
@@ -114,6 +156,7 @@ class polarBear extends GameObjects implements ICollidable {
             console.log("y after jump =" + super.getY());
         }
     }
+    
     public wait() : void{
 
     }
@@ -121,13 +164,40 @@ class polarBear extends GameObjects implements ICollidable {
     public update() : void{
         if(this._isJumping === 1){
             this.jump();
+        } else {
+            for(var obj of this._game.objectList) {
+                if(obj != this){
+                    // console.log("obj not equal to current so we move other objects");
+                    if(obj instanceof crate){
+                        if(obj.getX() <= -75){
+                            super.setY(260);    
+                        } 
+                    }    
+                }
+            }
         }
+        
+        // console.log(super.getX() === this.getX());
+        
+        // if(super.getX() === this.endCollisionPos){
+        //     console.log('called');
+        //     this.onCollisionExit();
+        //     this.hasCollision = false;
+        // }
 
         super.move();
+        
+        // console.log(super.getX());
+        
+        
     }
     
     private updateUIScore(points):void{
         this._game._ui.updateScore(points);
+    }
+    
+    public getMoving() {
+        return this.isMoving;
     }
     
     private changeAllObjectsMovementX(speedX) : void {

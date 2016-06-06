@@ -1,6 +1,7 @@
 interface ICollidable {
     hasCollision:boolean;
     
-    onCollision(gameObject: ICollidable);
+    onCollision(gameObject: ICollidable | IHardObject);
     getBounds():Rectangle;
+    // getY():number;
 }
