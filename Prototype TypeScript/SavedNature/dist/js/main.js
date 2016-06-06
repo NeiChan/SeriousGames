@@ -102,6 +102,7 @@ window.addEventListener("load", function () {
 });
 var Menu = (function () {
     function Menu() {
+        var _this = this;
         this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
@@ -116,7 +117,10 @@ var Menu = (function () {
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
         this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnStart.addEventListener("click", this.removeMenu);
+        this.btnStart.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnHighscores.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnClose.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnStart.addEventListener("click", this.startEvent.bind(this));
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
@@ -124,6 +128,11 @@ var Menu = (function () {
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
     }
+    Menu.prototype.startEvent = function () {
+        this.soundmanager.play('start');
+        this.removeMenu.bind(this)();
+        this.main = new Game();
+    };
     Menu.prototype.showLeaderboards = function () {
         window.location.href = "leaderboard.php";
     };
@@ -132,8 +141,9 @@ var Menu = (function () {
         document.getElementById("btnStart").remove();
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
+        this.soundmanager.play("background");
+        console.log(this.soundmanager);
         document.body.style.backgroundImage = "";
-        this.main = new Game();
     };
     return Menu;
 }());
@@ -305,6 +315,7 @@ var soundMarker = (function () {
         this.duration = duration;
         this.volume = volume;
         this.loop = loop;
+        console.log(this.duration);
     }
     return soundMarker;
 }());
@@ -524,6 +535,7 @@ var SoundsManager = (function () {
     };
     SoundsManager.prototype.parseJsonSounds = function (data) {
         console.log("onread aangeroepen");
+        console.log(data.markers.length);
         for (var i = 0; i < data.markers.length; i++) {
             var obj = data.markers[i];
             console.log("marker name is " + obj.name);

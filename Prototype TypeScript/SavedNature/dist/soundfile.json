@@ -21,6 +21,35 @@
 			"duration": 5,
 			"volume": 1,
 			"loop": 0
+		},
+		{
+			"name":"start",
+			"start": 0.5,
+			"duration": 5,
+			"volume": 1,
+			"loop": 0
+		},
+		{
+			"name":"background",
+			"start": 0,
+			"duration": 49,
+			"volume": 1,
+			"loop": 0
+		},
+		{
+			"name":"coin",
+			"start": 0,
+			"duration": 0.5,
+			"volume": 1,
+			"loop": 0
+		},
+		{
+			"name":"hover",
+			"start": 0,
+			"duration": 0.5,
+			"volume": 1,
+			"loop": 0
 		}
+	
 	]
 }

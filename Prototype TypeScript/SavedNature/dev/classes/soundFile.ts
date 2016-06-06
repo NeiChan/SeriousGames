@@ -67,5 +67,8 @@ class soundMarker{
         this.duration = duration;
         this.volume = volume;
         this.loop = loop;
+        
+        console.log(this.duration);
+        
     }
 }
