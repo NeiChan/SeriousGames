@@ -1,9 +1,11 @@
 class Coin extends GameObjects implements ICollidable, IDestructable {
         public hasCollision:boolean     = true;
         public hasDestructable:boolean  = true;
+        private _game:Game;
         
-        constructor(source) {
+        constructor(game:Game, source) {
             super(source);
+            this._game = game;
         }
 
         /**
@@ -20,6 +22,7 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
             // Doe iets wanneer er een collision is.
 
             // this.x = 0;
+            this._game._ui.updateScore(10);
         }
 
         public draw(): void {

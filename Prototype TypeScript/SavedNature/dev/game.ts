@@ -42,7 +42,7 @@ class Game {
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0});
         this._ui            = new UI({x: 50, y: 50});
-        this._generator     = new JunkGenerator(this.objectList);
+        this._generator     = new JunkGenerator(this, this.objectList);
         
         this._dObject       = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bObject       = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
@@ -50,7 +50,7 @@ class Game {
 
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
         this._bush          = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
-        this._goldCoin      = new Coin({imgSrc: goldCoinImg,  x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10});
+        this._goldCoin      = new Coin(this, {imgSrc: goldCoinImg,  x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10});
 
         this.objectList.push(this._background);
         this.objectList.push(this._goldCoin);
@@ -69,6 +69,8 @@ class Game {
     private draw()  : void {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
         
+        this._background.draw();
+        
         for(var obj of this.objectList) {
             obj.draw();
         }
@@ -81,9 +83,12 @@ class Game {
 
     private update() : void {
         // Aanroepen van update function
+        this._background.update();
+        
         for(var obj of this.objectList) {
             obj.update();
         }
+        
         this._generator.generateJunk();
         
         this._ui.update();

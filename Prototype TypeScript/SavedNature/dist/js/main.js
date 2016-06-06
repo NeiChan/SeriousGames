@@ -19,13 +19,13 @@ var Game = (function () {
         var goldCoinImg = this.assets.collectables.goldCoin;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
-        this._generator = new JunkGenerator(this.objectList);
+        this._generator = new JunkGenerator(this, this.objectList);
         this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
         this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
         this._bush = new testSubject({ imgSrc: bushImg, x: 150, y: 215, frameHeight: 145, frameWidth: 80 });
-        this._goldCoin = new Coin({ imgSrc: goldCoinImg, x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
+        this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
         this.objectList.push(this._background);
         this.objectList.push(this._goldCoin);
         this.objectList.push(this._bush);
@@ -39,6 +39,7 @@ var Game = (function () {
     Game.prototype.draw = function () {
         var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this._background.draw();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
             var obj = _a[_i];
             obj.draw();
@@ -47,6 +48,7 @@ var Game = (function () {
         requestAnimationFrame(function () { return _this.update(); });
     };
     Game.prototype.update = function () {
+        this._background.update();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
             var obj = _a[_i];
             obj.update();
@@ -424,7 +426,7 @@ var AssetsManager = (function () {
     return AssetsManager;
 }());
 var JunkGenerator = (function () {
-    function JunkGenerator(objList) {
+    function JunkGenerator(game, objList) {
         this.assets = new AssetsManager();
         this.minNumber = 1;
         this.maxNumber = 4;
@@ -435,6 +437,7 @@ var JunkGenerator = (function () {
         this.minPositionX = 1100;
         this.maxPositionX = 1150;
         this.objectList = objList;
+        this._game = game;
         console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
@@ -448,23 +451,25 @@ var JunkGenerator = (function () {
             var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             console.log(randomY);
+            var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 });
+            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
             switch (random) {
                 case 1:
                     console.log("Case 1 - Background Object");
-                    this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(bush);
                     break;
                 case 2:
-                    console.log("Case 2 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 }));
+                    console.log("Case 2 - Coin Object");
+                    this.objectList.push(coin);
                     break;
                 case 3:
                     console.log("Case 3 - Destructable Object");
-                    this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
+                    this.objectList.push(bush);
                     console.log("Case 3");
                     break;
                 case 4:
-                    console.log("Case 4 - Destructable Object");
-                    this.objectList.push(new DestructableObject({ imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 }));
+                    console.log("Case 4 - Coin Object");
+                    this.objectList.push(coin);
                     console.log("Case 4");
                     break;
             }
@@ -581,15 +586,17 @@ var BackgroundObject = (function (_super) {
 }(GameObjects));
 var Coin = (function (_super) {
     __extends(Coin, _super);
-    function Coin(source) {
+    function Coin(game, source) {
         _super.call(this, source);
         this.hasCollision = true;
         this.hasDestructable = true;
+        this._game = game;
     }
     Coin.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     Coin.prototype.onCollision = function (gameObject) {
+        this._game._ui.updateScore(10);
     };
     Coin.prototype.draw = function () {
         _super.prototype.Draw.call(this);
@@ -755,6 +762,8 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 0);
                 break;
             case 32:
+                break;
+            default:
                 break;
         }
     };

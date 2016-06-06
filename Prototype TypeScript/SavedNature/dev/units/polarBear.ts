@@ -82,6 +82,8 @@ class polarBear extends GameObjects implements ICollidable {
                 break;
             case 32: // SPACEBAR
                 break;
+            default:
+                break;    
         }
         
         // requestAnimationFrame( () => this.onKeyUp(event));
