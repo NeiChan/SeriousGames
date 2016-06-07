@@ -79,7 +79,9 @@ class SoundsManager{
     }
     
     protected parseJsonSounds(data: any) {
-        // console.log("onread aangeroepen");
+
+        console.log("onread aangeroepen");
+        console.log(data.markers.length);
         
         for (let i = 0;i<data.markers.length;i++){
             var obj = data.markers[i];

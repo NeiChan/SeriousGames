@@ -38,6 +38,7 @@ class Game {
 
     // constructor for Main
     constructor() {
+        
         // call createPlayer() function
         Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
@@ -80,6 +81,8 @@ class Game {
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
         content.appendChild(div);
+        
+        // Game.soundmanager.play('background');
 
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
