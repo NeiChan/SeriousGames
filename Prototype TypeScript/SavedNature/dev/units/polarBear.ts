@@ -9,6 +9,7 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
     public  myY:number = 0;
     private isMoving:boolean = false;
     private _game:Game;
+    private collidesWith:IHardObject;
     
     // private _ui : UI;
     
@@ -18,7 +19,6 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
         window.addEventListener("keydown", (e) => this.onKeyDown(e));
         window.addEventListener("keyup"  , (e) => this.onKeyUp(e));
         this._game = game;
-        console.log(game.objectList);
     }
 
     /**
@@ -29,54 +29,11 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
     getBounds():Rectangle {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
-
-    onCollision(gameObject:IHardObject) {
-        
-        this.hasCollision = true;
-        
-        if(this.startCollisionPos === 0){
-            this.startCollisionPos = gameObject.getX();
-            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
-            // console.log(this.endCollisionPos);
-        }
-        
-        if(gameObject instanceof crate){
-            this.onCollisionEnter(gameObject);
-            // console.log("done"); 
-        } 
-    }
-    
-    public onCollisionEnter(gameObject: IHardObject) :void{
-        var y = gameObject.getY();
-        // console.log(y);
-        
-        var newY = y - 45;
-        super.setY(newY);          
-    }
-    
-    public onCollisionExit() : void{
-        super.setY(260);
-        this.hasCollision = false;
-        // console.log("not done");
-    }
-    
-    public getY():number{
-        return super.getY();
-    }
-    
-    public getX():number{
-        return super.getX();
-    }
-    
-    public getObjectWidth() : number{
-        return super.getFrameWidth();
-    }
     
     private onKeyDown(event:KeyboardEvent):void {
         switch(event.keyCode){
             case 39: // RIGHT
                 super.changeY(0);
-                super.changeX(1);
                 super.changeAnimationY(0);
                 this.isMoving = true;
                 // Update the Score from the UI in game
@@ -109,7 +66,6 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
         switch(event.keyCode){
             case 88: // UP
                 super.changeY(0);
-                super.changeX(0);
                 super.changeAnimationY(0);
                 this.isMoving = false;
                 break;
@@ -145,7 +101,7 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
         var posY = 0;
 
         posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
-        posY = -posY * 2;
+        posY = -posY * 5;
 
         super.updateY(posY);
 
@@ -162,6 +118,17 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
     }
 
     public update() : void{
+        
+        
+        // for(var obj of this._game.objectList){
+        //      if(obj === this){
+        //         var l = this._game.objectList[obj];
+        //         console.log(l)
+        //         // this.objectList.unshift(l);
+        //     }
+        // }
+        
+        super.setX(25);
         if(this._isJumping === 1){
             this.jump();
         } else {
@@ -186,10 +153,6 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
         // }
 
         super.move();
-        
-        // console.log(super.getX());
-        
-        
     }
     
     private updateUIScore(points):void{
@@ -207,5 +170,49 @@ class polarBear extends GameObjects implements ICollidable, IHardObject {
                 obj.changeMovementX(speedX);
             }
         }
+    }
+    
+    onCollision(gameObject:IHardObject) {
+        this.isMoving
+        
+        this.hasCollision = true;
+        this.collidesWith = gameObject;
+        
+        if(this.startCollisionPos === 0){
+            this.startCollisionPos = gameObject.getX();
+            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
+            // console.log(this.endCollisionPos);
+        }
+        
+        //if(gameObject instanceof crate){
+        this.onCollisionEnter(gameObject);
+            // console.log("done"); 
+        //} 
+    }
+    
+    public onCollisionEnter(gameObject: IHardObject) :void{
+        var y = gameObject.getY();
+        // console.log(y);
+        
+        var newY = y - 45;
+        super.setY(newY);          
+    }
+    
+    public onCollisionExit() : void{
+        super.setY(260);
+        this.hasCollision = false;
+        // console.log("not done");
+    }
+    
+    public getY():number{
+        return super.getY();
+    }
+    
+    public getX():number{
+        return super.getX();
+    }
+    
+    public getObjectWidth() : number{
+        return super.getFrameWidth();
     }
 }

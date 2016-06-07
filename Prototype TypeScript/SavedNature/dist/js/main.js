@@ -7,7 +7,7 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this.assets = new AssetsManager();
-        this.objectList = [];
+        this.objectList = new Array();
         Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
@@ -50,7 +50,6 @@ var Game = (function () {
             obj.draw();
         }
         this._ui.draw();
-        this._bear.draw();
         requestAnimationFrame(function () { return _this.update(); });
     };
     Game.prototype.update = function () {
@@ -61,7 +60,6 @@ var Game = (function () {
         }
         this._generator.generateJunk();
         this._ui.update();
-        this._bear.draw();
         this.checkCollisions();
         this.moveWorld();
         if (this._ui.getScore() > 250) {
@@ -87,24 +85,14 @@ var Game = (function () {
             }
         }
         for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
-            var obj1 = GO_collidables_1[_b];
-            var hit = false;
-            for (var _c = 0, GO_collidables_2 = GO_collidables; _c < GO_collidables_2.length; _c++) {
-                var obj2 = GO_collidables_2[_c];
-                if (obj1 != obj2) {
-                    var obj1Bounds = obj1.getBounds();
-                    var obj2Bounds = obj2.getBounds();
-                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                        obj1.onCollision(obj2);
-                        obj2.onCollision(obj1);
-                        this.checkDestructable(obj1, this.objectList);
-                        this.checkDestructable(obj2, this.objectList);
-                        hit = true;
-                    }
+            var obj2 = GO_collidables_1[_b];
+            if (this._bear != obj2) {
+                var obj1Bounds = this._bear.getBounds();
+                var obj2Bounds = obj2.getBounds();
+                if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                    this._bear.onCollision(obj2);
+                    this.checkDestructable(this._bear, this.objectList);
                 }
-            }
-            if (hit) {
-                break;
             }
         }
     };
@@ -124,6 +112,7 @@ window.addEventListener("load", function () {
 });
 var Menu = (function () {
     function Menu() {
+        var _this = this;
         this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
@@ -137,8 +126,16 @@ var Menu = (function () {
         this.btnStart.innerHTML = "Start";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnHighscores.addEventListener("click", function () { return _this.soundmanager.play("game_over"); });
         this.btnStart.addEventListener("click", this.removeMenu);
+        utility.addSoundEvent(this.btnStart, "game_over");
+        var sound = new Howl({
+            urls: ["sound/game_over.ogg"],
+            sprite: {
+                blast: [0, 2000],
+            }
+        });
+        sound.play('blast');
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
@@ -209,6 +206,9 @@ var GameObjects = (function () {
     };
     GameObjects.prototype.setY = function (int) {
         this.y = int;
+    };
+    GameObjects.prototype.setX = function (int) {
+        this.x = int;
     };
     GameObjects.prototype.changeMovementX = function (int) {
         this.x = this.x + this.speed * this.directionX + int;
@@ -483,16 +483,16 @@ var JunkGenerator = (function () {
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
             switch (random) {
                 case 1:
-                    this.objectList.push(bush);
+                    this.objectList.unshift(bush);
                     break;
                 case 2:
-                    this.objectList.push(coin);
+                    this.objectList.unshift(coin);
                     break;
                 case 3:
-                    this.objectList.push(bush);
+                    this.objectList.unshift(bush);
                     break;
                 case 4:
-                    this.objectList.push(coin);
+                    this.objectList.unshift(coin);
                     break;
             }
             this.counter = 0;
@@ -773,44 +773,14 @@ var polarBear = (function (_super) {
         window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
         window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
         this._game = game;
-        console.log(game.objectList);
     }
     polarBear.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    polarBear.prototype.onCollision = function (gameObject) {
-        this.hasCollision = true;
-        if (this.startCollisionPos === 0) {
-            this.startCollisionPos = gameObject.getX();
-            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
-        }
-        if (gameObject instanceof crate) {
-            this.onCollisionEnter(gameObject);
-        }
-    };
-    polarBear.prototype.onCollisionEnter = function (gameObject) {
-        var y = gameObject.getY();
-        var newY = y - 45;
-        _super.prototype.setY.call(this, newY);
-    };
-    polarBear.prototype.onCollisionExit = function () {
-        _super.prototype.setY.call(this, 260);
-        this.hasCollision = false;
-    };
-    polarBear.prototype.getY = function () {
-        return _super.prototype.getY.call(this);
-    };
-    polarBear.prototype.getX = function () {
-        return _super.prototype.getX.call(this);
-    };
-    polarBear.prototype.getObjectWidth = function () {
-        return _super.prototype.getFrameWidth.call(this);
     };
     polarBear.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
             case 39:
                 _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 1);
                 _super.prototype.changeAnimationY.call(this, 0);
                 this.isMoving = true;
                 break;
@@ -835,7 +805,6 @@ var polarBear = (function (_super) {
         switch (event.keyCode) {
             case 88:
                 _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);
                 this.isMoving = false;
                 break;
@@ -859,7 +828,7 @@ var polarBear = (function (_super) {
         this._jumpTimer += 0.1;
         var posY = 0;
         posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
-        posY = -posY * 2;
+        posY = -posY * 5;
         _super.prototype.updateY.call(this, posY);
         if (this._jumpTimer >= 4.5) {
             this._isJumping = 0;
@@ -871,6 +840,7 @@ var polarBear = (function (_super) {
     polarBear.prototype.wait = function () {
     };
     polarBear.prototype.update = function () {
+        _super.prototype.setX.call(this, 25);
         if (this._isJumping === 1) {
             this.jump();
         }
@@ -901,6 +871,34 @@ var polarBear = (function (_super) {
                 obj.changeMovementX(speedX);
             }
         }
+    };
+    polarBear.prototype.onCollision = function (gameObject) {
+        this.isMoving;
+        this.hasCollision = true;
+        this.collidesWith = gameObject;
+        if (this.startCollisionPos === 0) {
+            this.startCollisionPos = gameObject.getX();
+            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
+        }
+        this.onCollisionEnter(gameObject);
+    };
+    polarBear.prototype.onCollisionEnter = function (gameObject) {
+        var y = gameObject.getY();
+        var newY = y - 45;
+        _super.prototype.setY.call(this, newY);
+    };
+    polarBear.prototype.onCollisionExit = function () {
+        _super.prototype.setY.call(this, 260);
+        this.hasCollision = false;
+    };
+    polarBear.prototype.getY = function () {
+        return _super.prototype.getY.call(this);
+    };
+    polarBear.prototype.getX = function () {
+        return _super.prototype.getX.call(this);
+    };
+    polarBear.prototype.getObjectWidth = function () {
+        return _super.prototype.getFrameWidth.call(this);
     };
     return polarBear;
 }(GameObjects));

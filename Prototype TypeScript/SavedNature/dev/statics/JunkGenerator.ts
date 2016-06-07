@@ -45,24 +45,24 @@ class JunkGenerator {
             switch(random){
                 case 1:
                     // console.log("Case 1 - Background Object");
-                    this.objectList.push(bush);
+                    this.objectList.unshift(bush);
                 break;
                 
                 case 2:
                     // console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.objectList.unshift(coin);
                     // console.log("Case 2 - Background Object");
                     // this.objectList.push(new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 }));
                 break;
                 
                 case 3:
                     // console.log("Case 3 - Destructable Object");
-                    this.objectList.push(bush);
+                    this.objectList.unshift(bush);
                 break;
                 
                 case 4:
                     // console.log("Case 4 - Coin Object");
-                    this.objectList.push(coin);
+                    this.objectList.unshift(coin);
                 break;
             }
             

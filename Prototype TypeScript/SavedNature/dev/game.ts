@@ -5,7 +5,18 @@ class Game {
 
     static soundmanager      : SoundsManager;
 
-    public objectList:any = [];
+    //public objectList:Array<GameObjects> = new Array<GameObjects>();
+    
+    public objectList:Array<ICollidable> = new Array<ICollidable>();
+    
+    //public objectList:any = [];
+    
+    // array BG items (parallax)
+    
+    
+    // array FG items - toevoegen met unshift
+    
+    
 
     // Get class player
     private _background  : Background;
@@ -85,7 +96,7 @@ class Game {
         
         this._ui.draw();
 
-        this._bear.draw();
+        // this._bear.draw();
         
         requestAnimationFrame(() => this.update());
     }
@@ -103,7 +114,7 @@ class Game {
         
         this._ui.update();
         
-        this._bear.draw();
+        // this._bear.update();
 
         this.checkCollisions();
         this.moveWorld();
@@ -127,7 +138,7 @@ class Game {
 
     private checkCollisions() : void {
         let GO_collidables = new Array<ICollidable>();
-
+        
         //**
         //* Everything that has ICollidable needs to be pushed into GO_collidables
         //* hasCollision :boolean comes from ICollidable and needs to be given in object.
@@ -141,30 +152,30 @@ class Game {
         //**
         //* Loop through GO_collidables to do a function and check for collisions
 
-        for(var obj1 of GO_collidables){
-            let hit:boolean = false;
+        // for(var obj1 of GO_collidables){
+            //let hit:boolean = false;
 
             for(var obj2 of GO_collidables){
-                if(obj1 != obj2){
-                    let obj1Bounds = obj1.getBounds();
+                if(this._bear != obj2){
+                    let obj1Bounds = this._bear.getBounds();
                     let obj2Bounds = obj2.getBounds();
 
                     if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
-                        obj1.onCollision(obj2);
-                        obj2.onCollision(obj1);
+                        this._bear.onCollision(obj2);
+                        //obj2.onCollision(obj1);
                         // if obj2 gelijk is aan objectList
 
                         // check on hasDestructable
-                        this.checkDestructable(obj1, this.objectList);
-                        this.checkDestructable(obj2, this.objectList);
-                        hit = true;
+                        this.checkDestructable(this._bear, this.objectList);
+                        //this.checkDestructable(obj2, this.objectList);
+                       // hit = true;
                     }
                 }
-            }
+            // }
 
-            if(hit){
-                break;
-            }
+           // if(hit){
+             //   break;
+           // }
         }
     }
     

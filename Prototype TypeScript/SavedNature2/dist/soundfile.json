@@ -1,0 +1,26 @@
+{
+	"markers": [
+       
+		{
+			"name":"game_over",
+			"start": 0,
+			"duration": 5,
+			"volume": 1,
+			"loop": 0
+		},
+		{
+			"name":"new_highscore",
+			"start": 0,
+			"duration": 5,
+			"volume": 1,
+			"loop": 0
+		},
+		{
+			"name":"go",
+			"start": 0,
+			"duration": 5,
+			"volume": 1,
+			"loop": 0
+		}
+	]
+}

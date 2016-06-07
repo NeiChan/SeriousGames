@@ -1,3 +1,4 @@
+/// <reference path="../typings/howler.d.ts"/>
 class Menu {
     private btnStart: HTMLElement;
     private btnHighscores: HTMLElement;
@@ -28,17 +29,31 @@ class Menu {
         this.btnHighscores.innerHTML = "Highscores";
 
         // Add click events.
-        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        // this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnHighscores.addEventListener("click", () => this.soundmanager.play("game_over"));
         this.btnStart.addEventListener("click", this.removeMenu);
-
+        utility.addSoundEvent(this.btnStart, "game_over");
+        
+        
+        var sound = new Howl({
+                urls: ["sound/game_over.ogg"],
+                sprite: {
+                    blast: [0, 2000],
+                }
+            });
+            
+        sound.play('blast');
+        
+        
         // Append to the body
         var content = document.getElementById('content');
-
+        
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
+        
 
         // Make sound when clicking on button start
         // this.btnStart.addEventListener('click', () => this.soundmanager.play('go'));
