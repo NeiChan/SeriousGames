@@ -7,28 +7,34 @@ var Game = (function () {
     function Game() {
         var _this = this;
         this.assets = new AssetsManager();
-        this.WorldSpeed = 5;
         this.objectList = new Array();
-        this.BGList = new Array();
         Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         this.context.save();
         this.context.scale(1.8, 1.8);
-        var backgroundImg = this.assets.greenBG4;
-        var bearImg = this.assets.polarbear2;
+        var backgroundImg = this.assets.greenBG;
+        var bearImg = this.assets.polarbear;
         var bushImg = this.assets.desObjects.Bush1;
         var goldCoinImg = this.assets.collectables.goldCoin;
         var crateImg = this.assets.desObjects.Crate;
-        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this);
+        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0 });
         this._ui = new UI({ x: 50, y: 50 });
-        this._generator = new JunkGenerator(this, this.objectList, this.BGList);
-        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 330, frameHeight: 145, frameWidth: 80 }, 7, this);
-        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._generator = new JunkGenerator(this, this.objectList);
+        this._hardobj = new crate(this, { imgSrc: crateImg, x: 150, y: 215, frameHeight: 101, frameWidth: 101 });
+        this._hardobj2 = new crate(this, { imgSrc: crateImg, x: 450, y: 215, frameHeight: 101, frameWidth: 101 });
+        this._dObject = new DestructableObject({ imgSrc: bushImg, x: 150, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._cObject = new CollidableObject({ imgSrc: bushImg, x: 450, y: 530, frameHeight: 145, frameWidth: 80 });
+        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 260, speed: 3 });
         this._bush = new testSubject({ imgSrc: bushImg, x: 350, y: 215, frameHeight: 145, frameWidth: 80 });
-        this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3 });
-        this.BGList.push(this._background);
-        this.BGList.push(this._bObject);
+        this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 270, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
+        this.objectList.push(this._background);
+        this.objectList.push(this._goldCoin);
+        this.objectList.push(this._bush);
+        this.objectList.push(this._hardobj);
+        this.objectList.push(this._hardobj2);
+        this.objectList.push(this._bear);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
@@ -38,72 +44,56 @@ var Game = (function () {
     Game.prototype.draw = function () {
         var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (var _i = 0, _a = this.BGList; _i < _a.length; _i++) {
-            var obj2 = _a[_i];
-            obj2.draw();
-        }
-        for (var _b = 0, _c = this.objectList; _b < _c.length; _b++) {
-            var obj = _c[_b];
-            obj.Draw();
+        this._background.draw();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.draw();
         }
         this._ui.draw();
-        this._bear.draw();
         requestAnimationFrame(function () { return _this.update(); });
     };
     Game.prototype.update = function () {
-        this._generator.generateJunk();
+        this._background.update();
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
             var obj = _a[_i];
-            obj.Update();
+            obj.update();
         }
-        for (var _b = 0, _c = this.BGList; _b < _c.length; _b++) {
-            var obj2 = _c[_b];
-            obj2.update();
-        }
+        this._generator.generateJunk();
         this._ui.update();
-        this._bear.update();
         this.checkCollisions();
+        this.moveWorld();
         if (this._ui.getScore() > 250) {
             this._background.changeBackground(this.assets.desBG);
         }
         this.draw();
     };
-    Game.prototype.checkCollisions = function () {
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj2 = _a[_i];
-            for (var _b = 0, _c = this.objectList; _b < _c.length; _b++) {
-                var obj = _c[_b];
-                if (obj instanceof bullet || obj2 instanceof bullet) {
-                    var obj1Bounds = obj2.getBounds();
-                    var obj2Bounds = obj.getBounds();
-                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                        obj2.onCollision(obj);
-                        obj.onCollision(obj2);
-                    }
-                }
+    Game.prototype.moveWorld = function () {
+        if (this._bear.getMoving()) {
+            for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                obj.changeMovementX(-5);
             }
-        }
-        for (var _d = 0, _e = this.objectList; _d < _e.length; _d++) {
-            var obj = _e[_d];
-            var obj1Bounds = this._bear.getBounds();
-            var obj2Bounds = obj.getBounds();
-            if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
-                this._bear.onCollision(obj);
-                obj.onCollision(this._bear);
-            }
+            this._ui.updateScore(1);
         }
     };
-    Game.prototype.deleteGO = function (obj, obj2) {
-        if (obj) {
-            var index = this.objectList.indexOf(obj);
-            this.objectList.splice(index, 1);
+    Game.prototype.checkCollisions = function () {
+        var GO_collidables = new Array();
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj.hasCollision) {
+                GO_collidables.push(obj);
+            }
         }
-        else if (obj2) {
-            var index = this.BGList.indexOf(obj2);
-            this.BGList.splice(index, 1);
-        }
-        else {
-            console.log("not true shit");
+        for (var _b = 0, GO_collidables_1 = GO_collidables; _b < GO_collidables_1.length; _b++) {
+            var obj2 = GO_collidables_1[_b];
+            if (this._bear != obj2) {
+                var obj1Bounds = this._bear.getBounds();
+                var obj2Bounds = obj2.getBounds();
+                if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                    this._bear.onCollision(obj2);
+                    this.checkDestructable(this._bear, this.objectList);
+                }
+            }
         }
     };
     Game.prototype.checkDestructable = function (currentObj, listObjects) {
@@ -114,12 +104,6 @@ var Game = (function () {
                 return listObjects.splice(index, 1);
             }
         }
-    };
-    Game.prototype.getWorldSpeed = function () {
-        return this.WorldSpeed;
-    };
-    Game.prototype.setWorldSpeed = function (int) {
-        this.WorldSpeed = int;
     };
     return Game;
 }());
@@ -142,8 +126,11 @@ var Menu = (function () {
         this.btnStart.innerHTML = "Start";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", function () { return _this.showLeaderboards(); });
-        this.btnStart.addEventListener("click", this.removeMenu);
+        this.btnHighscores.addEventListener("click", this.showLeaderboards);
+        this.btnStart.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnHighscores.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnClose.addEventListener("mouseover", function () { return _this.soundmanager.play('hover'); });
+        this.btnStart.addEventListener("click", this.startEvent.bind(this));
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
@@ -151,6 +138,11 @@ var Menu = (function () {
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
     }
+    Menu.prototype.startEvent = function () {
+        this.soundmanager.play('start');
+        this.removeMenu.bind(this)();
+        this.main = new Game();
+    };
     Menu.prototype.showLeaderboards = function () {
         window.location.href = "leaderboard.php";
     };
@@ -159,63 +151,11 @@ var Menu = (function () {
         document.getElementById("btnStart").remove();
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
+        this.soundmanager.play("background");
+        console.log(this.soundmanager);
         document.body.style.backgroundImage = "";
-        this.main = new Game();
     };
     return Menu;
-}());
-var bgObjects = (function () {
-    function bgObjects(source, speed, game) {
-        this.speed = 1;
-        this.speedOffset = 0;
-        this.timer = 0;
-        this.directionX = 0;
-        this.directionY = 0;
-        this.currentFrame = 0;
-        this.maxFrame = 0;
-        this.frameWidth = 0;
-        this.frameHeight = 0;
-        this.animationY = 0;
-        this.animationSpeed = 0;
-        this.init(source);
-        if (speed) {
-            this.speedOffset = speed;
-        }
-        this.game = game;
-        this.createCanvasElement();
-    }
-    bgObjects.prototype.init = function (source) {
-        utility.CopyProperties(source, this);
-    };
-    bgObjects.prototype.createCanvasElement = function () {
-        var canvas = document.getElementsByTagName("canvas")[0];
-        this.context = canvas.getContext('2d');
-        this.image = new Image();
-        this.image.src = this.imgSrc;
-    };
-    bgObjects.prototype.changeSpeed = function (int) {
-        this.speed = int;
-    };
-    bgObjects.prototype.update = function () {
-        this.x = this.x + (this.game.WorldSpeed * -(this.speed * this.speedOffset));
-    };
-    bgObjects.prototype.getX = function () {
-        return this.x;
-    };
-    bgObjects.prototype.setX = function (int) {
-        this.x = int;
-    };
-    bgObjects.prototype.draw = function () {
-        this.timer++;
-        if (this.timer % this.animationSpeed == 0) {
-            this.currentFrame++;
-        }
-        if (this.currentFrame > this.maxFrame) {
-            this.currentFrame = 0;
-        }
-        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    return bgObjects;
 }());
 var GameObjects = (function () {
     function GameObjects(source) {
@@ -274,9 +214,6 @@ var GameObjects = (function () {
     GameObjects.prototype.changeMovementX = function (int) {
         this.x = this.x + this.speed * this.directionX + int;
     };
-    GameObjects.prototype.getFrameHeight = function () {
-        return this.frameHeight;
-    };
     GameObjects.prototype.getFrameWidth = function () {
         return this.frameWidth;
     };
@@ -329,12 +266,6 @@ var Rectangle = (function () {
         this.width = w;
         this.height = h;
     }
-    Rectangle.prototype.leftCollision = function (rec) {
-        return (this.x < rec.x);
-    };
-    Rectangle.prototype.topCollision = function (rec) {
-        return (this.y > rec.y);
-    };
     Rectangle.prototype.hitsOtherRectangle = function (rec) {
         return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);
     };
@@ -406,13 +337,13 @@ var soundMarker = (function () {
         this.duration = duration;
         this.volume = volume;
         this.loop = loop;
+        console.log(this.duration);
     }
     return soundMarker;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
         this.polarbear = "images/polarbear/spritesheet.png";
-        this.polarbear2 = "images/polarbear/spritesheet3.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -453,9 +384,6 @@ var AssetsManager = (function () {
             StoneBlock: this.desertBase + "Objects/StoneBlock.png",
         };
         this.greenBG = this.greenBase + "BG2.png";
-        this.greenBG2 = this.greenBase + "menu_background2.png";
-        this.greenBG3 = this.greenBase + "BG3.png";
-        this.greenBG4 = this.greenBase + "BG4.png";
         this.greenTiles = [
             this.greenBase + "Tiles/1.png",
             this.greenBase + "Tiles/2.png",
@@ -529,10 +457,10 @@ var AssetsManager = (function () {
     return AssetsManager;
 }());
 var JunkGenerator = (function () {
-    function JunkGenerator(game, objList, bglist) {
+    function JunkGenerator(game, objList) {
         this.assets = new AssetsManager();
         this.minNumber = 1;
-        this.maxNumber = 9;
+        this.maxNumber = 4;
         this.counter = 0;
         this.updateTimout = 60;
         this.minPositionY = 185;
@@ -540,16 +468,11 @@ var JunkGenerator = (function () {
         this.minPositionX = 1100;
         this.maxPositionX = 1150;
         this.objectList = objList;
-        this.BGList = bglist;
         this._game = game;
         console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
         var random = Math.floor(Math.random() * (max - min + 1) + min);
-        return random;
-    };
-    JunkGenerator.prototype.getRandomFloat = function (range) {
-        var random = (Math.random() * range) + 0.2;
         return random;
     };
     JunkGenerator.prototype.generateJunk = function () {
@@ -558,38 +481,20 @@ var JunkGenerator = (function () {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
             var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
-            var crateImg = this.assets.desObjects.Crate;
-            var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, this.getRandomFloat(1.05), this._game);
-            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
-            var Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 80 });
+            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10 });
             switch (random) {
                 case 1:
-                    this.objectList.push(coin);
+                    this.objectList.unshift(bush);
                     break;
                 case 2:
-                    console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.objectList.unshift(coin);
                     break;
                 case 3:
-                    this.BGList.push(bush);
+                    this.objectList.unshift(bush);
                     break;
                 case 4:
-                    this.objectList.push(coin);
-                    break;
-                case 5:
-                    this.objectList.push(Crate);
-                    break;
-                case 6:
-                    this.objectList.push(coin);
-                    break;
-                case 7:
-                    this.BGList.push(bush);
-                    break;
-                case 8:
-                    this.BGList.push(bush);
-                    break;
-                case 9:
-                    this.objectList.push(Crate);
+                    this.objectList.unshift(coin);
                     break;
             }
             this.counter = 0;
@@ -643,6 +548,8 @@ var SoundsManager = (function () {
         marker_xhr.send();
     };
     SoundsManager.prototype.parseJsonSounds = function (data) {
+        console.log("onread aangeroepen");
+        console.log(data.markers.length);
         for (var i = 0; i < data.markers.length; i++) {
             var obj = data.markers[i];
             var markers = obj;
@@ -669,59 +576,35 @@ var SoundsManager = (function () {
 }());
 var Background = (function (_super) {
     __extends(Background, _super);
-    function Background(source, speed, game) {
-        _super.call(this, source, speed, game);
+    function Background(source) {
+        _super.call(this, source);
     }
     Background.prototype.draw = function () {
-        _super.prototype.draw.call(this);
+        this.context.drawImage(this.image, this.x, this.y);
     };
     Background.prototype.update = function () {
-        _super.prototype.update.call(this);
-        if (_super.prototype.getX.call(this) + this.image.x < -623) {
-            _super.prototype.setX.call(this, 0);
+        if (this.x + this.image.x < 0) {
+            this.x = 0;
         }
     };
     Background.prototype.changeBackground = function (image) {
+        _super.prototype.newImage.call(this, image);
     };
     return Background;
-}(bgObjects));
+}(GameObjects));
 var BackgroundObject = (function (_super) {
     __extends(BackgroundObject, _super);
-    function BackgroundObject(source, speed, _game) {
-        _super.call(this, source, speed, _game);
-        this._game = _game;
+    function BackgroundObject(source) {
+        _super.call(this, source);
     }
     BackgroundObject.prototype.draw = function () {
-        _super.prototype.draw.call(this);
+        this.context.drawImage(this.image, this.x, this.y);
     };
     BackgroundObject.prototype.wait = function () {
     };
     BackgroundObject.prototype.update = function () {
-        _super.prototype.update.call(this);
-        if (_super.prototype.getX.call(this) <= 0) {
-            this._game.deleteGO(null, this);
-        }
     };
     return BackgroundObject;
-}(bgObjects));
-var bullet = (function (_super) {
-    __extends(bullet, _super);
-    function bullet(game, source) {
-        _super.call(this, source);
-        this.game = game;
-    }
-    bullet.prototype.onCollision = function (gameObject) {
-    };
-    bullet.prototype.getBounds = function () {
-        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    bullet.prototype.Update = function () {
-        this.x = this.x + 10;
-        if (this.x >= 1500) {
-            this.game.deleteGO(this);
-        }
-    };
-    return bullet;
 }(GameObjects));
 var Coin = (function (_super) {
     __extends(Coin, _super);
@@ -736,24 +619,11 @@ var Coin = (function (_super) {
     };
     Coin.prototype.onCollision = function (gameObject) {
         this._game._ui.updateScore(10);
-        var sound = new Howl({
-            urls: ["sound/mario1up.mp3"],
-            volume: 0.4,
-            sprite: {
-                blast: [0, 2000],
-            }
-        });
-        sound.play('blast');
-        this._game.deleteGO(this, null);
     };
     Coin.prototype.draw = function () {
         _super.prototype.Draw.call(this);
     };
-    Coin.prototype.Update = function () {
-        this.x = this.x - this._game.getWorldSpeed();
-        if (this.x <= 0) {
-            this._game.deleteGO(this);
-        }
+    Coin.prototype.update = function () {
     };
     return Coin;
 }(GameObjects));
@@ -782,32 +652,15 @@ var crate = (function (_super) {
     function crate(game, source) {
         _super.call(this, source);
         this.hasCollision = true;
-        this.game = game;
+        this.startCollisionPos = 0;
+        this.endCollisionPos = 0;
     }
     crate.prototype.getBounds = function () {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     };
     crate.prototype.onCollision = function (gameObject) {
         this.hasCollision = true;
-        if (this.bearJump === true) {
-            this.game.setWorldSpeed(5);
-        }
-        else if (gameObject instanceof bullet) {
-            this.game.setWorldSpeed(5);
-        }
-        else {
-        }
-        if (gameObject instanceof bullet) {
-            this.game.deleteGO(this);
-            var sound = new Howl({
-                urls: ["sound/go.ogg"],
-                volume: 0.4,
-                sprite: {
-                    blast: [0, 2000],
-                }
-            });
-            sound.play('blast');
-        }
+        this.onCollisionEnter(gameObject);
     };
     crate.prototype.getY = function () {
         return _super.prototype.getY.call(this);
@@ -815,17 +668,16 @@ var crate = (function (_super) {
     crate.prototype.getObjectWidth = function () {
         return _super.prototype.getFrameWidth.call(this);
     };
+    crate.prototype.onCollisionEnter = function (gameObject) {
+    };
     crate.prototype.onCollisionExit = function () {
         this.hasCollision = false;
     };
-    crate.prototype.Update = function () {
-        this.x = this.x - this.game.getWorldSpeed();
+    crate.prototype.update = function () {
+        _super.prototype.Update.call(this);
     };
     crate.prototype.draw = function () {
         _super.prototype.Draw.call(this);
-    };
-    crate.prototype.bearJumps = function (bool) {
-        this.bearJump = bool;
     };
     return crate;
 }(GameObjects));
@@ -915,8 +767,7 @@ var polarBear = (function (_super) {
     function polarBear(game, source) {
         var _this = this;
         _super.call(this, source);
-        this.asset = new AssetsManager();
-        this._isJumping = false;
+        this._isJumping = 0;
         this._jumpTimer = 2.39645;
         this.hasCollision = true;
         this.startCollisionPos = 0;
@@ -934,20 +785,8 @@ var polarBear = (function (_super) {
         switch (event.keyCode) {
             case 39:
                 _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 1);
                 _super.prototype.changeAnimationY.call(this, 0);
                 this.isMoving = true;
-                this._game.setWorldSpeed(5);
-                break;
-            case 37:
-                _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, -1);
-                _super.prototype.changeAnimationY.call(this, 2);
-                this.isMoving = true;
-                this._game.setWorldSpeed(2);
-                break;
-            case 70:
-                this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
                 break;
             case 88:
                 _super.prototype.changeY.call(this, 0);
@@ -955,20 +794,13 @@ var polarBear = (function (_super) {
                 _super.prototype.changeAnimationY.call(this, 1);
                 break;
             case 32:
-                if (this._isJumping === true) {
+                if (this._isJumping === 1) {
                     console.log('already jumping');
                 }
                 else {
-                    this._isJumping = true;
+                    this._isJumping = 1;
                     this.myY = _super.prototype.getY.call(this);
-                    var sound = new Howl({
-                        urls: ["sound/jumpsound.mp3"],
-                        volume: 0.2,
-                        sprite: {
-                            blast: [0, 2000],
-                        }
-                    });
-                    sound.play('blast');
+                    console.log("Y before jump =" + _super.prototype.getY.call(this));
                 }
                 break;
         }
@@ -978,12 +810,6 @@ var polarBear = (function (_super) {
             case 88:
                 _super.prototype.changeY.call(this, 0);
                 _super.prototype.changeAnimationY.call(this, 0);
-                this.isMoving = false;
-                break;
-            case 37:
-                _super.prototype.changeY.call(this, 0);
-                _super.prototype.changeX.call(this, 0);
-                _super.prototype.changeAnimationY.call(this, 2);
                 this.isMoving = false;
                 break;
             case 39:
@@ -1002,7 +828,6 @@ var polarBear = (function (_super) {
         _super.prototype.Draw.call(this);
     };
     polarBear.prototype.jump = function () {
-        this._game.setWorldSpeed(5);
         var self = this;
         this._jumpTimer += 0.1;
         var posY = 0;
@@ -1010,36 +835,32 @@ var polarBear = (function (_super) {
         posY = -posY * 5;
         _super.prototype.updateY.call(this, posY);
         if (this._jumpTimer >= 4.5) {
-            this._isJumping = false;
+            this._isJumping = 0;
             this._jumpTimer = 2.39645;
+            _super.prototype.setY.call(this, this.myY);
             console.log("y after jump =" + _super.prototype.getY.call(this));
         }
     };
     polarBear.prototype.wait = function () {
     };
     polarBear.prototype.update = function () {
-        if (this.currentCollision) {
-            this.currentCollision.bearJumps(this._isJumping);
-        }
-        if (this.hasCollision) {
-        }
-        else {
-            _super.prototype.setY.call(this, 240);
-        }
-        _super.prototype.move.call(this);
-        if (this._isJumping === true) {
+        _super.prototype.setX.call(this, 25);
+        if (this._isJumping === 1) {
             this.jump();
         }
         else {
             for (var _i = 0, _a = this._game.objectList; _i < _a.length; _i++) {
                 var obj = _a[_i];
-                if (obj instanceof crate) {
-                    if (obj.getX() <= _super.prototype.getX.call(this)) {
-                        _super.prototype.setY.call(this, 240);
+                if (obj != this) {
+                    if (obj instanceof crate) {
+                        if (obj.getX() <= -75) {
+                            _super.prototype.setY.call(this, 260);
+                        }
                     }
                 }
             }
         }
+        _super.prototype.move.call(this);
     };
     polarBear.prototype.updateUIScore = function (points) {
         this._game._ui.updateScore(points);
@@ -1047,35 +868,32 @@ var polarBear = (function (_super) {
     polarBear.prototype.getMoving = function () {
         return this.isMoving;
     };
+    polarBear.prototype.changeAllObjectsMovementX = function (speedX) {
+        for (var _i = 0, _a = this._game.objectList; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            if (obj != this) {
+                obj.changeMovementX(speedX);
+            }
+        }
+    };
     polarBear.prototype.onCollision = function (gameObject) {
         this.isMoving;
         this.hasCollision = true;
-        this.checkObj(gameObject);
-    };
-    polarBear.prototype.checkObj = function (gameObject) {
-        if (gameObject instanceof crate) {
-            var y = gameObject.getY();
-            this.currentCollision = gameObject;
-            var crateWidth = gameObject.getFrameWidth();
-            var crateHeight = gameObject.getFrameHeight();
-            var polarBounds = this.getBounds();
-            var crateBounds = gameObject.getBounds();
-            var count = 0;
-            var onTop = 0;
-            if (polarBounds.leftCollision(crateBounds)) {
-                console.log("left collision");
-                this._game.setWorldSpeed(0);
-            }
-            else if (polarBounds.topCollision(crateBounds)) {
-                console.log("top collision");
-                var onTop_1 = crateBounds.y - (crateBounds.height / 2.8);
-                this.y = onTop_1;
-                this._game.setWorldSpeed(2);
-            }
-            else {
-                this.hasCollision = false;
-            }
+        this.collidesWith = gameObject;
+        if (this.startCollisionPos === 0) {
+            this.startCollisionPos = gameObject.getX();
+            this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
         }
+        this.onCollisionEnter(gameObject);
+    };
+    polarBear.prototype.onCollisionEnter = function (gameObject) {
+        var y = gameObject.getY();
+        var newY = y - 45;
+        _super.prototype.setY.call(this, newY);
+    };
+    polarBear.prototype.onCollisionExit = function () {
+        _super.prototype.setY.call(this, 260);
+        this.hasCollision = false;
     };
     polarBear.prototype.getY = function () {
         return _super.prototype.getY.call(this);

@@ -42,6 +42,8 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeAnimationY(0);
                 this.isMoving = true;
                 this._game.setWorldSpeed(5);
+                
+                
                 // Update the Score from the UI in game
                 // this.updateUIScore(10);
                 // // // Update all movements that exist in the gameObject list in the game
@@ -60,7 +62,7 @@ class polarBear extends GameObjects implements ICollidable {
                 // this.changeAllObjectsMovementX(-10);
                 
                 break;
-            case 70: // LEFT
+            case 70: // F
                 this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
 
                 // let coin = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5});
@@ -175,6 +177,14 @@ class polarBear extends GameObjects implements ICollidable {
         if(this.currentCollision){
             this.currentCollision.bearJumps(this._isJumping);
         }
+
+        // If HasCollision has a true do nothing
+        if(this.hasCollision){
+            
+        }else{
+            // Change the Y to 240.
+            super.setY(240);
+        }
         
         // for(var obj of this._game.objectList){
         //      if(obj === this){
@@ -224,13 +234,9 @@ class polarBear extends GameObjects implements ICollidable {
         this.isMoving;
         
         this.hasCollision = true;
-        console.log("AUHFUYADG");
+        // console.log("AUHFUYADG");
 
-        this.checkobj(gameObject);
-
-        if(gameObject instanceof crate){
-            this.currentCollision = gameObject;
-        }
+        this.checkObj(gameObject);
         
         // this.collidesWith = gameObject;
         
@@ -242,10 +248,34 @@ class polarBear extends GameObjects implements ICollidable {
         
     }
 
-    checkobj(gameObject:ICollidable) : void{
+    checkObj(gameObject:ICollidable) : void{
         if(gameObject instanceof crate){
             var y = gameObject.getY();
-            super.setY(y - 45);
+            // super.setY(y - 45);
+            this.currentCollision = gameObject;
+            let crateWidth = gameObject.getFrameWidth();
+            let crateHeight = gameObject.getFrameHeight();
+
+            let polarBounds = this.getBounds();
+            let crateBounds = gameObject.getBounds();
+            let count = 0;
+            let onTop = 0;
+            
+            if(polarBounds.leftCollision(crateBounds)) {
+                // this.x = this.x - gameObject.getX();
+                console.log("left collision");
+                this._game.setWorldSpeed(0);
+
+            }else if(polarBounds.topCollision(crateBounds)){
+
+                console.log("top collision");
+                let onTop = crateBounds.y - (crateBounds.height/2.8);
+                this.y = onTop;
+                this._game.setWorldSpeed(2);
+
+            }else{
+                this.hasCollision = false;
+            }
         }
     }
 

@@ -22,7 +22,7 @@ class crate extends GameObjects implements ICollidable{
         } else if(gameObject instanceof bullet){
             this.game.setWorldSpeed(5);
         } else {
-            this.game.setWorldSpeed(0);
+            // this.game.setWorldSpeed(0);
         }
 
         if(gameObject instanceof bullet){

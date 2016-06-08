@@ -15,6 +15,14 @@ class Rectangle {
         this.height = h;
     }
     
+    leftCollision(rec: Rectangle) : boolean {
+        return (this.x < rec.x); 
+    }
+
+    topCollision(rec: Rectangle) : boolean {
+        return (this.y > rec.y);
+    }
+
     // kijk of twee rectangles elkaar raken
     hitsOtherRectangle(rec: Rectangle): boolean {
          return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);

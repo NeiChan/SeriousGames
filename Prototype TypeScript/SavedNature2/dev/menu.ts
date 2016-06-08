@@ -30,7 +30,8 @@ class Menu {
 
         // Add click events.
         // this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnHighscores.addEventListener("click", () => this.soundmanager.play("game_over"));
+        // this.soundmanager.play("game_over")
+        this.btnHighscores.addEventListener("click", () => this.showLeaderboards());
         this.btnStart.addEventListener("click", this.removeMenu);
         
         // Append to the body

@@ -61,8 +61,8 @@ class Game {
 
         this.BGList.push(this._background);
         this.BGList.push(this._bObject);        
-        this.objectList.push(this._goldCoin);
-        this.objectList.push(this._bush);
+        // this.objectList.push(this._goldCoin);
+        // this.objectList.push(this._bush);
         
         // this.objectList.push(this._bear);
         
@@ -95,7 +95,7 @@ class Game {
             obj.Draw();
         }
         
-        // this._ui.draw();
+        this._ui.draw();
 
         this._bear.draw();
         
@@ -118,7 +118,7 @@ class Game {
             // console.log(obj2);
         }
 
-        // this._ui.update();
+        this._ui.update();
         
         this._bear.update();
 
@@ -162,9 +162,9 @@ class Game {
                         let obj2Bounds = obj.getBounds();   
 
                         if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
-                        obj2.onCollision(obj);
-                        obj.onCollision(obj2);
-                    }
+                            obj2.onCollision(obj);
+                            obj.onCollision(obj2);
+                        }
                     
 
                     
@@ -188,6 +188,12 @@ class Game {
                 if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
                     this._bear.onCollision(obj);
                     obj.onCollision(this._bear);
+
+                    // console.log("polar x = " + this._bear.getX());
+                    // console.log("polar y = " + this._bear.getY());
+
+                    // console.log("crate x = " + obj.getBounds().x);
+                    // console.log("crate y = " + obj.getBounds().y);
                     // if obj2 gelijk is aan objectList
 
                     // check on hasDestructable
@@ -209,8 +215,8 @@ class Game {
         } else {
             console.log("not true shit")
         }
-        console.log("BG list" + this.BGList);
-        console.log("object list" + this.objectList);
+        // console.log("BG list" + this.BGList);
+        // console.log("object list" + this.objectList);
     }
     
     private checkDestructable(currentObj, listObjects) : void {
