@@ -6,5 +6,4 @@ interface ICollidable {
 
     Draw():void;
     Update():void;
-    // getY():number;
 }
