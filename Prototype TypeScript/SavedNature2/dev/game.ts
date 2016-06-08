@@ -12,7 +12,8 @@ class Game {
     public BGList:Array<bgObjects> = new Array<bgObjects>();
     
     // array FG items - toevoegen met unshift
-    
+    private _pause : boolean;
+
     // Get class player
     private _background  : Background;
     public  _ui          : UI;
@@ -43,7 +44,7 @@ class Game {
 
         // Aanmaken van een polarBear
         this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559}, 1, this);
-        this._ui            = new UI({x: 50, y: 50});
+        this._ui            = new UI(this, {x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList);
 
         
@@ -94,31 +95,37 @@ class Game {
         requestAnimationFrame(() => this.update());
     }
 
+    public pause() : void {
+        this._pause = true;
+    }
+
 
     private update() : void {
         // Aanroepen van update function
         // this._background.update();
+        if(this._pause){
 
-        this._generator.generateJunk();
-        
-        for(var obj of this.objectList) {
-            obj.Update();
-        }
-        
-        for(var obj2 of this.BGList) {
-            obj2.update();
-            // console.log(obj2);
-        }
+        }else{
+            this._generator.generateJunk();
+            
+            for(var obj of this.objectList) {
+                obj.Update();
+            }
+            
+            for(var obj2 of this.BGList) {
+                obj2.update();
+                // console.log(obj2);
+            }
 
+            this._bear.update();
+
+            this.checkCollisions();
+            
+            if(this._ui.getScore() > 250){
+                this._background.changeBackground(this.assets.desBG);
+            }
+        }
         this._ui.update();
-        
-        this._bear.update();
-
-        this.checkCollisions();
-        
-        if(this._ui.getScore() > 250){
-            this._background.changeBackground(this.assets.desBG);
-        }
         
         this.draw();
     }

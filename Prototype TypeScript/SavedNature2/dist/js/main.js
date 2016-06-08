@@ -19,7 +19,7 @@ var Game = (function () {
         var goldCoinImg = this.assets.collectables.goldCoin;
         var crateImg = this.assets.desObjects.Crate;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this);
-        this._ui = new UI({ x: 50, y: 50 });
+        this._ui = new UI(this, { x: 50, y: 50 });
         this._generator = new JunkGenerator(this, this.objectList, this.BGList);
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3 });
@@ -45,22 +45,29 @@ var Game = (function () {
         this._bear.draw();
         requestAnimationFrame(function () { return _this.update(); });
     };
+    Game.prototype.pause = function () {
+        this._pause = true;
+    };
     Game.prototype.update = function () {
-        this._generator.generateJunk();
-        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
-            var obj = _a[_i];
-            obj.Update();
+        if (this._pause) {
         }
-        for (var _b = 0, _c = this.BGList; _b < _c.length; _b++) {
-            var obj2 = _c[_b];
-            obj2.update();
+        else {
+            this._generator.generateJunk();
+            for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                obj.Update();
+            }
+            for (var _b = 0, _c = this.BGList; _b < _c.length; _b++) {
+                var obj2 = _c[_b];
+                obj2.update();
+            }
+            this._bear.update();
+            this.checkCollisions();
+            if (this._ui.getScore() > 250) {
+                this._background.changeBackground(this.assets.desBG);
+            }
         }
         this._ui.update();
-        this._bear.update();
-        this.checkCollisions();
-        if (this._ui.getScore() > 250) {
-            this._background.changeBackground(this.assets.desBG);
-        }
         this.draw();
     };
     Game.prototype.checkCollisions = function () {
@@ -190,6 +197,9 @@ var bgObjects = (function () {
     bgObjects.prototype.changeSpeed = function (int) {
         this.speed = int;
     };
+    bgObjects.prototype.newImage = function (img) {
+        this.image.src = img;
+    };
     bgObjects.prototype.update = function () {
         this.x = this.x + (this.game.WorldSpeed * -(this.speed * this.speedOffset));
     };
@@ -237,9 +247,6 @@ var GameObjects = (function () {
         this.context = canvas.getContext('2d');
         this.image = new Image();
         this.image.src = this.imgSrc;
-    };
-    GameObjects.prototype.newImage = function (img) {
-        this.image.src = img;
     };
     GameObjects.prototype.changeY = function (int) {
         this.directionY = int;
@@ -363,6 +370,7 @@ var AssetsManager = (function () {
     function AssetsManager() {
         this.polarbear = "images/polarbear/spritesheet.png";
         this.polarbear2 = "images/polarbear/spritesheet3.png";
+        this.lives = "images/interface/heart.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -562,6 +570,7 @@ var Background = (function (_super) {
         }
     };
     Background.prototype.changeBackground = function (image) {
+        _super.prototype.newImage.call(this, image);
     };
     return Background;
 }(bgObjects));
@@ -624,6 +633,7 @@ var Coin = (function (_super) {
             }
         });
         sound.play('blast');
+        this._game._ui.loseLive();
         this._game.deleteGO(this, null);
     };
     Coin.prototype.draw = function () {
@@ -992,15 +1002,29 @@ var testSubject = (function (_super) {
 }(GameObjects));
 var UI = (function (_super) {
     __extends(UI, _super);
-    function UI(source) {
+    function UI(game, source) {
         _super.call(this, source);
         this._font = "14px Arial";
         this._counter = 0;
+        this._lives = 3;
         this.context.font = this._font;
+        this._game = game;
+        this._liveImage = new Image();
+        this._liveImage.src = new AssetsManager().lives;
     }
     UI.prototype.generateScore = function () {
         this.context.fillText("Score :  ", this.x, this.y);
         this.context.fillText(this._counter.toString(), this.x + 50, this.y);
+    };
+    UI.prototype.generateLives = function () {
+        var x = 450;
+        for (var i = 1; i <= this._lives; i++) {
+            this.context.drawImage(this._liveImage, this.x + x, this.y - 20);
+            x += 30;
+        }
+    };
+    UI.prototype.loseLive = function () {
+        return this._lives--;
     };
     UI.prototype.getScore = function () {
         return this._counter;
@@ -1008,8 +1032,16 @@ var UI = (function (_super) {
     UI.prototype.updateScore = function (score) {
         this._counter += score;
     };
+    UI.prototype.gameOverScreen = function () {
+        if (this._lives == 0) {
+            this.context.fillText("Game Over!", this.x + 300, this.y + 100);
+            this._game.pause();
+        }
+    };
     UI.prototype.draw = function () {
         this.generateScore();
+        this.generateLives();
+        this.gameOverScreen();
     };
     UI.prototype.update = function () {
     };

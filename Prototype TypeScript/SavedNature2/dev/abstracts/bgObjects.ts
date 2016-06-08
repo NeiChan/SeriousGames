@@ -59,6 +59,10 @@ class bgObjects{
         this.speed = int;
     }
 
+    public newImage(img): void{
+        this.image.src = img;
+    }
+
     public update(){
         this.x = this.x + (this.game.WorldSpeed * -(this.speed * this.speedOffset));
     }

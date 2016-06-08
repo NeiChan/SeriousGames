@@ -1,17 +1,18 @@
 class AssetsManager {
     // players
-    public polarbear = "images/polarbear/spritesheet.png";
-    public polarbear2 = "images/polarbear/spritesheet3.png";
+    public polarbear        = "images/polarbear/spritesheet.png";
+    public polarbear2       = "images/polarbear/spritesheet3.png";
+    public lives            = "images/interface/heart.png";
 
     // ***************** Levels
-    private desertBase = "images/levels/desert/";
-    private greenBase = "images/levels/green/";
-    private winterBase = "images/levels/winter/";
+    private desertBase      = "images/levels/desert/";
+    private greenBase       = "images/levels/green/";
+    private winterBase      = "images/levels/winter/";
 
     // ***************** Collectables
-    private collectBase = "images/collectables/";
-    private collectCoins = this.collectBase + "coins/";
-
+    private collectBase     = "images/collectables/";
+    private collectCoins    = this.collectBase + "coins/";
+    
     // Desert level
     public desBG = this.desertBase + "BG.png";
 

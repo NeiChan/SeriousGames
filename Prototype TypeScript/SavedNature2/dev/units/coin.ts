@@ -33,8 +33,11 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
                 });
                 
             sound.play('blast');
+            
+            this._game._ui.loseLive();
 
             this._game.deleteGO(this, null);
+
         }
 
         public draw(): void {

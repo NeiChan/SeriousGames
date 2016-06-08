@@ -21,6 +21,6 @@ class Background extends bgObjects
     }
     
     public changeBackground(image) : void {
-        // super.newImage(image);
+        super.newImage(image);
     }
 }
