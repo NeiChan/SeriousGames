@@ -153,6 +153,15 @@ abstract class GameObjects {
     }
     
     /**
+     * getFrameHeight
+     * 
+     * Public function for getting object width for collision detection
+     */
+    public getFrameHeight() : number{
+        return this.frameHeight;
+    }
+
+    /**
      * getFrameWidth
      * 
      * Public function for getting object width for collision detection

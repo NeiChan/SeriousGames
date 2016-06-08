@@ -28,7 +28,10 @@ class Menu {
 
         // Add click events.
         // this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        utility.addSoundEvent(this.btnHighscores,"game_over.ogg", "mouseover");
+        // this.soundmanager.play("game_over")
+
+        this.btnHighscores.addEventListener("click", () => this.showLeaderboards());
+        // utility.addSoundEvent(this.btnHighscores,"game_over.ogg", "mouseover");
         this.btnStart.addEventListener("click", this.removeMenu);
         
         // Append to the body

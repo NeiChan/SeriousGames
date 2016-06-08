@@ -129,9 +129,20 @@ class Game {
                         let obj2Bounds = obj.getBounds();   
 
                         if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
-                        obj2.onCollision(obj);
-                        obj.onCollision(obj2);
-                    }
+
+                            obj2.onCollision(obj);
+                            obj.onCollision(obj2);
+                        }
+                    
+
+                    
+                        // if obj2 gelijk is aan objectList
+
+                        // check on hasDestructable
+                        // this.checkDestructable(obj, this.objectList);
+                        //this.checkDestructable(obj2, this.objectList);
+                        // hit = true;
+                    
                 }
             }
         }
@@ -145,6 +156,12 @@ class Game {
                 if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
                     this._bear.onCollision(obj);
                     obj.onCollision(this._bear);
+
+                    // console.log("polar x = " + this._bear.getX());
+                    // console.log("polar y = " + this._bear.getY());
+
+                    // console.log("crate x = " + obj.getBounds().x);
+                    // console.log("crate y = " + obj.getBounds().y);
                     // if obj2 gelijk is aan objectList
 
                     // check on hasDestructable
@@ -166,8 +183,8 @@ class Game {
         } else {
             console.log("not true shit")
         }
-        console.log("BG list" + this.BGList);
-        console.log("object list" + this.objectList);
+        // console.log("BG list" + this.BGList);
+        // console.log("object list" + this.objectList);
     }
     
     private checkDestructable(currentObj, listObjects) : void {
