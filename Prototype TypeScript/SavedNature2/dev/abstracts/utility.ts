@@ -1,3 +1,4 @@
+/// <reference path="../../typings/howler.d.ts"/>
 class utility {
     
     /**
@@ -30,10 +31,28 @@ class utility {
         return el;
     }
     
-    public static addSoundEvent(el: HTMLElement, soundName: string): HTMLElement{
-        el.addEventListener('click', () => Game.soundmanager.play(soundName));
+    public static addSoundEvent(el: HTMLElement, soundName: string, event?: string): HTMLElement{
+        if(event){
+            el.addEventListener(event, () => utility.playSound(soundName));
+        } else{
+            el.addEventListener('click', () => utility.playSound(soundName));
+        }
         return el;
     }
+
+    public static playSound(soundName: string) : void{
+        var sound = new Howl({
+            urls: ["sound/" + soundName],
+            volume: 0.4,
+            sprite: {
+                blast: [0, 2000],
+            }
+        });
+                
+        sound.play('blast');
+    }
+
+
     
     // public static BearIsBoss(objectList: Array, old_index, new_index){
     //     objectList = function (old_index, new_index) {

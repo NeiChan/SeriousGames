@@ -10,27 +10,21 @@ var Game = (function () {
         this.WorldSpeed = 5;
         this.objectList = new Array();
         this.BGList = new Array();
-        Game.soundmanager = new SoundsManager('soundfile');
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         this.context.save();
         this.context.scale(1.8, 1.8);
         var backgroundImg = this.assets.greenBG4;
         var bearImg = this.assets.polarbear2;
-        var bushImg = this.assets.desObjects.Bush1;
         var goldCoinImg = this.assets.collectables.goldCoin;
         var crateImg = this.assets.desObjects.Crate;
         this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this);
         this._ui = new UI({ x: 50, y: 50 });
         this._generator = new JunkGenerator(this, this.objectList, this.BGList);
-        this._bObject = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 330, frameHeight: 145, frameWidth: 80 }, 7, this);
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
-        this._bush = new testSubject({ imgSrc: bushImg, x: 350, y: 215, frameHeight: 145, frameWidth: 80 });
         this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3 });
         this.BGList.push(this._background);
-        this.BGList.push(this._bObject);
         this.objectList.push(this._goldCoin);
-        this.objectList.push(this._bush);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
@@ -130,8 +124,6 @@ window.addEventListener("load", function () {
 });
 var Menu = (function () {
     function Menu() {
-        var _this = this;
-        this.soundmanager = new SoundsManager("soundfile");
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
         this.btnClose = document.createElement("button");
@@ -144,7 +136,7 @@ var Menu = (function () {
         this.btnStart.innerHTML = "Start";
         this.btnClose.innerHTML = "Uitleg";
         this.btnHighscores.innerHTML = "Highscores";
-        this.btnHighscores.addEventListener("click", function () { return _this.soundmanager.play("game_over"); });
+        utility.addSoundEvent(this.btnHighscores, "game_over.ogg", "mouseover");
         this.btnStart.addEventListener("click", this.removeMenu);
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
@@ -315,9 +307,24 @@ var utility = (function () {
         document.body.appendChild(el);
         return el;
     };
-    utility.addSoundEvent = function (el, soundName) {
-        el.addEventListener('click', function () { return Game.soundmanager.play(soundName); });
+    utility.addSoundEvent = function (el, soundName, event) {
+        if (event) {
+            el.addEventListener(event, function () { return utility.playSound(soundName); });
+        }
+        else {
+            el.addEventListener('click', function () { return utility.playSound(soundName); });
+        }
         return el;
+    };
+    utility.playSound = function (soundName) {
+        var sound = new Howl({
+            urls: ["sound/" + soundName],
+            volume: 0.4,
+            sprite: {
+                blast: [0, 2000],
+            }
+        });
+        sound.play('blast');
     };
     return utility;
 }());
@@ -342,65 +349,6 @@ var Rectangle = (function () {
         return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
     };
     return Rectangle;
-}());
-var soundFile = (function () {
-    function soundFile(soundURL) {
-        var _this = this;
-        this.loadComplete = false;
-        this.onloadComplete = function (ev) {
-            _this.xhr = ev.currentTarget;
-            _this.context.decodeAudioData(_this.xhr.response, _this.decodeData);
-        };
-        this.decodeData = function (buffer) {
-            _this.buffer = buffer;
-            _this.loadComplete = true;
-        };
-        this.play = function (start_time, duration) {
-            if (_this.context == undefined) {
-                return;
-            }
-            if (_this.loadComplete == false) {
-                return;
-            }
-            _this.source = _this.context.createBufferSource();
-            _this.source.buffer = _this.buffer;
-            _this.source.connect(_this.context.destination);
-            _this.source.start(_this.context.currentTime, start_time, duration);
-        };
-        try {
-            this.context = new AudioContext();
-            this.loadFile(soundURL);
-        }
-        catch (e) {
-            console.log("no audio detected");
-        }
-    }
-    soundFile.prototype.loadFile = function (file_name) {
-        if (this.context == undefined) {
-            return;
-        }
-        this.xhr = new XMLHttpRequest();
-        this.xhr.open('GET', file_name, true);
-        this.xhr.responseType = 'arraybuffer';
-        this.xhr.onload = this.onloadComplete;
-        this.xhr.send();
-    };
-    return soundFile;
-}());
-var soundMarker = (function () {
-    function soundMarker(name, start, duration, volume, loop) {
-        this.name = "";
-        this.start = 0;
-        this.duration = 0;
-        this.volume = 1;
-        this.loop = false;
-        this.name = name;
-        this.start = start;
-        this.duration = duration;
-        this.volume = volume;
-        this.loop = loop;
-    }
-    return soundMarker;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
@@ -589,76 +537,6 @@ var JunkGenerator = (function () {
         }
     };
     return JunkGenerator;
-}());
-var SoundsManager = (function () {
-    function SoundsManager(sound_file) {
-        this.mute = false;
-        this.soundsLoaded = false;
-        this._jsonFileLoaded = false;
-        this._soundFileString = "";
-        this.soundMarkers = {};
-        this._soundFileString = sound_file;
-        this._loadMarkers(sound_file + '.json');
-    }
-    SoundsManager.prototype.mp3Enabled = function () {
-        var a = document.createElement('audio');
-        return !!(a.canPlayType && a.canPlayType('audio\ogg;').replace(/no/, ""));
-    };
-    SoundsManager.prototype.play = function (sound_name) {
-        if (this.mute) {
-            return;
-        }
-        var marker = this.soundMarkers[sound_name];
-        var sf = new soundFile("sound/" + marker.name + ".ogg");
-        if (marker != null && marker != undefined) {
-            sf.play(marker.start, marker.duration);
-            var sound = new Howl({
-                urls: ["sound/" + marker.name + ".ogg"],
-                sprite: {
-                    blast: [0, 2000],
-                }
-            });
-            sound.play('blast');
-        }
-    };
-    SoundsManager.prototype._loadMarkers = function (jsonfile) {
-        var _this = this;
-        var marker_xhr = new XMLHttpRequest();
-        marker_xhr.onreadystatechange = function () {
-            if (marker_xhr.readyState === XMLHttpRequest.DONE && marker_xhr.status === 200) {
-                var obj = JSON.parse(marker_xhr.responseText);
-                _this.parseJsonSounds(obj);
-            }
-            else {
-            }
-        };
-        marker_xhr.open("GET", jsonfile, true);
-        marker_xhr.send();
-    };
-    SoundsManager.prototype.parseJsonSounds = function (data) {
-        for (var i = 0; i < data.markers.length; i++) {
-            var obj = data.markers[i];
-            var markers = obj;
-            this.addMarker(new soundMarker(obj.name, obj.start, obj.duration, obj.volume, obj.loop));
-        }
-        this._jsonFileLoaded = true;
-        this.soundsLoaded = true;
-    };
-    SoundsManager.prototype.soundFileLoaded = function () {
-        if (this._jsonFileLoaded == true) {
-            this.soundsLoaded = true;
-        }
-    };
-    SoundsManager.prototype._onError = function (xhr) {
-        console.log("COULD NOT LOAD SOUND MARKER FILE: " + this._soundFileString + ".json status=" + xhr.readyState);
-    };
-    SoundsManager.prototype.addMarker = function (sound_marker) {
-        this.soundMarkers[sound_marker.name] = sound_marker;
-    };
-    SoundsManager.prototype.removeMarker = function (marker_name) {
-        delete this.soundMarkers[marker_name];
-    };
-    return SoundsManager;
 }());
 var Background = (function (_super) {
     __extends(Background, _super);

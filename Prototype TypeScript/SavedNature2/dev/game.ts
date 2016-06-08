@@ -3,7 +3,6 @@
 class Game {
     private assets      : AssetsManager = new AssetsManager();
     public WorldSpeed : number = 5;
-    static soundmanager      : SoundsManager;
 
     //public objectList:Array<GameObjects> = new Array<GameObjects>();
     
@@ -20,9 +19,6 @@ class Game {
     private _bear        : polarBear;
     private _generator   : JunkGenerator;
     
-    private _bObject     : BackgroundObject;
-    
-    private _bush        : testSubject;
     private _goldCoin    : Coin;
 
     private context     : CanvasRenderingContext2D;
@@ -30,8 +26,7 @@ class Game {
 
     // constructor for Main
     constructor() {
-        // call createPlayer() function
-        Game.soundmanager = new SoundsManager('soundfile');
+        // call createPlayer() function        
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         this.context.save();
@@ -43,7 +38,6 @@ class Game {
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
         let backgroundImg   = this.assets.greenBG4;
         let bearImg         = this.assets.polarbear2;
-        let bushImg         = this.assets.desObjects.Bush1;
         let goldCoinImg     = this.assets.collectables.goldCoin;
         let crateImg        = this.assets.desObjects.Crate;
 
@@ -52,19 +46,14 @@ class Game {
         this._ui            = new UI({x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList);
 
-        this._bObject       = new BackgroundObject({ imgSrc: bushImg, x: 250, y: 330, frameHeight: 145, frameWidth: 80 }, 7, this);
         
         // Aanmaken van een polarBear
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
-        this._bush          = new testSubject({ imgSrc: bushImg, x: 350, y: 215, frameHeight: 145, frameWidth: 80 });
+
         this._goldCoin      = new Coin(this, {imgSrc: goldCoinImg,  x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3});
 
-        this.BGList.push(this._background);
-        this.BGList.push(this._bObject);        
+        this.BGList.push(this._background);   
         this.objectList.push(this._goldCoin);
-        this.objectList.push(this._bush);
-        
-        // this.objectList.push(this._bear);
         
 
         var content = document.getElementById('content');

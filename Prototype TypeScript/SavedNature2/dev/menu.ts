@@ -5,10 +5,8 @@ class Menu {
     private btnClose: HTMLElement;
     private gameTitle: HTMLElement;
     private main: any;
-    private soundmanager: SoundsManager;
     
     constructor() {
-        this.soundmanager = new SoundsManager("soundfile");
         // Create the HTML elements.
         this.gameTitle = document.createElement("DIV");
         this.btnStart = document.createElement("button");
@@ -30,7 +28,7 @@ class Menu {
 
         // Add click events.
         // this.btnHighscores.addEventListener("click", this.showLeaderboards);
-        this.btnHighscores.addEventListener("click", () => this.soundmanager.play("game_over"));
+        utility.addSoundEvent(this.btnHighscores,"game_over.ogg", "mouseover");
         this.btnStart.addEventListener("click", this.removeMenu);
         
         // Append to the body
