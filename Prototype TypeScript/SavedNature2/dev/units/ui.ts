@@ -37,6 +37,10 @@ class UI extends GameObjects
     public getScore(): number {
         return this._counter;
     }
+
+    public addScore(int: number): void {
+        this._counter = this._counter + int;
+    }
     
     public updateScore(score) : void {
         this._counter += score;

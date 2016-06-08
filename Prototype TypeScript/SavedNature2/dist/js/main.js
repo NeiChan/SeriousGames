@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Game = (function () {
-    function Game() {
+    function Game(lvl) {
         var _this = this;
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
@@ -14,20 +14,11 @@ var Game = (function () {
         this.context = this.canvas.getContext('2d');
         this.context.save();
         this.context.scale(1.8, 1.8);
-        var backgroundImg = this.assets.greenBG4;
+        this.Level = new level(this, lvl);
         var bearImg = this.assets.polarbear2;
-        var goldCoinImg = this.assets.collectables.goldCoin;
-        var crateImg = this.assets.desObjects.Crate;
-        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this);
         this._ui = new UI(this, { x: 50, y: 50 });
-        this._generator = new JunkGenerator(this, this.objectList, this.BGList);
+        this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
-        this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3 });
-        this.BGList.push(this._background);
-        var content = document.getElementById('content');
-        var div = utility.createDiv('divver');
-        div = utility.addSoundEvent(div, 'game_over');
-        content.appendChild(div);
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.draw = function () {
@@ -63,12 +54,14 @@ var Game = (function () {
             }
             this._bear.update();
             this.checkCollisions();
-            if (this._ui.getScore() > 250) {
-                this._background.changeBackground(this.assets.desBG);
+            if (this._ui.getScore() > 50) {
+                this._ui.addScore(-60);
+                this._generator.level = 2;
+                console.log("calle");
             }
+            this._ui.update();
+            this.draw();
         }
-        this._ui.update();
-        this.draw();
     };
     Game.prototype.checkCollisions = function () {
         for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
@@ -161,7 +154,7 @@ var Menu = (function () {
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "";
-        this.main = new Game();
+        this.main = new Game(1);
     };
     return Menu;
 }());
@@ -298,6 +291,28 @@ var GameObjects = (function () {
     GameObjects.prototype.Update = function () {
     };
     return GameObjects;
+}());
+var level = (function () {
+    function level(game, level) {
+        this.game = game;
+        this.level = level;
+        this.setGame();
+    }
+    level.prototype.setGame = function () {
+        switch (this.level) {
+            case 1: {
+                var backgroundImg = this.game.assets.greenBG4;
+                this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game);
+                this.game.BGList.push(this._background);
+            }
+            case 2: {
+                var backgroundImg = this.game.assets.greenBG4;
+                this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game);
+                this.game.BGList.push(this._background);
+            }
+        }
+    };
+    return level;
 }());
 var utility = (function () {
     function utility() {
@@ -487,7 +502,7 @@ var AssetsManager = (function () {
     return AssetsManager;
 }());
 var JunkGenerator = (function () {
-    function JunkGenerator(game, objList, bglist) {
+    function JunkGenerator(game, objList, bglist, lvl) {
         this.assets = new AssetsManager();
         this.minNumber = 1;
         this.maxNumber = 9;
@@ -500,6 +515,7 @@ var JunkGenerator = (function () {
         this.objectList = objList;
         this.BGList = bglist;
         this._game = game;
+        this.level = lvl;
         console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
@@ -511,6 +527,18 @@ var JunkGenerator = (function () {
         return random;
     };
     JunkGenerator.prototype.generateJunk = function () {
+        switch (this.level) {
+            case 1: {
+                this.generateLevel1();
+                break;
+            }
+            case 2: {
+                this.generateLevel2();
+                break;
+            }
+        }
+    };
+    JunkGenerator.prototype.generateLevel1 = function () {
         this.counter++;
         if (this.counter > this.updateTimout) {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
@@ -520,6 +548,52 @@ var JunkGenerator = (function () {
             var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, this.getRandomFloat(1.05), this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            switch (random) {
+                case 1:
+                    this.objectList.push(coin);
+                    break;
+                case 2:
+                    console.log("Case 2 - Coin Object");
+                    this.objectList.push(coin);
+                    break;
+                case 3:
+                    this.BGList.push(bush);
+                    break;
+                case 4:
+                    this.objectList.push(coin);
+                    break;
+                case 5:
+                    this.objectList.push(Crate);
+                    break;
+                case 6:
+                    this.objectList.push(coin);
+                    break;
+                case 7:
+                    this.BGList.push(bush);
+                    break;
+                case 8:
+                    this.BGList.push(bush);
+                    break;
+                case 9:
+                    this.objectList.push(Crate);
+                    break;
+            }
+            this.counter = 0;
+        }
+    };
+    JunkGenerator.prototype.generateLevel2 = function () {
+        this.counter++;
+        var minPositionY = 0;
+        var maxPositionY = 15;
+        if (this.counter > this.updateTimout) {
+            var random = this.getRandomNumber(this.minNumber, this.maxNumber);
+            var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
+            var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
+            var randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
+            var crateImg = this.assets.desObjects.Crate;
+            var bush = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2, x: randomX, y: randomYTree, frameHeight: 280, frameWidth: 228 }, this.getRandomFloat(1.05), this._game);
+            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
+            var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBox, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
@@ -1028,6 +1102,9 @@ var UI = (function (_super) {
     };
     UI.prototype.getScore = function () {
         return this._counter;
+    };
+    UI.prototype.addScore = function (int) {
+        this._counter = this._counter + int;
     };
     UI.prototype.updateScore = function (score) {
         this._counter += score;

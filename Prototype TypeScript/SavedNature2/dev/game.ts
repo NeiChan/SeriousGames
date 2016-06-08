@@ -1,8 +1,10 @@
 /// <reference path="interfaces/ICollidable.ts"/>
 
 class Game {
-    private assets      : AssetsManager = new AssetsManager();
+    public assets      : AssetsManager = new AssetsManager();
     public WorldSpeed : number = 5;
+    private Level : level;
+    private main: any;
 
     //public objectList:Array<GameObjects> = new Array<GameObjects>();
     
@@ -15,7 +17,7 @@ class Game {
     private _pause : boolean;
 
     // Get class player
-    private _background  : Background;
+    
     public  _ui          : UI;
     private _bear        : polarBear;
     private _generator   : JunkGenerator;
@@ -26,7 +28,7 @@ class Game {
     private canvas      : HTMLCanvasElement;
 
     // constructor for Main
-    constructor() {
+    constructor(lvl: number) {
         // call createPlayer() function        
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
@@ -34,36 +36,17 @@ class Game {
         // Enlarge screen by 1.8x
         this.context.scale(1.8, 1.8);
 
+        this.Level = new level(this, lvl);
         // this.canvas.addEventListener("click", this.getClickPos, false);
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
-        let backgroundImg   = this.assets.greenBG4;
         let bearImg         = this.assets.polarbear2;
-        let goldCoinImg     = this.assets.collectables.goldCoin;
-        let crateImg        = this.assets.desObjects.Crate;
-
         // Aanmaken van een polarBear
-        this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559}, 1, this);
         this._ui            = new UI(this, {x: 50, y: 50});
-        this._generator     = new JunkGenerator(this, this.objectList, this.BGList);
-
+        this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);
         
         // Aanmaken van een polarBear
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
-
-        this._goldCoin      = new Coin(this, {imgSrc: goldCoinImg,  x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3});
-
-        this.BGList.push(this._background);        
-        // this.objectList.push(this._goldCoin);
-        // this.objectList.push(this._bush);
-        
-        // this.objectList.push(this._bear);
-        
-
-        var content = document.getElementById('content');
-        var div = utility.createDiv('divver');
-        div = utility.addSoundEvent(div, 'game_over');
-        content.appendChild(div);
 
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
@@ -77,7 +60,6 @@ class Game {
 
     private draw()  : void {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
-        
         // this._background.draw();
         
         for(var obj2 of this.BGList){
@@ -121,24 +103,17 @@ class Game {
 
             this.checkCollisions();
             
-            if(this._ui.getScore() > 250){
-                this._background.changeBackground(this.assets.desBG);
+            if(this._ui.getScore() > 50){
+                // this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
+                this._ui.addScore(-60);
+                this._generator.level = 2;
+                console.log("calle");
             }
-        }
-        this._ui.update();
-        
-        this.draw();
-    }
-    
-    // private moveWorld(): void {
-    //     if(this._bear.getMoving()){
-    //         for(var obj of this.objectList) {
-    //             obj.changeMovementX(-5);
-    //         }
+            this._ui.update();
             
-    //         this._ui.updateScore(1);
-    //     }
-    // }
+            this.draw();
+        }
+    }
 
     private checkCollisions() : void {
         // var collidables = new Array<ICollidable>();
@@ -161,6 +136,7 @@ class Game {
                         let obj2Bounds = obj.getBounds();   
 
                         if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
+
                             obj2.onCollision(obj);
                             obj.onCollision(obj2);
                         }
