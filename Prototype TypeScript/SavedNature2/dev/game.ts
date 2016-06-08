@@ -52,8 +52,7 @@ class Game {
 
         this._goldCoin      = new Coin(this, {imgSrc: goldCoinImg,  x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3});
 
-        this.BGList.push(this._background);
-        this.BGList.push(this._bObject);        
+        this.BGList.push(this._background);        
         // this.objectList.push(this._goldCoin);
         // this.objectList.push(this._bush);
         

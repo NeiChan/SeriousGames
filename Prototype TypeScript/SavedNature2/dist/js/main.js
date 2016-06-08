@@ -24,7 +24,6 @@ var Game = (function () {
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         this._goldCoin = new Coin(this, { imgSrc: goldCoinImg, x: 325, y: 225, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 3 });
         this.BGList.push(this._background);
-        this.BGList.push(this._bObject);
         var content = document.getElementById('content');
         var div = utility.createDiv('divver');
         div = utility.addSoundEvent(div, 'game_over');
