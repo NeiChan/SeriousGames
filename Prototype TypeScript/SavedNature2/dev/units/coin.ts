@@ -2,6 +2,7 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
         public hasCollision:boolean     = true;
         public hasDestructable:boolean  = true;
         private _game:Game;
+        private collectCounter: number;
 
         constructor(game:Game, source) {
             super(source);
@@ -23,6 +24,9 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
             // console.log("VBAIJO");
             // this.x = 0;
             this._game._ui.updateScore(10);
+
+            // Every time you collect a coin, do this function
+            this._game.updateCollectedCoins(this._game.curLvl);
 
             var sound = new Howl({
                     urls: ["sound/mario1up.mp3"],

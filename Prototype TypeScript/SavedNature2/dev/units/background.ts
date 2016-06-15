@@ -1,6 +1,7 @@
 class Background extends bgObjects
 {
     protected level : number;
+    public assets: AssetsManager = new AssetsManager();
 
     // private bgObjects : bgObjects;
 
@@ -10,6 +11,7 @@ class Background extends bgObjects
 
         // Set variable level to lvl value
         this.level = lvl;
+        //window.addEventListener("click", this.changeBackground.bind(this));
     }
 
     public draw() : void {
@@ -39,6 +41,21 @@ class Background extends bgObjects
                 break;
         }
     }
+
+    // public findBackground(amount): void {
+    //     switch (amount) {
+    //         case 5:
+    //             var bgImage = this.assets.winterBG.BG3;
+    //             break;
+    //         case 10:
+    //             var bgImage = this.assets.winterBG.BG2;
+    //             break;
+    //         case 15:
+    //             var bgImage = this.assets.winterBG.BG1;
+    //             break;
+    //     }
+    //     this.changeBackground(bgImage);
+    // }
 
     public changeBackground(image) : void {
         super.newImage(image);

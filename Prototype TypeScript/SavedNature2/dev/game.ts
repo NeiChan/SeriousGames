@@ -5,7 +5,10 @@ class Game {
     public WorldSpeed : number = 5;
     private Level : level;
     private main: any;
+    private _bg: Background;
+    public curLvl: number;
 
+    private _collectCounter = 0;
     // public objectList:Array<GameObjects> = new Array<GameObjects>();
 
     public objectList:Array<ICollidable> = new Array<ICollidable>();
@@ -20,7 +23,7 @@ class Game {
 
     public  _ui          : UI;
     private _bear        : polarBear;
-    private _generator   : JunkGenerator;
+    public _generator   : JunkGenerator;
 
     private _goldCoin    : Coin;
 
@@ -37,7 +40,8 @@ class Game {
         // Enlarge screen by 1.8x
         this.context.scale(1.8, 1.8);
 
-        this.Level = new level(this, lvl);
+        this.curLvl = lvl;
+        this.Level = new level(this, this.curLvl, 0);
         // this.canvas.addEventListener("click", this.getClickPos, false);
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
@@ -48,6 +52,9 @@ class Game {
 
         // Aanmaken van een polarBear
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+
+        // let igloo           = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: 25, y: 240, frameHeight: 39, framewidth: 100}, 1, this);
+        // this.BGList.push(igloo);
 
         // console.log(lvl);
 
@@ -88,10 +95,16 @@ class Game {
     private update() : void {
         // Aanroepen van update function
         // this._background.update();
-        if(this._pause){
+        if (this._pause) {
 
-        }else{
-            this._generator.generateJunk();
+        }else {
+            if (this._ui.getScore() >= 200) {
+                this._generator.stopGenerating();
+            }
+            else {
+                this._generator.generateJunk();
+            }
+
 
             for(var obj of this.objectList) {
                 obj.Update();
@@ -106,19 +119,30 @@ class Game {
 
             this.checkCollisions();
 
-            if(this._ui.getScore() > 50){
-                // this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
-                this._ui.addScore(-60);
-                this._generator.level = 2;
-                console.log("calle");
-            }
+            // if(this._ui.getScore() > 50){
+            //     // this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
+            //
+            //     switch (this._generator.level) {
+            //         case 1:
+            //             this._generator.level = 2;
+            //             break;
+            //         case 2:
+            //             this._generator.level = 1;
+            //             break;
+            //         default:
+            //             this._generator.level = 1;
+            //             break;
+            //     }
+            //     this._ui.addScore(-60);
+            //     console.log("calle");
+            // }
             this._ui.update();
 
             this.draw();
         }
     }
 
-    private checkCollisions() : void {
+    private checkCollisions(): void {
         // var collidables = new Array<ICollidable>();
         // **
         // * Loop through GO_collidables to do a function and check for collisions
@@ -214,5 +238,20 @@ class Game {
 
     public setWorldSpeed(int) : void {
         this.WorldSpeed = int;
+    }
+
+    // Add a count to the amount of collected coins.
+    public updateCollectedCoins(lvl: number): void {
+        let amount: number = 1;
+        this._collectCounter += amount;
+
+        console.log(this._collectCounter);
+
+        // Change background (level)
+        if (this._collectCounter === 5 || this._collectCounter === 10 || this._collectCounter === 15) {
+            // this._bg.changeBackground(;)
+            this.Level = new level(this, lvl, this._collectCounter);
+            // this._bg.findBackground(this._collectCounter);
+        }
     }
 }

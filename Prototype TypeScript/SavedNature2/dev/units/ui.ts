@@ -6,7 +6,7 @@ class UI extends GameObjects
     private _liveImage : HTMLImageElement;
     private _game:Game;
 
-    constructor(game:Game, source)
+    constructor(game: Game, source)
     {
         super(source);
         this.context.font = this._font;

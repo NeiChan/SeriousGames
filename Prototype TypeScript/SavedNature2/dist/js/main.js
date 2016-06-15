@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var bgObjects = (function () {
     function bgObjects(source, speed, game) {
         this.xFix = 1349;
+        this.fixedX = this.x + this.xFix;
         this.speed = 1;
         this.speedOffset = 0;
         this.timer = 0;
@@ -149,23 +150,36 @@ var GameObjects = (function () {
     return GameObjects;
 }());
 var level = (function () {
-    function level(game, level) {
+    function level(game, level, coins) {
         this.game = game;
         this.level = level;
+        this._coins = coins;
         this.setGame();
     }
     level.prototype.setGame = function () {
         switch (this.level) {
             case 1:
                 {
-                    var backgroundImg = this.game.assets.greenBG;
-                    this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
+                    var backgroundImg_1 = this.game.assets.greenBG;
+                    this._background = new Background({ imgSrc: backgroundImg_1, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
                     this.game.BGList.push(this._background);
                 }
                 break;
             case 2:
                 {
-                    var backgroundImg = this.game.assets.winterBG;
+                    switch (this._coins) {
+                        case 5:
+                            var backgroundImg = this.game.assets.winterBG.BG3;
+                            break;
+                        case 10:
+                            var backgroundImg = this.game.assets.winterBG.BG2;
+                            break;
+                        case 15:
+                            var backgroundImg = this.game.assets.winterBG.BG1;
+                            break;
+                        default:
+                            var backgroundImg = this.game.assets.winterBG.BG4;
+                    }
                     this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
                     this.game.BGList.push(this._background);
                 }
@@ -246,13 +260,15 @@ var Game = (function () {
         var _this = this;
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
+        this._collectCounter = 0;
         this.objectList = new Array();
         this.BGList = new Array();
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         this.context.save();
         this.context.scale(1.8, 1.8);
-        this.Level = new level(this, lvl);
+        this.curLvl = lvl;
+        this.Level = new level(this, this.curLvl, 0);
         var bearImg = this.assets.polarbear2;
         this._ui = new UI(this, { x: 50, y: 50 });
         this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
@@ -281,7 +297,12 @@ var Game = (function () {
         if (this._pause) {
         }
         else {
-            this._generator.generateJunk();
+            if (this._ui.getScore() >= 200) {
+                this._generator.stopGenerating();
+            }
+            else {
+                this._generator.generateJunk();
+            }
             for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
                 var obj = _a[_i];
                 obj.Update();
@@ -292,11 +313,6 @@ var Game = (function () {
             }
             this._bear.update();
             this.checkCollisions();
-            if (this._ui.getScore() > 50) {
-                this._ui.addScore(-60);
-                this._generator.level = 2;
-                console.log("calle");
-            }
             this._ui.update();
             this.draw();
         }
@@ -353,6 +369,14 @@ var Game = (function () {
     };
     Game.prototype.setWorldSpeed = function (int) {
         this.WorldSpeed = int;
+    };
+    Game.prototype.updateCollectedCoins = function (lvl) {
+        var amount = 1;
+        this._collectCounter += amount;
+        console.log(this._collectCounter);
+        if (this._collectCounter === 5 || this._collectCounter === 10 || this._collectCounter === 15) {
+            this.Level = new level(this, lvl, this._collectCounter);
+        }
     };
     return Game;
 }());
@@ -475,7 +499,14 @@ var AssetsManager = (function () {
             Sign2: this.greenBase + "Objects/Sign_2.png",
             Stone: this.greenBase + "Objects/Stone.png",
         };
-        this.winterBG = this.winterBase + "BG.png";
+        this.winterBG = {
+            BG1: this.winterBase + "BG.png",
+            BG2: this.winterBase + "BG2.png",
+            BG3: this.winterBase + "BG3.png",
+            BG4: this.winterBase + "BG4.png",
+            BG5: this.winterBase + "BG5.png",
+            BG6: this.winterBase + "BG6.png",
+        };
         this.winterTiles = [
             this.winterBase + "Tiles/1.png",
             this.winterBase + "Tiles/2.png",
@@ -505,10 +536,14 @@ var AssetsManager = (function () {
             IceBox: this.winterBase + "Objects/IceBox.png",
             IceBoxSmall: this.winterBase + "Objects/IceBox_small.png",
             SnowMan: this.winterBase + "Objects/SnowMan.png",
+            SnowMan2: this.winterBase + "Objects/SnowMan2.png",
             Igloo: this.winterBase + "Objects/Igloo.png",
+            Igloo2: this.winterBase + "Objects/Igloo2.png",
             Stone: this.winterBase + "Objects/Stone.png",
+            Stone2: this.winterBase + "Objects/Stone2.png",
             Sign1: this.winterBase + "Objects/Sign_1.png",
             Sign2: this.winterBase + "Objects/Sign_2.png",
+            Sign2_2: this.winterBase + "Objects/Sign_2_2.png",
         };
         this.collectables = {
             goldCoin: this.collectCoins + "goldCoin.png"
@@ -520,7 +555,7 @@ var JunkGenerator = (function () {
     function JunkGenerator(game, objList, bglist, lvl) {
         this.assets = new AssetsManager();
         this.minNumber = 1;
-        this.maxNumber = 9;
+        this.maxNumber = 13;
         this.counter = 0;
         this.updateTimout = 60;
         this.minPositionY = 185;
@@ -607,14 +642,17 @@ var JunkGenerator = (function () {
             var randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
             var crateImg = this.assets.desObjects.Crate;
             var bush = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2_1, x: randomX, y: 30, frameHeight: 280, frameWidth: 228 }, 1, this._game);
+            var snowman = new BackgroundObject({ imgSrc: this.assets.winterObjects.SnowMan, x: randomX, y: 225, frameHeight: 50, frameWidth: 55 }, 1, this._game);
+            var sign = new BackgroundObject({ imgSrc: this.assets.winterObjects.Sign2_2, x: randomX, y: 225, frameHeight: 50, frameWidth: 53 }, 1, this._game);
+            var igloo = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: randomX, y: 255, frameHeight: 120, framewidth: 120 }, 1, this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
+            var stone = new crate(this._game, { imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
                     break;
                 case 2:
-                    console.log("Case 2 - Coin Object");
                     this.objectList.push(coin);
                     break;
                 case 3:
@@ -638,9 +676,23 @@ var JunkGenerator = (function () {
                 case 9:
                     this.objectList.push(Crate);
                     break;
+                case 10:
+                    this.BGList.push(snowman);
+                    break;
+                case 11:
+                    this.BGList.push(sign);
+                    break;
+                case 12:
+                    this.objectList.push(stone);
+                    break;
+                case 13:
+                    this.objectList.push(stone);
+                    break;
             }
             this.counter = 0;
         }
+    };
+    JunkGenerator.prototype.stopGenerating = function () {
     };
     return JunkGenerator;
 }());
@@ -648,6 +700,7 @@ var Background = (function (_super) {
     __extends(Background, _super);
     function Background(source, speed, game, lvl) {
         _super.call(this, source, speed, game);
+        this.assets = new AssetsManager();
         this.level = lvl;
     }
     Background.prototype.draw = function () {
@@ -726,6 +779,7 @@ var Coin = (function (_super) {
     };
     Coin.prototype.onCollision = function (gameObject) {
         this._game._ui.updateScore(10);
+        this._game.updateCollectedCoins(this._game.curLvl);
         var sound = new Howl({
             urls: ["sound/mario1up.mp3"],
             volume: 0.4,
@@ -1044,6 +1098,7 @@ var polarBear = (function (_super) {
     };
     polarBear.prototype.checkObj = function (gameObject) {
         if (gameObject instanceof crate) {
+            this._game._ui.loseLive;
             var y = gameObject.getY();
             this.currentCollision = gameObject;
             var crateWidth = gameObject.getFrameWidth();
@@ -1053,7 +1108,6 @@ var polarBear = (function (_super) {
             var count = 0;
             var onTop = 0;
             if (polarBounds.leftCollision(crateBounds)) {
-                console.log("left collision");
                 this._game.setWorldSpeed(0);
             }
             else if (polarBounds.topCollision(crateBounds)) {
@@ -1077,6 +1131,58 @@ var polarBear = (function (_super) {
         return _super.prototype.getFrameWidth.call(this);
     };
     return polarBear;
+}(GameObjects));
+var Stone = (function (_super) {
+    __extends(Stone, _super);
+    function Stone(game, source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+        this.game = game;
+    }
+    Stone.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    Stone.prototype.onCollision = function (gameObject) {
+        this.hasCollision = true;
+        if (this.bearJump === true) {
+            this.game.setWorldSpeed(5);
+        }
+        else if (gameObject instanceof bullet) {
+            this.game.setWorldSpeed(5);
+        }
+        else {
+        }
+        if (gameObject instanceof bullet) {
+            this.game.deleteGO(this);
+            var sound = new Howl({
+                urls: ["sound/go.ogg"],
+                volume: 0.4,
+                sprite: {
+                    blast: [0, 2000],
+                }
+            });
+            sound.play('blast');
+        }
+    };
+    Stone.prototype.getY = function () {
+        return _super.prototype.getY.call(this);
+    };
+    Stone.prototype.getObjectWidth = function () {
+        return _super.prototype.getFrameWidth.call(this);
+    };
+    Stone.prototype.onCollisionExit = function () {
+        this.hasCollision = false;
+    };
+    Stone.prototype.Update = function () {
+        this.x = this.x - this.game.getWorldSpeed();
+    };
+    Stone.prototype.draw = function () {
+        _super.prototype.Draw.call(this);
+    };
+    Stone.prototype.bearJumps = function (bool) {
+        this.bearJump = bool;
+    };
+    return Stone;
 }(GameObjects));
 var testSubject = (function (_super) {
     __extends(testSubject, _super);
