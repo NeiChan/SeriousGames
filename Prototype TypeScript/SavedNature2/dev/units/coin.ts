@@ -2,7 +2,7 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
         public hasCollision:boolean     = true;
         public hasDestructable:boolean  = true;
         private _game:Game;
-        
+
         constructor(game:Game, source) {
             super(source);
             this._game = game;
@@ -31,10 +31,13 @@ class Coin extends GameObjects implements ICollidable, IDestructable {
                         blast: [0, 2000],
                     }
                 });
-                
+
             sound.play('blast');
 
+            // this._game._ui.loseLive();
+
             this._game.deleteGO(this, null);
+
         }
 
         public draw(): void {

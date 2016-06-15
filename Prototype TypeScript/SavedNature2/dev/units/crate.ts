@@ -5,7 +5,7 @@ class crate extends GameObjects implements ICollidable{
     private game : Game;
 
     public bearJump : boolean;
-    
+
     constructor(game:Game, source){
         super(source);
         this.game = game;
@@ -13,10 +13,10 @@ class crate extends GameObjects implements ICollidable{
     public getBounds():Rectangle{
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
-    
+
     onCollision(gameObject:ICollidable) {
         this.hasCollision = true;
-      
+
         if(this.bearJump === true){
             this.game.setWorldSpeed(5);
         } else if(gameObject instanceof bullet){
@@ -35,40 +35,40 @@ class crate extends GameObjects implements ICollidable{
                         blast: [0, 2000],
                     }
                 });
-                
+
             sound.play('blast');
         }
-        
 
 
-        
+
+
         // gameObject.
         // functie van ICollidable
         // Doe iets wanneer er een collision is.
-        
+
         //this._ui.updateScore(10);
-        
+
         //this.x = 0;
         // console.log("olaaa");
 
     }
-    
+
     public getY():number{
         return super.getY();
     }
-    
+
     public getObjectWidth():number{
         return super.getFrameWidth();
     }
-    
+
     public onCollisionExit() : void{
         this.hasCollision = false;
     }
-    
+
     public Update():void{
         this.x = this.x - this.game.getWorldSpeed();
     }
-    
+
     public draw() : void {
         super.Draw();
     }
