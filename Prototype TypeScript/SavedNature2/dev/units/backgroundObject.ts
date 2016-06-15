@@ -20,6 +20,7 @@ class BackgroundObject extends bgObjects
     public update() : void{
         super.update();
 
+
         if(super.getX() <= -350){
                 this._game.deleteGO(null, this);
             }

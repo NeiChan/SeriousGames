@@ -3,6 +3,165 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var Game = (function () {
+    function Game(lvl) {
+        var _this = this;
+        this.assets = new AssetsManager();
+        this.WorldSpeed = 5;
+        this.objectList = new Array();
+        this.BGList = new Array();
+        this.canvas = document.getElementsByTagName('canvas')[0];
+        this.context = this.canvas.getContext('2d');
+        this.context.save();
+        this.context.scale(1.8, 1.8);
+        this.Level = new level(this, lvl);
+        var bearImg = this.assets.polarbear2;
+        this._ui = new UI(this, { x: 50, y: 50 });
+        this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
+        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        requestAnimationFrame(function () { return _this.update(); });
+    }
+    Game.prototype.draw = function () {
+        var _this = this;
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var _i = 0, _a = this.BGList; _i < _a.length; _i++) {
+            var obj2 = _a[_i];
+            obj2.draw();
+        }
+        for (var _b = 0, _c = this.objectList; _b < _c.length; _b++) {
+            var obj = _c[_b];
+            obj.Draw();
+        }
+        this._ui.draw();
+        this._bear.draw();
+        requestAnimationFrame(function () { return _this.update(); });
+    };
+    Game.prototype.pause = function () {
+        this._pause = true;
+    };
+    Game.prototype.update = function () {
+        if (this._pause) {
+        }
+        else {
+            this._generator.generateJunk();
+            for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                obj.Update();
+            }
+            for (var _b = 0, _c = this.BGList; _b < _c.length; _b++) {
+                var obj2 = _c[_b];
+                obj2.update();
+            }
+            this._bear.update();
+            this.checkCollisions();
+            if (this._ui.getScore() > 50) {
+                this._ui.addScore(-60);
+                this._generator.level = 2;
+                console.log("calle");
+            }
+            this._ui.update();
+            this.draw();
+        }
+    };
+    Game.prototype.checkCollisions = function () {
+        for (var _i = 0, _a = this.objectList; _i < _a.length; _i++) {
+            var obj2 = _a[_i];
+            for (var _b = 0, _c = this.objectList; _b < _c.length; _b++) {
+                var obj = _c[_b];
+                if (obj instanceof bullet || obj2 instanceof bullet) {
+                    var obj1Bounds = obj2.getBounds();
+                    var obj2Bounds = obj.getBounds();
+                    if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                        obj2.onCollision(obj);
+                        obj.onCollision(obj2);
+                    }
+                }
+            }
+        }
+        for (var _d = 0, _e = this.objectList; _d < _e.length; _d++) {
+            var obj = _e[_d];
+            var obj1Bounds = this._bear.getBounds();
+            var obj2Bounds = obj.getBounds();
+            if (obj1Bounds.hitsOtherRectangle(obj2Bounds)) {
+                this._bear.onCollision(obj);
+                obj.onCollision(this._bear);
+            }
+        }
+    };
+    Game.prototype.deleteGO = function (obj, obj2) {
+        if (obj) {
+            var index = this.objectList.indexOf(obj);
+            this.objectList.splice(index, 1);
+        }
+        else if (obj2) {
+            var index = this.BGList.indexOf(obj2);
+            this.BGList.splice(index, 1);
+        }
+        else {
+            console.log("not true shit");
+        }
+    };
+    Game.prototype.checkDestructable = function (currentObj, listObjects) {
+        var index = listObjects.indexOf(currentObj);
+        var hasDestructable = listObjects[index].hasDestructable;
+        if (hasDestructable) {
+            if (index > -1) {
+                return listObjects.splice(index, 1);
+            }
+        }
+    };
+    Game.prototype.getWorldSpeed = function () {
+        return this.WorldSpeed;
+    };
+    Game.prototype.setWorldSpeed = function (int) {
+        this.WorldSpeed = int;
+    };
+    return Game;
+}());
+window.addEventListener("load", function () {
+    new Menu();
+});
+var Menu = (function () {
+    function Menu() {
+        var _this = this;
+        this.gameTitle = document.createElement("DIV");
+        this.btnStart = document.createElement("button");
+        this.btnClose = document.createElement("button");
+        this.btnHighscores = document.createElement("button");
+        this.gameTitle.setAttribute("id", "gameTitle");
+        this.btnStart.setAttribute("id", "btnStart");
+        this.btnClose.setAttribute("id", "btnClose");
+        this.btnHighscores.setAttribute("id", "btnHighscores");
+        this.gameTitle.style.backgroundImage = "url('images/interface/title_screen.png')";
+        this.btnStart.innerHTML = "Start";
+        this.btnClose.innerHTML = "Uitleg";
+        this.btnHighscores.innerHTML = "Highscores";
+        this.btnHighscores.addEventListener("click", function () { return _this.showLeaderboards(); });
+        this.btnStart.addEventListener("click", this.removeMenu);
+        this.btnClose.addEventListener("click", function () { return _this.showUitleg(); });
+        var content = document.getElementById('content');
+        document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
+        content.appendChild(this.gameTitle);
+        content.appendChild(this.btnStart);
+        content.appendChild(this.btnHighscores);
+        content.appendChild(this.btnClose);
+    }
+    Menu.prototype.showLeaderboards = function () {
+        window.location.href = "leaderboard.php";
+    };
+    Menu.prototype.showUitleg = function () {
+        window.location.href = "explanation.html";
+    };
+    Menu.prototype.removeMenu = function () {
+        document.getElementById("gameTitle").remove();
+        document.getElementById("btnStart").remove();
+        document.getElementById("btnClose").remove();
+        document.getElementById("btnHighscores").remove();
+        document.body.style.backgroundImage = "";
+        this.main = new Game(2);
+    };
+    return Menu;
+}());
 var bgObjects = (function () {
     function bgObjects(source, speed, game) {
         this.xFix = 1349;
@@ -255,6 +414,7 @@ var Rectangle = (function () {
     };
     return Rectangle;
 }());
+<<<<<<< HEAD
 var Game = (function () {
     function Game(lvl) {
         var _this = this;
@@ -420,6 +580,8 @@ var Menu = (function () {
     };
     return Menu;
 }());
+=======
+>>>>>>> origin/developer
 var AssetsManager = (function () {
     function AssetsManager() {
         this.polarbear = "images/polarbear/spritesheet.png";

@@ -1,0 +1,80 @@
+body {
+    background-image: url("../images/backgrounds/menuClouds.png");
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+#space {
+    padding-top: 5%;
+    padding-left: 30%;
+    padding-right: 30%;
+}
+
+#header {
+    padding: 5%;
+    text-align: center;
+}
+
+#main {
+	border: 3px solid black;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    margin-left: 3px;
+    margin-right: 3px;
+    border-radius: 15px;
+    background-color: red;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+#returnspace{
+    padding-left: 40%;
+    padding-right: 40%;
+}
+#return {
+	border: 3px solid black;
+	cursor:pointer;
+	width: 100%;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    margin-left: 3px;
+    margin-right: 3px;
+    color: #FFFFFF;
+	font-size: 1,5em;
+    border-radius: 15px;
+    background-color: red;
+    text-align: center;
+}
+
+#return a {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#return a:link {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#return a:visited {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#return a:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#return a:active {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#footer {
+    color: #FFFFFF;
+    text-decoration: none;
+}
