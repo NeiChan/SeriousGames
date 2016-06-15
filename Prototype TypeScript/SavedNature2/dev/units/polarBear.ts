@@ -17,9 +17,9 @@ class polarBear extends GameObjects implements ICollidable {
 
     private currentCollision : crate;
     // private collidesWith:IHardObject;
-    
+
     // private _ui : UI;
-    
+
     constructor(game:Game, source) {
         // extending from GameObjects
         super(source);
@@ -36,7 +36,7 @@ class polarBear extends GameObjects implements ICollidable {
     getBounds():Rectangle {
         return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
     }
-    
+
     private onKeyDown(event:KeyboardEvent):void {
         switch(event.keyCode){
             case 39: // RIGHT
@@ -50,7 +50,6 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeAnimationY(0);
                 this.isMoving = true;
                 this._game.setWorldSpeed(5);
-                
                 break;
             case 37: // LEFT
                 if(this.velX > -this.speed ){
@@ -86,7 +85,7 @@ class polarBear extends GameObjects implements ICollidable {
                                 blast: [0, 2000],
                             }
                         });
-                        
+
                     sound.play('blast');
                 }
                 break;
@@ -111,7 +110,7 @@ class polarBear extends GameObjects implements ICollidable {
                 // this.updateUIScore(10);
                 // // // Update all movements that exist in the gameObject list in the game
                 // this.changeAllObjectsMovementX(-10);
-                
+
                 break;
             case 39: // RIGHT
                 super.changeY(0);
@@ -122,10 +121,10 @@ class polarBear extends GameObjects implements ICollidable {
             case 32: // SPACEBAR
                 break;
             default:
-                
-                break;    
+
+                break;
         }
-        
+
         // requestAnimationFrame( () => this.onKeyUp(event));
     }
 
@@ -133,7 +132,7 @@ class polarBear extends GameObjects implements ICollidable {
         // console.log("I have been drawn");
         super.Draw();
     }
-    
+
     public wait() : void{
 
     }
@@ -172,18 +171,18 @@ class polarBear extends GameObjects implements ICollidable {
             this._isJumping = false;
         }
     }
-    
+
     private updateUIScore(points):void{
         this._game._ui.updateScore(points);
     }
-    
+
     public getMoving() {
         return this.isMoving;
     }
-    
+
     onCollision(gameObject:ICollidable) : void {
         this.isMoving;
-        
+
         this.hasCollision = true;
         // console.log("AUHFUYADG");
 
@@ -211,11 +210,11 @@ class polarBear extends GameObjects implements ICollidable {
     public getY():number{
         return super.getY();
     }
-    
+
     public getX():number{
         return super.getX();
     }
-    
+
     public getObjectWidth() : number{
         return super.getFrameWidth();
     }

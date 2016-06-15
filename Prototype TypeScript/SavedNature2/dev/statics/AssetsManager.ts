@@ -92,7 +92,15 @@ class AssetsManager {
 
 
     // Winter level
-    public winterBG = this.winterBase + "BG.png";
+    public winterBG = {
+        BG1: this.winterBase + "BG.png",
+        BG2: this.winterBase + "BG2.png",
+        BG3: this.winterBase + "BG3.png",
+        BG4: this.winterBase + "BG4.png",
+        BG5: this.winterBase + "BG5.png",
+        BG6: this.winterBase + "BG6.png",
+    };
+    // public winterBG = this.winterBase + "BG.png";
 
     public winterTiles = [
         this.winterBase + "Tiles/1.png",
@@ -124,10 +132,14 @@ class AssetsManager {
         IceBox : this.winterBase + "Objects/IceBox.png",
         IceBoxSmall : this.winterBase + "Objects/IceBox_small.png",
         SnowMan : this.winterBase + "Objects/SnowMan.png",
+        SnowMan2: this.winterBase + "Objects/SnowMan2.png",
         Igloo : this.winterBase + "Objects/Igloo.png",
+        Igloo2: this.winterBase + "Objects/Igloo2.png",
         Stone : this.winterBase + "Objects/Stone.png",
+        Stone2: this.winterBase + "Objects/Stone2.png",
         Sign1 : this.winterBase + "Objects/Sign_1.png",
         Sign2 : this.winterBase + "Objects/Sign_2.png",
+        Sign2_2: this.winterBase + "Objects/Sign_2_2.png",
     };
 
     // Collectables

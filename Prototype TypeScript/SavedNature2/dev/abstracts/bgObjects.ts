@@ -1,6 +1,7 @@
 class bgObjects{
     protected x : number;
     private xFix: number = 1349;
+    private fixedX = this.x + this.xFix;
     private y : number;
 
     private speed = 1;
@@ -130,7 +131,7 @@ class bgObjects{
             dw	Destination width	Frame width
             dh	Destination height	Frame height
          */
-         
+
         // Defining the currentFrame during GameTime
         this.timer ++;
         if (this.timer % this.animationSpeed == 0) {
