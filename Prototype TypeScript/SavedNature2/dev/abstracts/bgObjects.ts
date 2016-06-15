@@ -1,5 +1,6 @@
 class bgObjects{
     protected x : number;
+    private xFix: number = 1349;
     private y : number;
 
     private speed = 1;
@@ -8,7 +9,7 @@ class bgObjects{
     protected context: CanvasRenderingContext2D;
     protected image: HTMLImageElement;
 
-    private imgSrc : string;
+    protected imgSrc : string;
 
     private timer:          number  = 0;
 
@@ -74,7 +75,7 @@ class bgObjects{
     public setX(int) : void{
         this.x = int;
     }
-    
+
     // public draw(){
     //     this.context.drawImage(this.image, this.x, this.y);
     // }
@@ -115,4 +116,41 @@ class bgObjects{
             this.frameHeight
         );
 	}
+
+    public draw2() : void
+    {
+        /**
+         * img	Source image object	Sprite sheet
+            sx	Source x	Frame index times frame width
+            sy	Source y	0
+            sw	Source width	Frame width
+            sh	Source height	Frame height
+            dx	Destination x	1349
+            dy	Destination y	0
+            dw	Destination width	Frame width
+            dh	Destination height	Frame height
+         */
+         
+        // Defining the currentFrame during GameTime
+        this.timer ++;
+        if (this.timer % this.animationSpeed == 0) {
+            this.currentFrame++;
+        }
+
+        if (this.currentFrame > this.maxFrame) {
+            this.currentFrame = 0;
+        }
+
+        this.context.drawImage (
+            this.image,
+            this.currentFrame * this.frameWidth,
+            this.animationY * this.frameHeight,
+            this.frameWidth,
+            this.frameHeight,
+            this.x + this.xFix,
+            this.y,
+            this.frameWidth,
+            this.frameHeight
+        );
+    }
 }

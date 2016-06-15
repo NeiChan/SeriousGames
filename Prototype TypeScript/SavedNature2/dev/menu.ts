@@ -5,7 +5,7 @@ class Menu {
     private btnClose: HTMLElement;
     private gameTitle: HTMLElement;
     private main: any;
-    
+
     constructor() {
         // Create the HTML elements.
         this.gameTitle = document.createElement("DIV");
@@ -33,16 +33,16 @@ class Menu {
         this.btnHighscores.addEventListener("click", () => this.showLeaderboards());
         // utility.addSoundEvent(this.btnHighscores,"game_over.ogg", "mouseover");
         this.btnStart.addEventListener("click", this.removeMenu);
-        
+
         // Append to the body
         var content = document.getElementById('content');
-        
+
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
-        
+
 
         // Make sound when clicking on button start
         // this.btnStart.addEventListener('click', () => this.soundmanager.play('go'));
@@ -63,6 +63,6 @@ class Menu {
         document.body.style.backgroundImage = "";
 
         // Call function to create Game.
-        this.main = new Game(1);
+        this.main = new Game(2);
     }
 }

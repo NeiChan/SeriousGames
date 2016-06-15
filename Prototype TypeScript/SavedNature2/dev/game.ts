@@ -6,22 +6,22 @@ class Game {
     private Level : level;
     private main: any;
 
-    //public objectList:Array<GameObjects> = new Array<GameObjects>();
-    
+    // public objectList:Array<GameObjects> = new Array<GameObjects>();
+
     public objectList:Array<ICollidable> = new Array<ICollidable>();
-    
+
     // array BG items (parallax)
     public BGList:Array<bgObjects> = new Array<bgObjects>();
-    
+
     // array FG items - toevoegen met unshift
     private _pause : boolean;
 
     // Get class player
-    
+
     public  _ui          : UI;
     private _bear        : polarBear;
     private _generator   : JunkGenerator;
-    
+
     private _goldCoin    : Coin;
 
     private context     : CanvasRenderingContext2D;
@@ -29,10 +29,11 @@ class Game {
 
     // constructor for Main
     constructor(lvl: number) {
-        // call createPlayer() function        
+        // call createPlayer() function
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
         this.context.save();
+
         // Enlarge screen by 1.8x
         this.context.scale(1.8, 1.8);
 
@@ -44,9 +45,11 @@ class Game {
         // Aanmaken van een polarBear
         this._ui            = new UI(this, {x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);
-        
+
         // Aanmaken van een polarBear
         this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+
+        // console.log(lvl);
 
         // Request animation, replaces an update() function so it can run at 60 fps
         requestAnimationFrame(() => this.update());
@@ -61,7 +64,7 @@ class Game {
     private draw()  : void {
         this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
         // this._background.draw();
-        
+
         for(var obj2 of this.BGList){
             obj2.draw();
         }
@@ -69,11 +72,11 @@ class Game {
         for(var obj of this.objectList) {
             obj.Draw();
         }
-        
+
         this._ui.draw();
 
         this._bear.draw();
-        
+
         requestAnimationFrame(() => this.update());
     }
 
@@ -89,11 +92,11 @@ class Game {
 
         }else{
             this._generator.generateJunk();
-            
+
             for(var obj of this.objectList) {
                 obj.Update();
             }
-            
+
             for(var obj2 of this.BGList) {
                 obj2.update();
                 // console.log(obj2);
@@ -102,7 +105,7 @@ class Game {
             this._bear.update();
 
             this.checkCollisions();
-            
+
             if(this._ui.getScore() > 50){
                 // this.context.clearRect(0, 0, this.canvas.width,  this.canvas.height);
                 this._ui.addScore(-60);
@@ -110,18 +113,18 @@ class Game {
                 console.log("calle");
             }
             this._ui.update();
-            
+
             this.draw();
         }
     }
 
     private checkCollisions() : void {
         // var collidables = new Array<ICollidable>();
-        //**
-        //* Loop through GO_collidables to do a function and check for collisions
+        // **
+        // * Loop through GO_collidables to do a function and check for collisions
 
         // for(var obj1 of GO_collidables){
-            //let hit:boolean = false;
+            // let hit:boolean = false;
 
         // for(var obj of this.objectList) {
         //     if(obj.hasCollision){
@@ -130,26 +133,26 @@ class Game {
         // }
         for(var obj2 of this.objectList){
             for(var obj of this.objectList){
-                
+
                     if(obj instanceof bullet || obj2 instanceof bullet){
                         let obj1Bounds = obj2.getBounds();
-                        let obj2Bounds = obj.getBounds();   
+                        let obj2Bounds = obj.getBounds();
 
                         if(obj1Bounds.hitsOtherRectangle(obj2Bounds)){
 
                             obj2.onCollision(obj);
                             obj.onCollision(obj2);
                         }
-                    
 
-                    
+
+
                         // if obj2 gelijk is aan objectList
 
                         // check on hasDestructable
                         // this.checkDestructable(obj, this.objectList);
-                        //this.checkDestructable(obj2, this.objectList);
+                        // this.checkDestructable(obj2, this.objectList);
                         // hit = true;
-                    
+
                 }
             }
         }
@@ -173,7 +176,7 @@ class Game {
 
                     // check on hasDestructable
                     // this.checkDestructable(obj, this.objectList);
-                    //this.checkDestructable(obj2, this.objectList);
+                    // this.checkDestructable(obj2, this.objectList);
                     // hit = true;
                 }
             // }
@@ -193,15 +196,15 @@ class Game {
         // console.log("BG list" + this.BGList);
         // console.log("object list" + this.objectList);
     }
-    
+
     private checkDestructable(currentObj, listObjects) : void {
         let index = listObjects.indexOf(currentObj);
         let hasDestructable = listObjects[index].hasDestructable;
-        
+
         if(hasDestructable){
             if(index > -1) {
                 return listObjects.splice(index, 1);
-            } 
+            }
         }
     }
 

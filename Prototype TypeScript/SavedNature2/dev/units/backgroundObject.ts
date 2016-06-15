@@ -1,5 +1,5 @@
 class BackgroundObject extends bgObjects
-{   
+{
     private _game : Game;
     constructor(source, speed, _game: Game) {
         // extending from GameObjects
@@ -7,20 +7,20 @@ class BackgroundObject extends bgObjects
 
         this._game = _game;
     }
-    
+
     public draw() : void {
-        //  console.log("I have been drawn"); 
+        //  console.log("I have been drawn");
         super.draw();
     }
-    
+
     public wait() : void{
-        
+
     }
-    
+
     public update() : void{
         super.update();
 
-        if(super.getX() <= 0){
+        if(super.getX() <= -350){
                 this._game.deleteGO(null, this);
             }
         // this.x -= 5;

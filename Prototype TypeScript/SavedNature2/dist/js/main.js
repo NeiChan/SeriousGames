@@ -3,6 +3,244 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var bgObjects = (function () {
+    function bgObjects(source, speed, game) {
+        this.xFix = 1349;
+        this.speed = 1;
+        this.speedOffset = 0;
+        this.timer = 0;
+        this.directionX = 0;
+        this.directionY = 0;
+        this.currentFrame = 0;
+        this.maxFrame = 0;
+        this.frameWidth = 0;
+        this.frameHeight = 0;
+        this.animationY = 0;
+        this.animationSpeed = 0;
+        this.init(source);
+        if (speed) {
+            this.speedOffset = speed;
+        }
+        this.game = game;
+        this.createCanvasElement();
+    }
+    bgObjects.prototype.init = function (source) {
+        utility.CopyProperties(source, this);
+    };
+    bgObjects.prototype.createCanvasElement = function () {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        this.context = canvas.getContext('2d');
+        this.image = new Image();
+        this.image.src = this.imgSrc;
+    };
+    bgObjects.prototype.changeSpeed = function (int) {
+        this.speed = int;
+    };
+    bgObjects.prototype.newImage = function (img) {
+        this.image.src = img;
+    };
+    bgObjects.prototype.update = function () {
+        this.x = this.x + (this.game.WorldSpeed * -(this.speed * this.speedOffset));
+    };
+    bgObjects.prototype.getX = function () {
+        return this.x;
+    };
+    bgObjects.prototype.setX = function (int) {
+        this.x = int;
+    };
+    bgObjects.prototype.draw = function () {
+        this.timer++;
+        if (this.timer % this.animationSpeed == 0) {
+            this.currentFrame++;
+        }
+        if (this.currentFrame > this.maxFrame) {
+            this.currentFrame = 0;
+        }
+        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    bgObjects.prototype.draw2 = function () {
+        this.timer++;
+        if (this.timer % this.animationSpeed == 0) {
+            this.currentFrame++;
+        }
+        if (this.currentFrame > this.maxFrame) {
+            this.currentFrame = 0;
+        }
+        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x + this.xFix, this.y, this.frameWidth, this.frameHeight);
+    };
+    return bgObjects;
+}());
+var GameObjects = (function () {
+    function GameObjects(source) {
+        this.assets = new AssetsManager();
+        this.directionX = 0;
+        this.directionY = 0;
+        this.x = 0;
+        this.y = 0;
+        this.speed = 0;
+        this.currentFrame = 0;
+        this.maxFrame = 0;
+        this.frameWidth = 0;
+        this.frameHeight = 0;
+        this.animationY = 0;
+        this.animationSpeed = 0;
+        this.timer = 0;
+        this.init(source);
+        this.createCanvasElement();
+    }
+    GameObjects.prototype.init = function (source) {
+        utility.CopyProperties(source, this);
+    };
+    GameObjects.prototype.createCanvasElement = function () {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        this.context = canvas.getContext('2d');
+        this.image = new Image();
+        this.image.src = this.imgSrc;
+    };
+    GameObjects.prototype.changeY = function (int) {
+        this.directionY = int;
+    };
+    GameObjects.prototype.changeAnimationY = function (int) {
+        this.animationY = int;
+    };
+    GameObjects.prototype.changeX = function (int) {
+        this.directionX = int;
+    };
+    GameObjects.prototype.updateY = function (int) {
+        this.y = this.y + int;
+    };
+    GameObjects.prototype.getY = function () {
+        return this.y;
+    };
+    GameObjects.prototype.getX = function () {
+        return this.x;
+    };
+    GameObjects.prototype.setY = function (int) {
+        this.y = int;
+    };
+    GameObjects.prototype.setX = function (int) {
+        this.x = int;
+    };
+    GameObjects.prototype.changeMovementX = function (int) {
+        this.x = this.x + this.speed * this.directionX + int;
+    };
+    GameObjects.prototype.getFrameHeight = function () {
+        return this.frameHeight;
+    };
+    GameObjects.prototype.getFrameWidth = function () {
+        return this.frameWidth;
+    };
+    GameObjects.prototype.move = function () {
+        this.x = this.x + this.speed * this.directionX;
+        this.y = this.y + this.speed * this.directionY;
+    };
+    GameObjects.prototype.Draw = function () {
+        this.timer++;
+        if (this.timer % this.animationSpeed == 0) {
+            this.currentFrame++;
+        }
+        if (this.currentFrame > this.maxFrame) {
+            this.currentFrame = 0;
+        }
+        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    GameObjects.prototype.Update = function () {
+    };
+    return GameObjects;
+}());
+var level = (function () {
+    function level(game, level) {
+        this.game = game;
+        this.level = level;
+        this.setGame();
+    }
+    level.prototype.setGame = function () {
+        switch (this.level) {
+            case 1:
+                {
+                    var backgroundImg = this.game.assets.greenBG;
+                    this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
+                    this.game.BGList.push(this._background);
+                }
+                break;
+            case 2:
+                {
+                    var backgroundImg = this.game.assets.winterBG;
+                    this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
+                    this.game.BGList.push(this._background);
+                }
+                break;
+        }
+    };
+    return level;
+}());
+var utility = (function () {
+    function utility() {
+    }
+    utility.CopyProperties = function (source, target) {
+        for (var prop in source) {
+            if (prop !== undefined) {
+                target[prop] = source[prop];
+            }
+            else {
+                console.error("Cannot set undefined property: " + prop);
+            }
+        }
+    };
+    utility.createDiv = function (elementName) {
+        var el = document.createElement(elementName);
+        document.body.appendChild(el);
+        return el;
+    };
+    utility.addSoundEvent = function (el, soundName, event) {
+        if (event) {
+            el.addEventListener(event, function () { return utility.playSound(soundName); });
+        }
+        else {
+            el.addEventListener('click', function () { return utility.playSound(soundName); });
+        }
+        return el;
+    };
+    utility.playSound = function (soundName) {
+        var sound = new Howl({
+            urls: ["sound/" + soundName],
+            volume: 0.4,
+            sprite: {
+                blast: [0, 2000],
+            }
+        });
+        sound.play('blast');
+    };
+    return utility;
+}());
+var Rectangle = (function () {
+    function Rectangle(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+    }
+    Rectangle.prototype.leftCollision = function (rec) {
+        return (this.x < rec.x);
+    };
+    Rectangle.prototype.topCollision = function (rec) {
+        return (this.y > rec.y);
+    };
+    Rectangle.prototype.hitsOtherRectangle = function (rec) {
+        return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);
+    };
+    Rectangle.prototype.isInside = function (posx, posy) {
+        var differencex = this.x - posx;
+        var differencey = this.y - posy;
+        return Math.abs(differencex) < this.width / 2 && Math.abs(differencey) < this.height / 2;
+    };
+    Rectangle.prototype.hasOverlap = function (rec) {
+        var differencex = this.x - rec.x;
+        var differencey = this.y - rec.y;
+        return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
+    };
+    return Rectangle;
+}());
 var Game = (function () {
     function Game(lvl) {
         var _this = this;
@@ -154,232 +392,9 @@ var Menu = (function () {
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "";
-        this.main = new Game(1);
+        this.main = new Game(2);
     };
     return Menu;
-}());
-var bgObjects = (function () {
-    function bgObjects(source, speed, game) {
-        this.speed = 1;
-        this.speedOffset = 0;
-        this.timer = 0;
-        this.directionX = 0;
-        this.directionY = 0;
-        this.currentFrame = 0;
-        this.maxFrame = 0;
-        this.frameWidth = 0;
-        this.frameHeight = 0;
-        this.animationY = 0;
-        this.animationSpeed = 0;
-        this.init(source);
-        if (speed) {
-            this.speedOffset = speed;
-        }
-        this.game = game;
-        this.createCanvasElement();
-    }
-    bgObjects.prototype.init = function (source) {
-        utility.CopyProperties(source, this);
-    };
-    bgObjects.prototype.createCanvasElement = function () {
-        var canvas = document.getElementsByTagName("canvas")[0];
-        this.context = canvas.getContext('2d');
-        this.image = new Image();
-        this.image.src = this.imgSrc;
-    };
-    bgObjects.prototype.changeSpeed = function (int) {
-        this.speed = int;
-    };
-    bgObjects.prototype.newImage = function (img) {
-        this.image.src = img;
-    };
-    bgObjects.prototype.update = function () {
-        this.x = this.x + (this.game.WorldSpeed * -(this.speed * this.speedOffset));
-    };
-    bgObjects.prototype.getX = function () {
-        return this.x;
-    };
-    bgObjects.prototype.setX = function (int) {
-        this.x = int;
-    };
-    bgObjects.prototype.draw = function () {
-        this.timer++;
-        if (this.timer % this.animationSpeed == 0) {
-            this.currentFrame++;
-        }
-        if (this.currentFrame > this.maxFrame) {
-            this.currentFrame = 0;
-        }
-        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    return bgObjects;
-}());
-var GameObjects = (function () {
-    function GameObjects(source) {
-        this.assets = new AssetsManager();
-        this.directionX = 0;
-        this.directionY = 0;
-        this.x = 0;
-        this.y = 0;
-        this.speed = 0;
-        this.currentFrame = 0;
-        this.maxFrame = 0;
-        this.frameWidth = 0;
-        this.frameHeight = 0;
-        this.animationY = 0;
-        this.animationSpeed = 0;
-        this.timer = 0;
-        this.init(source);
-        this.createCanvasElement();
-    }
-    GameObjects.prototype.init = function (source) {
-        utility.CopyProperties(source, this);
-    };
-    GameObjects.prototype.createCanvasElement = function () {
-        var canvas = document.getElementsByTagName("canvas")[0];
-        this.context = canvas.getContext('2d');
-        this.image = new Image();
-        this.image.src = this.imgSrc;
-    };
-    GameObjects.prototype.changeY = function (int) {
-        this.directionY = int;
-    };
-    GameObjects.prototype.changeAnimationY = function (int) {
-        this.animationY = int;
-    };
-    GameObjects.prototype.changeX = function (int) {
-        this.directionX = int;
-    };
-    GameObjects.prototype.updateY = function (int) {
-        this.y = this.y + int;
-    };
-    GameObjects.prototype.getY = function () {
-        return this.y;
-    };
-    GameObjects.prototype.getX = function () {
-        return this.x;
-    };
-    GameObjects.prototype.setY = function (int) {
-        this.y = int;
-    };
-    GameObjects.prototype.setX = function (int) {
-        this.x = int;
-    };
-    GameObjects.prototype.changeMovementX = function (int) {
-        this.x = this.x + this.speed * this.directionX + int;
-    };
-    GameObjects.prototype.getFrameHeight = function () {
-        return this.frameHeight;
-    };
-    GameObjects.prototype.getFrameWidth = function () {
-        return this.frameWidth;
-    };
-    GameObjects.prototype.move = function () {
-        this.x = this.x + this.speed * this.directionX;
-        this.y = this.y + this.speed * this.directionY;
-    };
-    GameObjects.prototype.Draw = function () {
-        this.timer++;
-        if (this.timer % this.animationSpeed == 0) {
-            this.currentFrame++;
-        }
-        if (this.currentFrame > this.maxFrame) {
-            this.currentFrame = 0;
-        }
-        this.context.drawImage(this.image, this.currentFrame * this.frameWidth, this.animationY * this.frameHeight, this.frameWidth, this.frameHeight, this.x, this.y, this.frameWidth, this.frameHeight);
-    };
-    GameObjects.prototype.Update = function () {
-    };
-    return GameObjects;
-}());
-var level = (function () {
-    function level(game, level) {
-        this.game = game;
-        this.level = level;
-        this.setGame();
-    }
-    level.prototype.setGame = function () {
-        switch (this.level) {
-            case 1: {
-                var backgroundImg = this.game.assets.greenBG4;
-                this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game);
-                this.game.BGList.push(this._background);
-            }
-            case 2: {
-                var backgroundImg = this.game.assets.greenBG4;
-                this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game);
-                this.game.BGList.push(this._background);
-            }
-        }
-    };
-    return level;
-}());
-var utility = (function () {
-    function utility() {
-    }
-    utility.CopyProperties = function (source, target) {
-        for (var prop in source) {
-            if (prop !== undefined) {
-                target[prop] = source[prop];
-            }
-            else {
-                console.error("Cannot set undefined property: " + prop);
-            }
-        }
-    };
-    utility.createDiv = function (elementName) {
-        var el = document.createElement(elementName);
-        document.body.appendChild(el);
-        return el;
-    };
-    utility.addSoundEvent = function (el, soundName, event) {
-        if (event) {
-            el.addEventListener(event, function () { return utility.playSound(soundName); });
-        }
-        else {
-            el.addEventListener('click', function () { return utility.playSound(soundName); });
-        }
-        return el;
-    };
-    utility.playSound = function (soundName) {
-        var sound = new Howl({
-            urls: ["sound/" + soundName],
-            volume: 0.4,
-            sprite: {
-                blast: [0, 2000],
-            }
-        });
-        sound.play('blast');
-    };
-    return utility;
-}());
-var Rectangle = (function () {
-    function Rectangle(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
-    }
-    Rectangle.prototype.leftCollision = function (rec) {
-        return (this.x < rec.x);
-    };
-    Rectangle.prototype.topCollision = function (rec) {
-        return (this.y > rec.y);
-    };
-    Rectangle.prototype.hitsOtherRectangle = function (rec) {
-        return (this.x < rec.x + rec.width && this.x + this.width > rec.x && this.y < rec.y + rec.height && this.height + this.y > rec.y);
-    };
-    Rectangle.prototype.isInside = function (posx, posy) {
-        var differencex = this.x - posx;
-        var differencey = this.y - posy;
-        return Math.abs(differencex) < this.width / 2 && Math.abs(differencey) < this.height / 2;
-    };
-    Rectangle.prototype.hasOverlap = function (rec) {
-        var differencex = this.x - rec.x;
-        var differencey = this.y - rec.y;
-        return Math.abs(differencex) < this.width / 2 + rec.width / 2 && Math.abs(differencey) < this.height / 2 + rec.height / 2;
-    };
-    return Rectangle;
 }());
 var AssetsManager = (function () {
     function AssetsManager() {
@@ -425,10 +440,8 @@ var AssetsManager = (function () {
             Stone: this.desertBase + "Objects/Stone.png",
             StoneBlock: this.desertBase + "Objects/StoneBlock.png",
         };
-        this.greenBG = this.greenBase + "BG2.png";
+        this.greenBG = this.greenBase + "BG.png";
         this.greenBG2 = this.greenBase + "menu_background2.png";
-        this.greenBG3 = this.greenBase + "BG3.png";
-        this.greenBG4 = this.greenBase + "BG4.png";
         this.greenTiles = [
             this.greenBase + "Tiles/1.png",
             this.greenBase + "Tiles/2.png",
@@ -488,7 +501,9 @@ var AssetsManager = (function () {
             Crate: this.winterBase + "Objects/Crate.png",
             Tree1: this.winterBase + "Objects/Tree_1.png",
             Tree2: this.winterBase + "Objects/Tree_2.png",
+            Tree2_1: this.winterBase + "Objects/Tree_2_1.png",
             IceBox: this.winterBase + "Objects/IceBox.png",
+            IceBoxSmall: this.winterBase + "Objects/IceBox_small.png",
             SnowMan: this.winterBase + "Objects/SnowMan.png",
             Igloo: this.winterBase + "Objects/Igloo.png",
             Stone: this.winterBase + "Objects/Stone.png",
@@ -545,7 +560,7 @@ var JunkGenerator = (function () {
             var randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             var crateImg = this.assets.desObjects.Crate;
-            var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, this.getRandomFloat(1.05), this._game);
+            var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, 1, this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
             switch (random) {
@@ -591,9 +606,9 @@ var JunkGenerator = (function () {
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             var randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
             var crateImg = this.assets.desObjects.Crate;
-            var bush = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2, x: randomX, y: randomYTree, frameHeight: 280, frameWidth: 228 }, this.getRandomFloat(1.05), this._game);
-            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
-            var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBox, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            var bush = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2_1, x: randomX, y: 30, frameHeight: 280, frameWidth: 228 }, 1, this._game);
+            var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5 });
+            var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
@@ -631,16 +646,28 @@ var JunkGenerator = (function () {
 }());
 var Background = (function (_super) {
     __extends(Background, _super);
-    function Background(source, speed, game) {
+    function Background(source, speed, game, lvl) {
         _super.call(this, source, speed, game);
+        this.level = lvl;
     }
     Background.prototype.draw = function () {
         _super.prototype.draw.call(this);
+        _super.prototype.draw2.call(this);
     };
     Background.prototype.update = function () {
         _super.prototype.update.call(this);
-        if (_super.prototype.getX.call(this) + this.image.x < -623) {
-            _super.prototype.setX.call(this, 0);
+        console.log("The current level is: " + this.level);
+        switch (this.level) {
+            case 1:
+                if (_super.prototype.getX.call(this) + this.image.x < -1350) {
+                    _super.prototype.setX.call(this, 0);
+                }
+                break;
+            case 2:
+                if (_super.prototype.getX.call(this) + this.image.x < -1350) {
+                    _super.prototype.setX.call(this, 0);
+                }
+                break;
         }
     };
     Background.prototype.changeBackground = function (image) {
@@ -661,7 +688,7 @@ var BackgroundObject = (function (_super) {
     };
     BackgroundObject.prototype.update = function () {
         _super.prototype.update.call(this);
-        if (_super.prototype.getX.call(this) <= 0) {
+        if (_super.prototype.getX.call(this) <= -350) {
             this._game.deleteGO(null, this);
         }
     };
@@ -707,7 +734,6 @@ var Coin = (function (_super) {
             }
         });
         sound.play('blast');
-        this._game._ui.loseLive();
         this._game.deleteGO(this, null);
     };
     Coin.prototype.draw = function () {

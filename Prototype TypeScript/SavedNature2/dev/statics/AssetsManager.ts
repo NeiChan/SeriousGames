@@ -12,7 +12,7 @@ class AssetsManager {
     // ***************** Collectables
     private collectBase     = "images/collectables/";
     private collectCoins    = this.collectBase + "coins/";
-    
+
     // Desert level
     public desBG = this.desertBase + "BG.png";
 
@@ -52,10 +52,8 @@ class AssetsManager {
     };
 
     // Green level
-    public greenBG = this.greenBase + "BG2.png";
+    public greenBG = this.greenBase + "BG.png";
     public greenBG2 = this.greenBase + "menu_background2.png";
-    public greenBG3 = this.greenBase + "BG3.png";
-    public greenBG4 = this.greenBase + "BG4.png";
 
     public greenTiles = [
         this.greenBase + "Tiles/1.png",
@@ -122,7 +120,9 @@ class AssetsManager {
         Crate : this.winterBase + "Objects/Crate.png",
         Tree1 : this.winterBase + "Objects/Tree_1.png",
         Tree2 : this.winterBase + "Objects/Tree_2.png",
+        Tree2_1: this.winterBase + "Objects/Tree_2_1.png",
         IceBox : this.winterBase + "Objects/IceBox.png",
+        IceBoxSmall : this.winterBase + "Objects/IceBox_small.png",
         SnowMan : this.winterBase + "Objects/SnowMan.png",
         Igloo : this.winterBase + "Objects/Igloo.png",
         Stone : this.winterBase + "Objects/Stone.png",
