@@ -3,14 +3,17 @@
 class polarBear extends GameObjects implements ICollidable {
     private asset      : AssetsManager = new AssetsManager();
 
-    public _isJumping: boolean = false;
-    private _jumpTimer: number = 2.39645;
-    public  hasCollision:boolean = true;
-    public startCollisionPos : number = 0;
-    public endCollisionPos : number = 0;
-    public  myY:number = 0;
-    private isMoving:boolean = false;
-    private _game:Game;
+    public      _isJumping: boolean = false;
+    public      _isGrounded: boolean = true;
+    private     _jumpTimer: number = 2.39645;
+    public      hasCollision:boolean = true;
+    public      startCollisionPos : number = 0;
+    public      endCollisionPos : number = 0;
+    public      myY:number = 0;
+    private     isMoving:boolean = false;
+    private     _game:Game;
+    private     _friction = 0.8;
+    private     _gravity = 0.3
 
     private currentCollision : crate;
     // private collidesWith:IHardObject;
@@ -37,40 +40,33 @@ class polarBear extends GameObjects implements ICollidable {
     private onKeyDown(event:KeyboardEvent):void {
         switch(event.keyCode){
             case 39: // RIGHT
+                if(this.velX < this.speed ){
+                    this.velX++;
+                    super.changeX(1);
+                }
+
                 super.changeY(0);
-                super.changeX(1);
+                // super.changeX(1);
                 super.changeAnimationY(0);
                 this.isMoving = true;
                 this._game.setWorldSpeed(5);
                 
-                
-                // Update the Score from the UI in game
-                // this.updateUIScore(10);
-                // // // Update all movements that exist in the gameObject list in the game
-                // this.changeAllObjectsMovementX(-10);
-                
                 break;
             case 37: // LEFT
+                if(this.velX > -this.speed ){
+                    this.velX--;
+                    super.changeX(-1);
+                }
+
+                
                 super.changeY(0);
-                super.changeX(-1);
+                // super.changeX(-1);
                 super.changeAnimationY(2);
                 this.isMoving = true;
-                this._game.setWorldSpeed(2);
-                // Update the Score from the UI in game
-                // this.updateUIScore(10);
-                // // // Update all movements that exist in the gameObject list in the game
-                // this.changeAllObjectsMovementX(-10);
-                
+                this._game.setWorldSpeed(2);                
                 break;
             case 70: // F
                 this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
-
-                // let coin = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5});
-                // Update the Score from the UI in game
-                // this.updateUIScore(10);
-                // // // Update all movements that exist in the gameObject list in the game
-                // this.changeAllObjectsMovementX(-10);
-                
                 break;
             case 88: // UP
                 super.changeY(0);
@@ -78,13 +74,10 @@ class polarBear extends GameObjects implements ICollidable {
                 super.changeAnimationY(1);
                 break;
             case 32: // SPACEBAR
-                if(this._isJumping === true){
-                    console.log('already jumping');
-                } else {
+                if(!this._isJumping){
                     this._isJumping = true;
-                    
-                    this.myY = super.getY();
-                    // console.log("Y before jump =" + super.getY());
+                    this._isGrounded = false;
+                    this.velY = -this.speed*2.8;
 
                     var sound = new Howl({
                             urls: ["sound/jumpsound.mp3"],
@@ -95,11 +88,9 @@ class polarBear extends GameObjects implements ICollidable {
                         });
                         
                     sound.play('blast');
-                    
                 }
                 break;
         }
-        
         // requestAnimationFrame( () => this.onKeyDown(event));
     }
 
@@ -142,32 +133,6 @@ class polarBear extends GameObjects implements ICollidable {
         // console.log("I have been drawn");
         super.Draw();
     }
-
-    // weird partly physical jump function
-    public jump() : void{
-        this._game.setWorldSpeed(5);
-        var self = this;
-
-        // y = -((x-2.25)^2) + 5
-        // (‑((x-​2.25)^​2))+​5
-
-        
-
-        this._jumpTimer += 0.1;
-        var posY = 0;
-
-        posY = -((this._jumpTimer - 2.25) * this._jumpTimer) + 5;
-        posY = -posY * 5;
-
-        super.updateY(posY);
-
-        if(this._jumpTimer >= 4.5){
-            this._isJumping = false;
-            this._jumpTimer = 2.39645;
-            // super.setY(this.myY);
-            console.log("y after jump =" + super.getY());
-        }
-    }
     
     public wait() : void{
 
@@ -178,48 +143,34 @@ class polarBear extends GameObjects implements ICollidable {
             this.currentCollision.bearJumps(this._isJumping);
         }
 
-        // If HasCollision has a true do nothing
-        if(this.hasCollision){
-            
-        }else{
-            // Change the Y to 240.
-            super.setY(240);
-        }
-        
-        // for(var obj of this._game.objectList){
-        //      if(obj === this){
-        //         var l = this._game.objectList[obj];
-        //         console.log(l)
-        //         // this.objectList.unshift(l);
-        //     }
-        // }
-        
-        // super.setX(25);
         super.move();
-        if(this._isJumping === true){
-            this.jump();
-        } else {
-            for(var obj of this._game.objectList) {
+
+        this.velX *= this._friction;
+        this.velY += this._gravity;
+
+        this.x += this.velX;
+        this.y += this.velY;
+
+        if(this._isGrounded){
+            this.velY = 0;
+
+            console.log("Im on the ground");
             
-                // console.log("obj not equal to current so we move other objects");
-                if(obj instanceof crate){
-                    if(obj.getX() <= super.getX()){
-                        super.setY(240);    
-                    } 
-                }    
-                
-            }
+        }
+
+        // Check canvas box
+        if (this.x >= this._game.canvas.width - this.frameWidth) {
+            this.x = this._game.canvas.width-this.frameWidth;
+        }else if (this.x <= 0) {         
+            this.x = 0;     
         }
         
-        // console.log(super.getX() === this.getX());
-        
-        // if(super.getX() === this.endCollisionPos){
-        //     console.log('called');
-        //     this.onCollisionExit();
-        //     this.hasCollision = false;
-        // }
-
-        
+        // Ground is 240
+        if (this.y >= 240) {
+            //this.y = this._game.canvas.height - this.frameHeight;
+            this.y = 240;
+            this._isJumping = false;
+        }
     }
     
     private updateUIScore(points):void{
@@ -236,45 +187,23 @@ class polarBear extends GameObjects implements ICollidable {
         this.hasCollision = true;
         // console.log("AUHFUYADG");
 
-        this.checkObj(gameObject);
-        
-        // this.collidesWith = gameObject;
-        
-        // if(this.startCollisionPos === 0){
-        //     this.startCollisionPos = gameObject.getX();
-        //     this.endCollisionPos = this.startCollisionPos + gameObject.getObjectWidth();
-        //     // console.log(this.endCollisionPos);
-        // }
-        
-    }
-
-    checkObj(gameObject:ICollidable) : void{
         if(gameObject instanceof crate){
-            var y = gameObject.getY();
-            // super.setY(y - 45);
-            this.currentCollision = gameObject;
-            let crateWidth = gameObject.getFrameWidth();
-            let crateHeight = gameObject.getFrameHeight();
-
             let polarBounds = this.getBounds();
             let crateBounds = gameObject.getBounds();
-            let count = 0;
-            let onTop = 0;
-            
-            if(polarBounds.leftCollision(crateBounds)) {
-                // this.x = this.x - gameObject.getX();
-                console.log("left collision");
-                this._game.setWorldSpeed(0);
 
-            }else if(polarBounds.topCollision(crateBounds)){
+            let dir = polarBounds.hitsSolidObject(this, crateBounds);
+            console.log("Direction = " + dir);
 
-                console.log("top collision");
-                let onTop = crateBounds.y - (crateBounds.height/2.8);
-                this.y = onTop;
-                this._game.setWorldSpeed(2);
-
-            }else{
-                this.hasCollision = false;
+            if (dir === "l" || dir === "r") {
+                this.velX = 0;
+                this._isJumping = false;
+                // this._game.setWorldSpeed(0);
+            } else if (dir === "b") {
+                this._isGrounded = true;
+                this._isJumping = false;
+                // this._game.setWorldSpeed(0);
+            } else if (dir === "t") {
+                this.velY *= -1;
             }
         }
     }

@@ -25,7 +25,7 @@ class Game {
     private _goldCoin    : Coin;
 
     private context     : CanvasRenderingContext2D;
-    private canvas      : HTMLCanvasElement;
+    public canvas      : HTMLCanvasElement;
 
     // constructor for Main
     constructor(lvl: number) {

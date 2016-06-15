@@ -1,12 +1,15 @@
 abstract class GameObjects {
     private assets : AssetsManager = new AssetsManager();
-    private directionX: number = 0;
-    private directionY: number = 0;
+    protected directionX: number = 0;
+    protected directionY: number = 0;
 
-    protected x: number = 0;
-    protected y: number = 0;
+    public x: number = 0;
+    public y: number = 0;
 
-	private speed: number = 0;
+    protected velX: number = 0;
+    protected velY: number = 0;
+
+	protected speed: number = 0;
 
 	protected context: CanvasRenderingContext2D;
     protected image: HTMLImageElement;
