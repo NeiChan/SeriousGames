@@ -46,6 +46,9 @@ class Game {
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
         let bearImg         = this.assets.polarbear2;
+        
+        // gorillaImg = this.assets.gorilla;
+
         // Aanmaken van een polarBear
         this._ui            = new UI(this, {x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);

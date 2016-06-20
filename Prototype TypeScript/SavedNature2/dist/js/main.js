@@ -462,6 +462,7 @@ var Rectangle = (function () {
 var AssetsManager = (function () {
     function AssetsManager() {
         this.polarbear = "images/polarbear/spritesheet.png";
+        this.gorilla = "images/gorilla/spritesheet.png";
         this.polarbear2 = "images/polarbear/spritesheet3.png";
         this.lives = "images/interface/heart.png";
         this.desertBase = "images/levels/desert/";
