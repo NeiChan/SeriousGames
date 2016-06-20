@@ -5,6 +5,8 @@
     $name = mysqli_real_escape_string($db, $_POST['playerName']);
     $score = mysqli_real_escape_string($db, $_POST['playerScore']);
 
+    // print_r($_POST);
+
     // Insert data into DATABASE
     mysqli_query($db, "INSERT INTO highscore(name, score) VALUES('$name', '$score')");
 

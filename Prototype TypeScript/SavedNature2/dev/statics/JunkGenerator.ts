@@ -63,6 +63,7 @@ class JunkGenerator {
             let bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, 1, this._game);
             let coin = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5});
             let Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            let bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
 
             switch (random) {
                 case 1:
@@ -71,7 +72,7 @@ class JunkGenerator {
 
                 case 2:
                     console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                 break;
 
                 case 3:
@@ -87,7 +88,7 @@ class JunkGenerator {
                 break;
 
                 case 6:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                 break;
 
                 case 7:
@@ -100,6 +101,10 @@ class JunkGenerator {
 
                 case 9:
                     this.objectList.push(Crate);
+                break;
+
+                case 10:
+                    this.objectList.push(bacteria);
                 break;
             }
             this.counter = 0;
@@ -131,6 +136,7 @@ class JunkGenerator {
             let coin    = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5});
             let Crate   = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
             let stone   = new crate(this._game, {imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5});
+            let bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
 
             switch (random) {
                 case 1:
@@ -138,7 +144,7 @@ class JunkGenerator {
                 break;
 
                 case 2:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                 break;
 
                 case 3:
@@ -154,7 +160,7 @@ class JunkGenerator {
                 break;
 
                 case 6:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                 break;
 
                 case 7:

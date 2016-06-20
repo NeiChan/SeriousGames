@@ -4,6 +4,7 @@ class AssetsManager {
     public gorilla          = "images/gorilla/spritesheet.png";
     public polarbear2       = "images/polarbear/spritesheet3.png";
     public lives            = "images/interface/heart.png";
+    public bacteria            = "images/enemy/bacteria.png";
 
     // ***************** Levels
     private desertBase      = "images/levels/desert/";

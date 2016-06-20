@@ -4,6 +4,8 @@ class Menu {
     private btnHighscores: HTMLElement;
     private btnClose: HTMLElement;
     private gameTitle: HTMLElement;
+    private nameField: HTMLInputElement;
+    private explanation : HTMLElement;
     private main: any;
 
     constructor() {
@@ -12,6 +14,14 @@ class Menu {
         this.btnStart = document.createElement("button");
         this.btnClose = document.createElement("button");
         this.btnHighscores = document.createElement("button");
+
+        this.explanation = document.createElement("DIV");
+        this.explanation.setAttribute("id", "explanation");
+        this.explanation.innerHTML = "Vul hieronder uw naam in om uw score bij te houden.";
+
+        this.nameField = document.createElement("input");
+        this.nameField.setAttribute("id", "playerName");
+        this.nameField.setAttribute("placeholder", "Jouw naam");
 
         // Set the ID's to the created HTML elements.
         this.gameTitle.setAttribute("id", "gameTitle");
@@ -41,6 +51,8 @@ class Menu {
 
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
+        content.appendChild(this.explanation);
+        content.appendChild(this.nameField);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
@@ -64,11 +76,15 @@ class Menu {
         document.getElementById("btnStart").remove();
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
+        document.getElementById("explanation").remove();
+        var name = (<HTMLInputElement>document.getElementById("playerName")).value;
+        document.getElementById("playerName").remove();
+        
         //document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
 
         document.body.style.backgroundImage = "";
 
         // Call function to create Game.
-        this.main = new Game(2);
+        this.main = new Game(2, name);
     }
 }

@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Game = (function () {
-    function Game(lvl) {
+    function Game(lvl, name) {
         var _this = this;
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
@@ -19,6 +19,7 @@ var Game = (function () {
         this.Level = new level(this, this.curLvl, 0);
         var bearImg = this.assets.polarbear2;
         this._ui = new UI(this, { x: 50, y: 50 });
+        this._ui.setPlayerName(name);
         this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
         this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         requestAnimationFrame(function () { return _this.update(); });
@@ -138,6 +139,12 @@ var Menu = (function () {
         this.btnStart = document.createElement("button");
         this.btnClose = document.createElement("button");
         this.btnHighscores = document.createElement("button");
+        this.explanation = document.createElement("DIV");
+        this.explanation.setAttribute("id", "explanation");
+        this.explanation.innerHTML = "Vul hieronder uw naam in om uw score bij te houden.";
+        this.nameField = document.createElement("input");
+        this.nameField.setAttribute("id", "playerName");
+        this.nameField.setAttribute("placeholder", "Jouw naam");
         this.gameTitle.setAttribute("id", "gameTitle");
         this.btnStart.setAttribute("id", "btnStart");
         this.btnClose.setAttribute("id", "btnClose");
@@ -152,6 +159,8 @@ var Menu = (function () {
         var content = document.getElementById('content');
         document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
         content.appendChild(this.gameTitle);
+        content.appendChild(this.explanation);
+        content.appendChild(this.nameField);
         content.appendChild(this.btnStart);
         content.appendChild(this.btnHighscores);
         content.appendChild(this.btnClose);
@@ -167,8 +176,11 @@ var Menu = (function () {
         document.getElementById("btnStart").remove();
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
+        document.getElementById("explanation").remove();
+        var name = document.getElementById("playerName").value;
+        document.getElementById("playerName").remove();
         document.body.style.backgroundImage = "";
-        this.main = new Game(2);
+        this.main = new Game(2, name);
     };
     return Menu;
 }());
@@ -465,6 +477,7 @@ var AssetsManager = (function () {
         this.gorilla = "images/gorilla/spritesheet.png";
         this.polarbear2 = "images/polarbear/spritesheet3.png";
         this.lives = "images/interface/heart.png";
+        this.bacteria = "images/enemy/bacteria.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -638,13 +651,14 @@ var JunkGenerator = (function () {
             var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, 1, this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
                     break;
                 case 2:
                     console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                     break;
                 case 3:
                     this.BGList.push(bush);
@@ -656,7 +670,7 @@ var JunkGenerator = (function () {
                     this.objectList.push(Crate);
                     break;
                 case 6:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                     break;
                 case 7:
                     this.BGList.push(bush);
@@ -666,6 +680,9 @@ var JunkGenerator = (function () {
                     break;
                 case 9:
                     this.objectList.push(Crate);
+                    break;
+                case 10:
+                    this.objectList.push(bacteria);
                     break;
             }
             this.counter = 0;
@@ -688,12 +705,13 @@ var JunkGenerator = (function () {
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
             var stone = new crate(this._game, { imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5 });
+            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
                     break;
                 case 2:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                     break;
                 case 3:
                     this.BGList.push(bush);
@@ -705,7 +723,7 @@ var JunkGenerator = (function () {
                     this.objectList.push(Crate);
                     break;
                 case 6:
-                    this.objectList.push(coin);
+                    this.objectList.push(bacteria);
                     break;
                 case 7:
                     this.BGList.push(bush);
@@ -787,6 +805,40 @@ var BackgroundObject = (function (_super) {
     };
     return BackgroundObject;
 }(bgObjects));
+var Bacteria = (function (_super) {
+    __extends(Bacteria, _super);
+    function Bacteria(game, source) {
+        _super.call(this, source);
+        this.hasCollision = true;
+        this.hasDestructable = true;
+        this._game = game;
+    }
+    Bacteria.prototype.getBounds = function () {
+        return new Rectangle(this.x, this.y, this.frameWidth, this.frameHeight);
+    };
+    Bacteria.prototype.onCollision = function (gameObject) {
+        var sound = new Howl({
+            urls: ["sound/mario1up.mp3"],
+            volume: 0.4,
+            sprite: {
+                blast: [0, 2000],
+            }
+        });
+        sound.play('blast');
+        this._game._ui.loseLife();
+        this._game.deleteGO(this, null);
+    };
+    Bacteria.prototype.draw = function () {
+        _super.prototype.Draw.call(this);
+    };
+    Bacteria.prototype.Update = function () {
+        this.x = this.x - this._game.getWorldSpeed();
+        if (this.x <= 0) {
+            this._game.deleteGO(this);
+        }
+    };
+    return Bacteria;
+}(GameObjects));
 var bullet = (function (_super) {
     __extends(bullet, _super);
     function bullet(game, source) {
@@ -1253,7 +1305,10 @@ var UI = (function (_super) {
             x += 30;
         }
     };
-    UI.prototype.loseLive = function () {
+    UI.prototype.setPlayerName = function (name) {
+        this.playername = name;
+    };
+    UI.prototype.loseLife = function () {
         return this._lives--;
     };
     UI.prototype.getScore = function () {
@@ -1268,8 +1323,25 @@ var UI = (function (_super) {
     UI.prototype.gameOverScreen = function () {
         if (this._lives == 0) {
             this.context.fillText("Game Over!", this.x + 300, this.y + 100);
+            this.postGameScore();
             this._game.pause();
         }
+    };
+    UI.prototype.postGameScore = function () {
+        var url = "http://game.dev/Prototype%20TypeScript/SavedNature2/dist/php/uploadScore.php";
+        var data = {
+            'playerName': this.playername,
+            'playerScore': this._counter
+        };
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function () {
+                console.log('uploaded');
+                window.location.href = "http://game.dev/Prototype%20TypeScript/SavedNature2/dist/leaderboard.php?var=1";
+            }
+        });
     };
     UI.prototype.draw = function () {
         this.generateScore();
