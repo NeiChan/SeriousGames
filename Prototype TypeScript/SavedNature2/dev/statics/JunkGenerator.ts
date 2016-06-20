@@ -63,44 +63,46 @@ class JunkGenerator {
             let bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, 1, this._game);
             let coin = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5});
             let Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            let tree = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree3, x: randomX, y: 130, frameHeight: 146, frameWidth: 150}, 1, this._game);
+            let treeLarge = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree2, x: randomX, y: -22, frameHeight: 301, frameWidth: 282}, 1, this._game);
+            let bushJungle = new BackgroundObject({ imgSrc: this.assets.greenObjects.Bush4, x: randomX, y: 235, frameHeight: 42, frameWidth: 73}, 1, this._game);            
 
             switch (random) {
-                case 1:
+                 case 1:
                     this.objectList.push(coin);
                 break;
 
                 case 2:
-                    console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.BGList.push(tree);
                 break;
 
                 case 3:
-                    this.BGList.push(bush);
+                    this.objectList.push(coin);
                 break;
 
                 case 4:
-                    this.objectList.push(coin);
+                    this.BGList.push(tree);
                 break;
 
                 case 5:
-                    this.objectList.push(Crate);
+                    this.BGList.push(bushJungle);
                 break;
 
                 case 6:
-                    this.objectList.push(coin);
+                    this.BGList.push(treeLarge);
                 break;
 
                 case 7:
-                    this.BGList.push(bush);
+                    this.BGList.push(tree);
+                    
                 break;
 
                 case 8:
-                    this.BGList.push(bush);
+                    this.BGList.push(tree);
                 break;
 
                 case 9:
-                    this.objectList.push(Crate);
-                break;
+                    this.BGList.push(treeLarge);
             }
             this.counter = 0;
         }

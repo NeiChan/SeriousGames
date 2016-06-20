@@ -18,9 +18,10 @@ var Game = (function () {
         this.curLvl = lvl;
         this.Level = new level(this, this.curLvl, 0);
         var bearImg = this.assets.polarbear2;
+        var gorillaImg = this.assets.gorilla;
         this._ui = new UI(this, { x: 50, y: 50 });
         this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
-        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._bear = new polarBear(this, { imgSrc: gorillaImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.draw = function () {
@@ -168,7 +169,7 @@ var Menu = (function () {
         document.getElementById("btnClose").remove();
         document.getElementById("btnHighscores").remove();
         document.body.style.backgroundImage = "";
-        this.main = new Game(2);
+        this.main = new Game(1);
     };
     return Menu;
 }());
@@ -638,35 +639,36 @@ var JunkGenerator = (function () {
             var bush = new BackgroundObject({ imgSrc: this.assets.desObjects.Bush1, x: randomX, y: randomY, frameHeight: 145, frameWidth: 145 }, 1, this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: 5 });
             var Crate = new crate(this._game, { imgSrc: this.assets.desObjects.Crate, x: randomX, y: randomY, frameHeight: 101, frameWidth: 101, speed: 5 });
+            var tree = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree3, x: randomX, y: 130, frameHeight: 146, frameWidth: 150 }, 1, this._game);
+            var treeLarge = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree2, x: randomX, y: -22, frameHeight: 301, frameWidth: 282 }, 1, this._game);
+            var bushJungle = new BackgroundObject({ imgSrc: this.assets.greenObjects.Bush4, x: randomX, y: 235, frameHeight: 42, frameWidth: 73 }, 1, this._game);
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
                     break;
                 case 2:
-                    console.log("Case 2 - Coin Object");
-                    this.objectList.push(coin);
+                    this.BGList.push(tree);
                     break;
                 case 3:
-                    this.BGList.push(bush);
+                    this.objectList.push(coin);
                     break;
                 case 4:
-                    this.objectList.push(coin);
+                    this.BGList.push(tree);
                     break;
                 case 5:
-                    this.objectList.push(Crate);
+                    this.BGList.push(bushJungle);
                     break;
                 case 6:
-                    this.objectList.push(coin);
+                    this.BGList.push(treeLarge);
                     break;
                 case 7:
-                    this.BGList.push(bush);
+                    this.BGList.push(tree);
                     break;
                 case 8:
-                    this.BGList.push(bush);
+                    this.BGList.push(tree);
                     break;
                 case 9:
-                    this.objectList.push(Crate);
-                    break;
+                    this.BGList.push(treeLarge);
             }
             this.counter = 0;
         }

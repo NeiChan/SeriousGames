@@ -47,14 +47,14 @@ class Game {
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
         let bearImg         = this.assets.polarbear2;
         
-        // gorillaImg = this.assets.gorilla;
+        let gorillaImg      = this.assets.gorilla;
 
         // Aanmaken van een polarBear
         this._ui            = new UI(this, {x: 50, y: 50});
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);
 
         // Aanmaken van een polarBear
-        this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._bear          = new polarBear(this, { imgSrc: gorillaImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
 
         // let igloo           = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: 25, y: 240, frameHeight: 39, framewidth: 100}, 1, this);
         // this.BGList.push(igloo);

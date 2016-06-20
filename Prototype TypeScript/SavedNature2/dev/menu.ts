@@ -69,6 +69,6 @@ class Menu {
         document.body.style.backgroundImage = "";
 
         // Call function to create Game.
-        this.main = new Game(2);
+        this.main = new Game(1);
     }
 }
