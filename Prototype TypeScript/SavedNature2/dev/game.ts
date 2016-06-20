@@ -8,7 +8,7 @@ class Game {
     private _bg: Background;
     public curLvl: number;
 
-    private _collectCounter = 0;
+    public _collectCounter = 0;
     // public objectList:Array<GameObjects> = new Array<GameObjects>();
 
     public objectList:Array<ICollidable> = new Array<ICollidable>();
@@ -31,7 +31,7 @@ class Game {
     public canvas      : HTMLCanvasElement;
 
     // constructor for Main
-    constructor(lvl: number) {
+    constructor(lvl: number, name: string) {
         // call createPlayer() function
         this.canvas = document.getElementsByTagName('canvas')[0];
         this.context = this.canvas.getContext('2d');
@@ -51,6 +51,7 @@ class Game {
 
         // Aanmaken van een polarBear
         this._ui            = new UI(this, {x: 50, y: 50});
+        this._ui.setPlayerName(name);
         this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);
 
         // Aanmaken van een polarBear

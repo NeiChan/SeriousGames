@@ -1,4 +1,4 @@
-<?php
+    <?php
 //HOST
 
 //SCHOOL HOST
@@ -10,7 +10,7 @@
 //LOCALHOST HOST
     $host = "localhost";
     $username = "root";
-    $password = "";
+    $password = "root";
     $database = "savenature";
 
     $db = mysqli_connect($host, $username, $password, $database) or die('Error: '.mysqli_connect_error());

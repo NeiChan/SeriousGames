@@ -2,6 +2,13 @@
     include_once "php/conn.php";
     $position = 1;
 
+    $gameover = 0;
+
+    if(isset($_GET["var"]) && $_GET["var"] == 1){
+        $gameover = 1;
+        echo $gameover;
+    }
+
     $query = "SELECT * FROM highscore ORDER BY score DESC";
     $result = mysqli_query($db, $query);
     $leaderb = [];
@@ -20,9 +27,13 @@
     </head>
     <body id = "leaderboardBody">
         <div class="wrapper">
+
             <div class="wrapperLeaderboard">
                 <img src="images/interface/leaderboard/savedNatureLeaderboard.png" alt="" />
                 <div class = "wrapperTable">
+                <?php if($gameover == 1){ ?>
+                    <h1 style="color:red">Nice Job!</h1>
+                <?php }; ?>
                 <table class = "leaderboard">
                     <tr>
                         <th>Rank</th>
