@@ -52,7 +52,97 @@ class JunkGenerator {
     }
 
     private generateLevel2(): void {
-        this.counter++;
+       
+ this.counter++;
+
+        let minPositionY = 0;
+        let maxPositionY = 15;
+
+        if (this.counter > this.updateTimout) {
+            let random = this.getRandomNumber(this.minNumber, this.maxNumber);
+            let randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
+            let randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
+            let randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
+            let crateImg = this.assets.desObjects.Crate;
+
+            let randomX2 = this.getRandomNumber(this.minPositionX, this.maxPositionX);
+
+            // BackgroundObjects
+            let bush    = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2_1, x: randomX, y: 30, frameHeight: 280, frameWidth: 228 }, 1, this._game);
+            let snowman = new BackgroundObject({ imgSrc: this.assets.winterObjects.SnowMan, x: randomX, y: 225, frameHeight: 50, frameWidth: 55}, 1, this._game);
+            let sign    = new BackgroundObject({ imgSrc: this.assets.winterObjects.Sign2_2, x: randomX, y: 225, frameHeight: 50, frameWidth: 53}, 1, this._game);
+            let igloo   = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: randomX, y: 255, frameHeight: 120, framewidth: 120}, 1, this._game);
+
+            // Objects
+            let coin    = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5});
+            let Crate   = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX2, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
+            let stone   = new crate(this._game, {imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5});
+            let bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX2, y: 255, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
+
+            switch (random) {
+                case 1:
+                    this.objectList.push(coin);
+                break;
+
+                case 2:
+                    this.objectList.push(bacteria);
+                    this.objectList.push(coin);
+                break;
+
+                case 3:
+                    this.BGList.push(bush);
+                break;
+
+                case 4:
+                    this.objectList.push(coin);
+                    this.objectList.push(Crate);
+                break;
+
+                case 5:
+                    this.objectList.push(Crate);
+                break;
+
+                case 6:
+                    this.objectList.push(bacteria);
+                    this.objectList.push(coin);
+                break;
+
+                case 7:
+                    this.BGList.push(bush);
+                break;
+
+                case 8:
+                    this.BGList.push(bush);
+                    this.objectList.push(Crate);
+                break;
+
+                case 9:
+                    this.objectList.push(Crate);
+                break;
+
+                case 10:
+                    this.BGList.push(snowman);
+                    break;
+                case 11:
+                    this.BGList.push(sign);
+                    break;
+                case 12:
+                    this.objectList.push(stone);
+                    break;
+                case 13:
+                    this.objectList.push(stone);
+                    break;
+            }
+            // console.log("The random number is: " + random);
+            this.counter = 0;
+        }
+    
+
+    }
+
+    private generateLevel1(): void {
+
+ this.counter++;
 
         if (this.counter > this.updateTimout) {
             let random = this.getRandomNumber(this.minNumber, this.maxNumber);
@@ -240,94 +330,7 @@ class JunkGenerator {
 
             this.counter = 0;
         }
-
-
-    }
-
-    private generateLevel1(): void {
-        this.counter++;
-
-        let minPositionY = 0;
-        let maxPositionY = 15;
-
-        if (this.counter > this.updateTimout) {
-            let random = this.getRandomNumber(this.minNumber, this.maxNumber);
-            let randomX = this.getRandomNumber(this.minPositionX, this.maxPositionX);
-            let randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
-            let randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
-            let crateImg = this.assets.desObjects.Crate;
-
-            let randomX2 = this.getRandomNumber(this.minPositionX, this.maxPositionX);
-
-            // BackgroundObjects
-            let bush    = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2_1, x: randomX, y: 30, frameHeight: 280, frameWidth: 228 }, 1, this._game);
-            let snowman = new BackgroundObject({ imgSrc: this.assets.winterObjects.SnowMan, x: randomX, y: 225, frameHeight: 50, frameWidth: 55}, 1, this._game);
-            let sign    = new BackgroundObject({ imgSrc: this.assets.winterObjects.Sign2_2, x: randomX, y: 225, frameHeight: 50, frameWidth: 53}, 1, this._game);
-            let igloo   = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: randomX, y: 255, frameHeight: 120, framewidth: 120}, 1, this._game);
-
-            // Objects
-            let coin    = new Coin(this._game, {imgSrc: this.assets.collectables.goldCoin,  x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5});
-            let Crate   = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX2, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
-            let stone   = new crate(this._game, {imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5});
-            let bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX2, y: 255, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
-
-            switch (random) {
-                case 1:
-                    this.objectList.push(coin);
-                break;
-
-                case 2:
-                    this.objectList.push(bacteria);
-                    this.objectList.push(coin);
-                break;
-
-                case 3:
-                    this.BGList.push(bush);
-                break;
-
-                case 4:
-                    this.objectList.push(coin);
-                    this.objectList.push(Crate);
-                break;
-
-                case 5:
-                    this.objectList.push(Crate);
-                break;
-
-                case 6:
-                    this.objectList.push(bacteria);
-                    this.objectList.push(coin);
-                break;
-
-                case 7:
-                    this.BGList.push(bush);
-                break;
-
-                case 8:
-                    this.BGList.push(bush);
-                    this.objectList.push(Crate);
-                break;
-
-                case 9:
-                    this.objectList.push(Crate);
-                break;
-
-                case 10:
-                    this.BGList.push(snowman);
-                    break;
-                case 11:
-                    this.BGList.push(sign);
-                    break;
-                case 12:
-                    this.objectList.push(stone);
-                    break;
-                case 13:
-                    this.objectList.push(stone);
-                    break;
-            }
-            // console.log("The random number is: " + random);
-            this.counter = 0;
-        }
+        
     }
 
     public stopGenerating() {
