@@ -172,7 +172,7 @@ class polarBear extends GameObjects implements ICollidable {
         }
 
         if(this._game.Level.getLevel() === 2){
-            this.image.srcset = this.asset.gorilla;
+            this.image.srcset = this.asset.polarbear2;
         }
     }
 
