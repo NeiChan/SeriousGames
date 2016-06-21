@@ -22,7 +22,7 @@ var Game = (function () {
         this._ui = new UI(this, { x: 50, y: 50 });
         this._ui.setPlayerName(name);
         this._generator = new JunkGenerator(this, this.objectList, this.BGList, this.Level);
-        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._bear = new polarBear(this, { imgSrc: gorillaImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.draw = function () {
@@ -1309,7 +1309,7 @@ var polarBear = (function (_super) {
             this._isJumping = false;
         }
         if (this._game.Level.getLevel() === 2) {
-            this.image.srcset = this.asset.gorilla;
+            this.image.srcset = this.asset.polarbear2;
         }
     };
     polarBear.prototype.updateUIScore = function (points) {
