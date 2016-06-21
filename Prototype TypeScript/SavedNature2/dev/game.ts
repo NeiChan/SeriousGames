@@ -3,10 +3,12 @@
 class Game {
     public assets      : AssetsManager = new AssetsManager();
     public WorldSpeed : number = 5;
-    private Level : level;
+    public Level : level;
     private main: any;
     private _bg: Background;
     public curLvl: number;
+    public text : any;
+    private pos : number = 700;
 
     public _collectCounter = 0;
     // public objectList:Array<GameObjects> = new Array<GameObjects>();
@@ -40,8 +42,8 @@ class Game {
         // Enlarge screen by 1.8x
         this.context.scale(1.8, 1.8);
 
-        this.curLvl = lvl;
-        this.Level = new level(this, this.curLvl, 0);
+        // this.curLvl = lvl;
+        this.Level = new level(this, lvl, 0);
         // this.canvas.addEventListener("click", this.getClickPos, false);
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
@@ -52,10 +54,10 @@ class Game {
         // Aanmaken van een polarBear
         this._ui            = new UI(this, {x: 50, y: 50});
         this._ui.setPlayerName(name);
-        this._generator     = new JunkGenerator(this, this.objectList, this.BGList, lvl);
+        this._generator     = new JunkGenerator(this, this.objectList, this.BGList, this.Level);
 
         // Aanmaken van een polarBear
-        this._bear          = new polarBear(this, { imgSrc: gorillaImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._bear          = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
 
         // let igloo           = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: 25, y: 240, frameHeight: 39, framewidth: 100}, 1, this);
         // this.BGList.push(igloo);
@@ -82,6 +84,14 @@ class Game {
 
         for(var obj of this.objectList) {
             obj.Draw();
+        }      
+
+        console.log(this.Level.getLevel());    
+        
+        if(this.Level.getLevel() === 2){
+            this.pos = this.pos - 3;
+            this.context.fillStyle = "#F48024";
+            this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);            
         }
 
         this._ui.draw();
@@ -119,6 +129,14 @@ class Game {
                 // console.log(obj2);
             }
 
+            if(this._collectCounter > 10 && this._collectCounter < 12) {
+                if(this.Level.getLevel() === 2){
+
+                } else {
+                    this.Level.setLevel(); 
+                }
+            }
+
             this._bear.update();
 
             this.checkCollisions();
@@ -141,6 +159,10 @@ class Game {
             //     console.log("calle");
             // }
             this._ui.update();
+            // console.log(this._ui.getScore());
+            // if(this._ui.getScore() > 90){
+            //     this.Level.setLevel(2);
+            // }
 
             this.draw();
         }
@@ -252,10 +274,10 @@ class Game {
         console.log(this._collectCounter);
 
         // Change background (level)
-        if (this._collectCounter === 5 || this._collectCounter === 10 || this._collectCounter === 15) {
-            // this._bg.changeBackground(;)
-            this.Level = new level(this, lvl, this._collectCounter);
-            // this._bg.findBackground(this._collectCounter);
-        }
+        // if (this._collectCounter === 5 || this._collectCounter === 10 || this._collectCounter === 15) {
+        //     // this._bg.changeBackground(;)
+        //     this.Level = new level(this, lvl, this._collectCounter);
+        //     // this._bg.findBackground(this._collectCounter);
+        // }
     }
 }

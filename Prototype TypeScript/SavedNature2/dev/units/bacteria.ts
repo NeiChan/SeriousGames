@@ -26,7 +26,7 @@ class Bacteria extends GameObjects implements ICollidable,IDestructable{
             // this._game._ui.updateScore(-10);
 
             var sound = new Howl({
-                    urls: ["sound/mario1up.mp3"],
+                    urls: ["sound/kill3.mp3"],
                     volume: 0.4,
                     sprite: {
                         blast: [0, 2000],

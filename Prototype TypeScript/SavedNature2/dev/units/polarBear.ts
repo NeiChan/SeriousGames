@@ -153,7 +153,7 @@ class polarBear extends GameObjects implements ICollidable {
         if(this._isGrounded){
             this.velY = 0;
 
-            console.log("Im on the ground");
+            // console.log("Im on the ground");
             
         }
 
@@ -169,6 +169,10 @@ class polarBear extends GameObjects implements ICollidable {
             //this.y = this._game.canvas.height - this.frameHeight;
             this.y = 240;
             this._isJumping = false;
+        }
+
+        if(this._game.Level.getLevel() === 2){
+            this.image.srcset = this.asset.gorilla;
         }
     }
 
@@ -191,7 +195,7 @@ class polarBear extends GameObjects implements ICollidable {
             let crateBounds = gameObject.getBounds();
 
             let dir = polarBounds.hitsSolidObject(this, crateBounds);
-            console.log("Direction = " + dir);
+            // console.log("Direction = " + dir);
 
             if (dir === "l" || dir === "r") {
                 this.velX = 0;

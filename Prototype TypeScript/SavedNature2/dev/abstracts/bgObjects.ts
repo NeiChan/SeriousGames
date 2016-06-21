@@ -26,7 +26,7 @@ class bgObjects{
     private animationY:     number  = 0;
     private animationSpeed: number  = 0;
 
-    private game : Game;
+    public game : Game;
 
     constructor(source, speed, game: Game) {
         // extending from GameObjects
@@ -54,6 +54,11 @@ class bgObjects{
 
         this.image = new Image();   // Create new img element
 
+        this.image.src = this.imgSrc;
+    }
+
+    public setImgSrc(src: string) : void{
+        this.imgSrc = src;
         this.image.src = this.imgSrc;
     }
 

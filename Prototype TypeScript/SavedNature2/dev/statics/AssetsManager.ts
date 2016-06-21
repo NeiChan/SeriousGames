@@ -5,6 +5,7 @@ class AssetsManager {
     public polarbear2       = "images/polarbear/spritesheet3.png";
     public lives            = "images/interface/heart.png";
     public bacteria         = "images/enemy/bacteria.png";
+    public bacteriahit         = "sound/kill3.mp3";
 
     // ***************** Levels
     private desertBase      = "images/levels/desert/";
@@ -17,6 +18,8 @@ class AssetsManager {
 
     // Desert level
     public desBG = this.desertBase + "BG.png";
+
+
 
     public desTiles = [
         this.desertBase + "Tiles/1.png",

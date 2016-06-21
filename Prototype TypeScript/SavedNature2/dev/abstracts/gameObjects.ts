@@ -70,6 +70,11 @@ abstract class GameObjects {
         this.image.src = this.imgSrc;
     }
 
+    public setImgSrc(src: string) : void{
+        this.imgSrc = src;
+        this.image.src = this.imgSrc;
+    }
+
     /**
      * changeY
      *

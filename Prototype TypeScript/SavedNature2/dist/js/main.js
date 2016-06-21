@@ -8,6 +8,7 @@ var Game = (function () {
         var _this = this;
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
+        this.pos = 700;
         this._collectCounter = 0;
         this.objectList = new Array();
         this.BGList = new Array();
@@ -15,14 +16,13 @@ var Game = (function () {
         this.context = this.canvas.getContext('2d');
         this.context.save();
         this.context.scale(1.8, 1.8);
-        this.curLvl = lvl;
-        this.Level = new level(this, this.curLvl, 0);
+        this.Level = new level(this, lvl, 0);
         var bearImg = this.assets.polarbear2;
         var gorillaImg = this.assets.gorilla;
         this._ui = new UI(this, { x: 50, y: 50 });
         this._ui.setPlayerName(name);
-        this._generator = new JunkGenerator(this, this.objectList, this.BGList, lvl);
-        this._bear = new polarBear(this, { imgSrc: gorillaImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
+        this._generator = new JunkGenerator(this, this.objectList, this.BGList, this.Level);
+        this._bear = new polarBear(this, { imgSrc: bearImg, frameWidth: 50, frameHeight: 50, maxFrame: 3, animationSpeed: 10, x: 25, y: 240, speed: 3 });
         requestAnimationFrame(function () { return _this.update(); });
     }
     Game.prototype.draw = function () {
@@ -35,6 +35,12 @@ var Game = (function () {
         for (var _b = 0, _c = this.objectList; _b < _c.length; _b++) {
             var obj = _c[_b];
             obj.Draw();
+        }
+        console.log(this.Level.getLevel());
+        if (this.Level.getLevel() === 2) {
+            this.pos = this.pos - 3;
+            this.context.fillStyle = "#F48024";
+            this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);
         }
         this._ui.draw();
         this._bear.draw();
@@ -60,6 +66,13 @@ var Game = (function () {
             for (var _b = 0, _c = this.BGList; _b < _c.length; _b++) {
                 var obj2 = _c[_b];
                 obj2.update();
+            }
+            if (this._collectCounter > 10 && this._collectCounter < 12) {
+                if (this.Level.getLevel() === 2) {
+                }
+                else {
+                    this.Level.setLevel();
+                }
             }
             this._bear.update();
             this.checkCollisions();
@@ -124,9 +137,6 @@ var Game = (function () {
         var amount = 1;
         this._collectCounter += amount;
         console.log(this._collectCounter);
-        if (this._collectCounter === 5 || this._collectCounter === 10 || this._collectCounter === 15) {
-            this.Level = new level(this, lvl, this._collectCounter);
-        }
     };
     return Game;
 }());
@@ -216,6 +226,10 @@ var bgObjects = (function () {
         this.image = new Image();
         this.image.src = this.imgSrc;
     };
+    bgObjects.prototype.setImgSrc = function (src) {
+        this.imgSrc = src;
+        this.image.src = this.imgSrc;
+    };
     bgObjects.prototype.changeSpeed = function (int) {
         this.speed = int;
     };
@@ -282,6 +296,10 @@ var GameObjects = (function () {
         this.image = new Image();
         this.image.src = this.imgSrc;
     };
+    GameObjects.prototype.setImgSrc = function (src) {
+        this.imgSrc = src;
+        this.image.src = this.imgSrc;
+    };
     GameObjects.prototype.changeY = function (int) {
         this.directionY = int;
     };
@@ -335,39 +353,47 @@ var GameObjects = (function () {
 }());
 var level = (function () {
     function level(game, level, coins) {
+        this.lvl = 1;
         this.game = game;
-        this.level = level;
+        this.lvl = level;
         this._coins = coins;
         this.setGame();
     }
+    level.prototype.setLevel = function () {
+        this.lvl++;
+    };
+    level.prototype.getLevel = function () {
+        return this.lvl;
+    };
     level.prototype.setGame = function () {
-        switch (this.level) {
+        var currentBG;
+        var temp;
+        if (this.game.BGList[0] != null) {
+            temp = this.game.BGList.shift();
+            if (temp instanceof bgObjects) {
+                currentBG = temp;
+            }
+        }
+        else {
+        }
+        switch (this.lvl) {
             case 1:
                 {
-                    var backgroundImg_1 = this.game.assets.greenBG;
-                    this._background = new Background({ imgSrc: backgroundImg_1, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
-                    this.game.BGList.push(this._background);
-                }
-                break;
-            case 2:
-                {
-                    switch (this._coins) {
-                        case 5:
-                            var backgroundImg = this.game.assets.winterBG.BG3;
-                            break;
-                        case 10:
-                            var backgroundImg = this.game.assets.winterBG.BG2;
-                            break;
-                        case 15:
-                            var backgroundImg = this.game.assets.winterBG.BG1;
-                            break;
-                        default:
-                            var backgroundImg = this.game.assets.winterBG.BG4;
+                    var backgroundImg = this.game.assets.greenBG;
+                    if (currentBG) {
+                        currentBG.setImgSrc(backgroundImg);
                     }
-                    this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this.level);
-                    this.game.BGList.push(this._background);
+                    else {
+                        this._background = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559 }, 1, this.game, this);
+                    }
                 }
                 break;
+        }
+        if (currentBG) {
+            this.game.BGList.unshift(currentBG);
+        }
+        else {
+            this.game.BGList.push(this._background);
         }
     };
     return level;
@@ -479,6 +505,7 @@ var AssetsManager = (function () {
         this.polarbear2 = "images/polarbear/spritesheet3.png";
         this.lives = "images/interface/heart.png";
         this.bacteria = "images/enemy/bacteria.png";
+        this.bacteriahit = "sound/kill3.mp3";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -619,7 +646,7 @@ var JunkGenerator = (function () {
         this.objectList = objList;
         this.BGList = bglist;
         this._game = game;
-        this.level = lvl;
+        this.Level = lvl;
         console.log("JunkGenerator is activated...");
     }
     JunkGenerator.prototype.getRandomNumber = function (min, max) {
@@ -631,7 +658,7 @@ var JunkGenerator = (function () {
         return random;
     };
     JunkGenerator.prototype.generateJunk = function () {
-        switch (this.level) {
+        switch (this.Level.getLevel()) {
             case 1: {
                 this.generateLevel1();
                 break;
@@ -642,7 +669,7 @@ var JunkGenerator = (function () {
             }
         }
     };
-    JunkGenerator.prototype.generateLevel1 = function () {
+    JunkGenerator.prototype.generateLevel2 = function () {
         this.counter++;
         if (this.counter > this.updateTimout) {
             var random = this.getRandomNumber(this.minNumber, this.maxNumber);
@@ -658,9 +685,9 @@ var JunkGenerator = (function () {
             var tree = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree3, x: randomX, y: 130, frameHeight: 146, frameWidth: 150 }, 1, this._game);
             var treeLarge = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree2, x: randomX, y: -22, frameHeight: 301, frameWidth: 282 }, 1, this._game);
             var bushJungle = new BackgroundObject({ imgSrc: this.assets.greenObjects.Bush4, x: randomX, y: 235, frameHeight: 42, frameWidth: 73 }, 1, this._game);
-            var trunk = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree1, x: 100, y: 100, frameHeight: 44, frameWidth: 116 }, 1, this._game);
-            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
-            if (this._game._collectCounter < 10) {
+            var trunk = new BackgroundObject({ imgSrc: this.assets.greenObjects.Tree1, x: randomX, y: 240, frameHeight: 44, frameWidth: 116 }, 1, this._game);
+            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX2, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
+            if (this._game._collectCounter > 25) {
                 console.log("geen bomen yo");
                 switch (random) {
                     case 1:
@@ -696,10 +723,11 @@ var JunkGenerator = (function () {
                         break;
                     case 10:
                         this.objectList.push(bacteria);
+                        this.objectList.push(coin);
                         break;
                 }
             }
-            else if (this._game._collectCounter < 15 && this._game._collectCounter > 10) {
+            else if (this._game._collectCounter < 25 && this._game._collectCounter > 10) {
                 console.log("weinig bomen yo");
                 switch (random) {
                     case 1:
@@ -777,7 +805,7 @@ var JunkGenerator = (function () {
             this.counter = 0;
         }
     };
-    JunkGenerator.prototype.generateLevel2 = function () {
+    JunkGenerator.prototype.generateLevel1 = function () {
         this.counter++;
         var minPositionY = 0;
         var maxPositionY = 15;
@@ -787,38 +815,43 @@ var JunkGenerator = (function () {
             var randomY = this.getRandomNumber(this.minPositionY, this.maxPositionY);
             var randomYTree = this.getRandomNumber(minPositionY, maxPositionY);
             var crateImg = this.assets.desObjects.Crate;
+            var randomX2 = this.getRandomNumber(this.minPositionX, this.maxPositionX);
             var bush = new BackgroundObject({ imgSrc: this.assets.winterObjects.Tree2_1, x: randomX, y: 30, frameHeight: 280, frameWidth: 228 }, 1, this._game);
             var snowman = new BackgroundObject({ imgSrc: this.assets.winterObjects.SnowMan, x: randomX, y: 225, frameHeight: 50, frameWidth: 55 }, 1, this._game);
             var sign = new BackgroundObject({ imgSrc: this.assets.winterObjects.Sign2_2, x: randomX, y: 225, frameHeight: 50, frameWidth: 53 }, 1, this._game);
             var igloo = new BackgroundObject({ imgSrc: this.assets.winterObjects.Igloo2, x: randomX, y: 255, frameHeight: 120, framewidth: 120 }, 1, this._game);
             var coin = new Coin(this._game, { imgSrc: this.assets.collectables.goldCoin, x: randomX, y: randomY, frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 5, speed: 5 });
-            var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
+            var Crate = new crate(this._game, { imgSrc: this.assets.winterObjects.IceBoxSmall, x: randomX2, y: 225, frameHeight: 50, frameWidth: 50, speed: 5 });
             var stone = new crate(this._game, { imgSrc: this.assets.winterObjects.Stone2, x: randomX, y: 236, frameHeight: 62, frameWidth: 62, speed: 5 });
-            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX, y: 240, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
+            var bacteria = new Bacteria(this._game, { imgSrc: this.assets.bacteria, x: randomX2, y: 255, maxFrame: 7, frameHeight: 30, frameWidth: 25, speed: 5, animationSpeed: 10 });
             switch (random) {
                 case 1:
                     this.objectList.push(coin);
                     break;
                 case 2:
                     this.objectList.push(bacteria);
+                    this.objectList.push(coin);
                     break;
                 case 3:
                     this.BGList.push(bush);
                     break;
                 case 4:
                     this.objectList.push(coin);
+                    this.objectList.push(Crate);
                     break;
                 case 5:
                     this.objectList.push(Crate);
                     break;
                 case 6:
                     this.objectList.push(bacteria);
+                    this.objectList.push(coin);
                     break;
                 case 7:
                     this.BGList.push(bush);
                     break;
                 case 8:
                     this.BGList.push(bush);
+                    this.objectList.push(Crate);
                     break;
                 case 9:
                     this.objectList.push(Crate);
@@ -848,7 +881,9 @@ var Background = (function (_super) {
     function Background(source, speed, game, lvl) {
         _super.call(this, source, speed, game);
         this.assets = new AssetsManager();
-        this.level = lvl;
+        this._font = "14px Arial";
+        this.context.font = this._font;
+        this.Level = lvl;
     }
     Background.prototype.draw = function () {
         _super.prototype.draw.call(this);
@@ -856,18 +891,34 @@ var Background = (function (_super) {
     };
     Background.prototype.update = function () {
         _super.prototype.update.call(this);
-        console.log("The current level is: " + this.level);
-        switch (this.level) {
-            case 1:
-                if (_super.prototype.getX.call(this) + this.image.x < -1350) {
-                    _super.prototype.setX.call(this, 0);
+        this.context.fillText("LEVEL 2 MADAFAKKA", 250, 100);
+        if (this.game._collectCounter < 10) {
+            if (_super.prototype.getX.call(this) + this.image.x < -1350) {
+                this.image.srcset = this.game.assets.greenBG;
+                _super.prototype.setX.call(this, 0);
+            }
+        }
+        else {
+            if (_super.prototype.getX.call(this) + this.image.x < -1350) {
+                _super.prototype.setX.call(this, 0);
+                switch (this.game._ui.getScore()) {
+                    case 130:
+                        this.image.srcset = this.assets.winterBG.BG3;
+                        break;
+                    case 160:
+                        this.image.srcset = this.assets.winterBG.BG2;
+                        break;
+                    case 200:
+                        this.image.srcset = this.assets.winterBG.BG4;
+                        break;
+                    default:
+                        if (this.game._ui.getScore() < 140) {
+                            this.image.srcset = this.assets.winterBG.BG1;
+                        }
+                        console.log("CHANGED");
+                        break;
                 }
-                break;
-            case 2:
-                if (_super.prototype.getX.call(this) + this.image.x < -1350) {
-                    _super.prototype.setX.call(this, 0);
-                }
-                break;
+            }
         }
     };
     Background.prototype.changeBackground = function (image) {
@@ -907,7 +958,7 @@ var Bacteria = (function (_super) {
     };
     Bacteria.prototype.onCollision = function (gameObject) {
         var sound = new Howl({
-            urls: ["sound/mario1up.mp3"],
+            urls: ["sound/kill3.mp3"],
             volume: 0.4,
             sprite: {
                 blast: [0, 2000],
@@ -1246,7 +1297,6 @@ var polarBear = (function (_super) {
         this.y += this.velY;
         if (this._isGrounded) {
             this.velY = 0;
-            console.log("Im on the ground");
         }
         if (this.x >= this._game.canvas.width - this.frameWidth) {
             this.x = this._game.canvas.width - this.frameWidth;
@@ -1257,6 +1307,9 @@ var polarBear = (function (_super) {
         if (this.y >= 240) {
             this.y = 240;
             this._isJumping = false;
+        }
+        if (this._game.Level.getLevel() === 2) {
+            this.image.srcset = this.asset.gorilla;
         }
     };
     polarBear.prototype.updateUIScore = function (points) {
@@ -1272,7 +1325,6 @@ var polarBear = (function (_super) {
             var polarBounds = this.getBounds();
             var crateBounds = gameObject.getBounds();
             var dir = polarBounds.hitsSolidObject(this, crateBounds);
-            console.log("Direction = " + dir);
             if (dir === "l" || dir === "r") {
                 this.velX = 0;
                 this._isJumping = false;
