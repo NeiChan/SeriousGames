@@ -9,6 +9,7 @@ var Game = (function () {
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
         this.pos = 700;
+        this.play = false;
         this._collectCounter = 0;
         this.objectList = new Array();
         this.BGList = new Array();
@@ -50,6 +51,28 @@ var Game = (function () {
         this._pause = true;
     };
     Game.prototype.update = function () {
+        if (this.play == false) {
+            switch (this.Level.getLevel()) {
+                case 1:
+                    var sound1 = new Howl({
+                        urls: [this.assets.jungleBackground],
+                        volume: 0.8,
+                        autoplay: true,
+                        loop: true
+                    }).play;
+                    break;
+                case 2: {
+                    var sound2 = new Howl({
+                        urls: [this.assets.polarBackground],
+                        volume: 0.8,
+                        autoplay: true,
+                        loop: true
+                    }).play;
+                    break;
+                }
+            }
+            this.play = true;
+        }
         if (this._pause) {
         }
         else {
@@ -506,6 +529,8 @@ var AssetsManager = (function () {
         this.lives = "images/interface/heart.png";
         this.bacteria = "images/enemy/bacteria.png";
         this.bacteriahit = "sound/kill3.mp3";
+        this.polarBackground = "sound/background.ogg";
+        this.jungleBackground = "sound/Funk_Down.mp3";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";

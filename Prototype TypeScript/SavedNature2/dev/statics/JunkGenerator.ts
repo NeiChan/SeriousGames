@@ -1,3 +1,5 @@
+
+
 class JunkGenerator {
     private assets: AssetsManager = new AssetsManager();
 

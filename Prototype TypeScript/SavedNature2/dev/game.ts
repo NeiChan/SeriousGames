@@ -1,4 +1,6 @@
 /// <reference path="interfaces/ICollidable.ts"/>
+/// <reference path="../typings/howler.d.ts" />
+
 
 class Game {
     public assets      : AssetsManager = new AssetsManager();
@@ -9,6 +11,7 @@ class Game {
     public curLvl: number;
     public text : any;
     private pos : number = 700;
+    private play: boolean = false;
 
     public _collectCounter = 0;
     // public objectList:Array<GameObjects> = new Array<GameObjects>();
@@ -109,6 +112,33 @@ class Game {
     private update() : void {
         // Aanroepen van update function
         // this._background.update();
+
+        if (this.play == false) {
+
+            switch(this.Level.getLevel()){
+                case 1: 
+                    var sound1 = new Howl({
+                            urls: [this.assets.jungleBackground],
+                            volume: 0.8,
+                            autoplay: true,
+                            loop: true
+                        }).play;
+                    break;
+                case 2: {                 
+                    var sound2 = new Howl({
+                            urls: [this.assets.polarBackground],
+                            volume: 0.8,
+                            autoplay: true, 
+                            loop: true
+                        }).play;
+                    break;
+                }
+            }
+
+    this.play = true;
+
+        }
+
         if (this._pause) {
 
         }else {

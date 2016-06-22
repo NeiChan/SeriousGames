@@ -5,7 +5,9 @@ class AssetsManager {
     public polarbear2       = "images/polarbear/spritesheet3.png";
     public lives            = "images/interface/heart.png";
     public bacteria         = "images/enemy/bacteria.png";
-    public bacteriahit         = "sound/kill3.mp3";
+    public bacteriahit      = "sound/kill3.mp3";
+    public polarBackground  = "sound/background.ogg";
+    public jungleBackground = "sound/Funk_Down.mp3";
 
     // ***************** Levels
     private desertBase      = "images/levels/desert/";
