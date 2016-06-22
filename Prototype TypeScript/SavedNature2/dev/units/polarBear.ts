@@ -65,7 +65,28 @@ class polarBear extends GameObjects implements ICollidable {
                 this._game.setWorldSpeed(2);                
                 break;
             case 70: // F
-                this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
+
+                switch(this._game.Level.getLevel()){
+                case 1:
+                    this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.bananabullet, x: this.getX() + 50, y: this.getY(), frameHeight: 34, frameWidth: 17.625, maxFrame: 7, animationSpeed: 10, speed: -2.5 }));
+                    // this.image.srcset = this._game.assets.bananabullet;
+                    // super.setMaxFrame(7);
+                    // this.frameHeight = 34;
+                    // this.frameWidth = 17.625;
+                    // super.setAnimationSpd(8);
+                    break;
+                case 2:
+                    this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.fishbullet, x: this.getX() + 50, y: this.getY(), frameHeight: 33, frameWidth: 39, speed: -2.5 }));
+                    // this.image.srcset = this._game.assets.turdbullet;
+                    // super.setMaxFrame(0);
+                    // this.frameHeight = 34;
+                    // this.frameWidth = 45;
+                    // super.setAnimationSpd(0);
+                    break;
+            }
+
+
+
                 break;
             case 88: // UP
                 super.changeY(0);
@@ -206,7 +227,7 @@ class polarBear extends GameObjects implements ICollidable {
                 this._isJumping = false;
                 // this._game.setWorldSpeed(0);
             } else if (dir === "t") {
-                this.velY *= -1;
+                this.velY = -this.speed*2.8;
             }
         }
     }

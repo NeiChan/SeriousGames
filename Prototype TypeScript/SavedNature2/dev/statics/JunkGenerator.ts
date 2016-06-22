@@ -222,7 +222,7 @@ class JunkGenerator {
                 break;
 
             }
-            } else if(this._game._collectCounter < 25 && this._game._collectCounter > 10) {
+            } else if(this._game._collectCounter < 25 && this._game._collectCounter > 9) {
                 console.log("weinig bomen yo");
                 
              switch (random) {
@@ -294,6 +294,7 @@ class JunkGenerator {
 
                 case 4:
                     this.BGList.push(tree);
+                    this.objectList.push(bacteria);
                 break;
 
                 case 5:
@@ -313,17 +314,20 @@ class JunkGenerator {
 
                 case 8:
                     this.BGList.push(tree);
+                    this.objectList.push(coin);
                 break;
 
                 case 9:
 
                     this.BGList.push(treeLarge);
+                    this.objectList.push(coin);
                     // this.objectList.push(Crate);
                 break;
 
                 case 10:
                     // this.objectList.push(bacteria);
                     this.BGList.push(bushJungle);
+                    this.objectList.push(coin);
                 break;
 
             }

@@ -9,6 +9,10 @@ class AssetsManager {
     public polarBackground  = "sound/background.ogg";
     public jungleBackground = "sound/Funk_Down.mp3";
 
+    public turdbullet         = "images/turd.png";
+    public bananabullet         = "images/banana.png";
+    public fishbullet         = "images/fish.png";
+
     // ***************** Levels
     private desertBase      = "images/levels/desert/";
     private greenBase       = "images/levels/green/";
