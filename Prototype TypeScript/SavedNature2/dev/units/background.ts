@@ -4,7 +4,7 @@ class Background extends bgObjects
     public assets: AssetsManager = new AssetsManager();
     public text : any;
     private _font = "14px Arial";
-    
+
 
     // private bgObjects : bgObjects;
 
@@ -30,45 +30,45 @@ class Background extends bgObjects
         // console.log(this.game.Level.getLevel());
 
         // console.log("The current level is: " + this.Level.getLevel());
-        
+
         // See what the level is in order to properly adjust the x value for a more fluid background motion
         this.context.fillText("LEVEL 2 MADAFAKKA", 250, 100);
         // this.text.x = this.text.x + 5;
         if(this.game._collectCounter < 10){
             if (super.getX() + this.image.x < -1350) {
                 this.image.srcset = this.game.assets.greenBG;
-                
+
                 super.setX(0);
             }
-            
+
         } else{
             if (super.getX() + this.image.x < -1350) {
                 // this.image = new Image();
                 // this.image.src = this.imgSrc;
                 super.setX(0);
-                
+
 
                 // if(this.Level.getLevel() === 1){
                 //     this.Level.setLevel(2);
-                    
+
                 // }
 
                 switch(this.game._ui.getScore()){
-                    case 130:
+                    case 350:
                         this.image.srcset = this.assets.winterBG.BG3;
 
                         break;
-                    case 160:
+                    case 400:
                         this.image.srcset = this.assets.winterBG.BG2;
 
                         break;
-                    case 200:
-                        this.image.srcset = this.assets.winterBG.BG4;
+                    case 450:
+                        this.image.srcset = this.assets.winterBG.BG1;
 
                         break;
                     default:
-                        if(this.game._ui.getScore() < 140){
-                            this.image.srcset = this.assets.winterBG.BG1;
+                        if(this.game._ui.getScore() < 310 ){
+                            this.image.srcset = this.assets.winterBG.BG4;
                         }
                         console.log("CHANGED");
                         break;

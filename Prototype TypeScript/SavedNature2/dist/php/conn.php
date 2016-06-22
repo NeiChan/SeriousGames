@@ -2,10 +2,10 @@
 //HOST
 
 //SCHOOL HOST
-//    $host = "sql.cmi.hro.nl";
-//    $username = "0876190";
-//    $password = "xohchahp";
-//    $database = "0876190";
+   // $host = "sql.cmi.hro.nl";
+   // $username = "0876190";
+   // $password = "xohchahp";
+   // $database = "0876190";
 
 //LOCALHOST HOST
     $host = "localhost";

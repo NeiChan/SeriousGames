@@ -51,7 +51,7 @@ class Game {
 
         // Ophalen van de polarbear-spritesheet uit de AssetsManager
         let bearImg         = this.assets.polarbear2;
-        
+
         let gorillaImg      = this.assets.gorilla;
 
         // Aanmaken van een polarBear
@@ -87,14 +87,18 @@ class Game {
 
         for(var obj of this.objectList) {
             obj.Draw();
-        }      
+        }
 
-        console.log(this.Level.getLevel());    
-        
+        console.log(this.Level.getLevel());
+
         if(this.Level.getLevel() === 2){
             this.pos = this.pos - 3;
             this.context.fillStyle = "#F48024";
+<<<<<<< Updated upstream
             this.context.fillText("LEVEL 2", this.pos, 100);            
+=======
+            this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);
+>>>>>>> Stashed changes
         }
 
         this._ui.draw();
@@ -142,12 +146,12 @@ class Game {
         if (this._pause) {
 
         }else {
-            if (this._ui.getScore() >= 200) {
-                this._generator.stopGenerating();
-            }
-            else {
+            // if (this._ui.getScore() >= 200) {
+                // this._generator.stopGenerating();
+            // }
+            // else {
                 this._generator.generateJunk();
-            }
+            // }
 
 
             for(var obj of this.objectList) {
@@ -159,11 +163,11 @@ class Game {
                 // console.log(obj2);
             }
 
-            if(this._collectCounter > 10 && this._collectCounter < 12) {
+            if(this._collectCounter >= 30 && this._collectCounter < 32) {
                 if(this.Level.getLevel() === 2){
 
                 } else {
-                    this.Level.setLevel(); 
+                    this.Level.setLevel();
                 }
             }
 

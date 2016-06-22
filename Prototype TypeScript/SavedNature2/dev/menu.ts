@@ -43,7 +43,7 @@ class Menu {
         this.btnHighscores.addEventListener("click", () => this.showLeaderboards());
         // utility.addSoundEvent(this.btnHighscores,"game_over.ogg", "mouseover");
         this.btnStart.addEventListener("click", this.removeMenu);
-        
+
         this.btnClose.addEventListener("click", () => this.showUitleg());
 
         // Append to the body
@@ -65,7 +65,7 @@ class Menu {
     showLeaderboards(): void {
         window.location.href = "leaderboard.php";
     }
-    
+
     showUitleg(): void {
         window.location.href = "explanation.html";
     }
@@ -79,7 +79,7 @@ class Menu {
         document.getElementById("explanation").remove();
         var name = (<HTMLInputElement>document.getElementById("playerName")).value;
         document.getElementById("playerName").remove();
-        
+
         //document.body.style.backgroundImage = "url('images/backgrounds/menu_background.png')";
 
         document.body.style.backgroundImage = "";

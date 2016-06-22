@@ -15,6 +15,7 @@ class level{
 
     public setLevel() : void{
         this.lvl++;
+        // this.game._collectCounter = 0;
     }
 
     public getLevel() : number{
@@ -28,21 +29,21 @@ class level{
             temp = this.game.BGList.shift();
             if(temp instanceof bgObjects){
                 currentBG = temp;
-            } 
+            }
         } else {
-            
+
         }
 
         switch (this.lvl){
             case 1:{
                 let backgroundImg   = this.game.assets.greenBG;
-                
+
                 if(currentBG){
                     currentBG.setImgSrc(backgroundImg);
                 } else {
                     this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559}, 1, this.game, this);
                 }
-                
+
             }
             break;
             // case 2:{
@@ -81,10 +82,10 @@ class level{
             //             }
             //     }
             //     // let backgroundImg   = this.game.assets.winterBG.BG4;
-                
+
             //     // this._background    = new Background({ imgSrc: backgroundImg, x: 0, y: 0, frameHeight: 640, frameWidth: 2559}, 1, this.game, this.level);
 
-                
+
             // }
             // break;
         }
@@ -94,6 +95,6 @@ class level{
         } else {
             this.game.BGList.push(this._background);
         }
-        
+
     }
 }
