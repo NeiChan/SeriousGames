@@ -206,7 +206,7 @@ class polarBear extends GameObjects implements ICollidable {
                 this._isJumping = false;
                 // this._game.setWorldSpeed(0);
             } else if (dir === "t") {
-                this.velY *= -1;
+                this.velY = -this.speed*2.8;
             }
         }
     }

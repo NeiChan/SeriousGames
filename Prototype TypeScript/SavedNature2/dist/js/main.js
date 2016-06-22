@@ -40,7 +40,7 @@ var Game = (function () {
         if (this.Level.getLevel() === 2) {
             this.pos = this.pos - 3;
             this.context.fillStyle = "#F48024";
-            this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);
+            this.context.fillText("LEVEL 2", this.pos, 100);
         }
         this._ui.draw();
         this._bear.draw();
@@ -1334,7 +1334,7 @@ var polarBear = (function (_super) {
                 this._isJumping = false;
             }
             else if (dir === "t") {
-                this.velY *= -1;
+                this.velY = -this.speed * 2.8;
             }
         }
     };
