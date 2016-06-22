@@ -75,6 +75,14 @@ abstract class GameObjects {
         this.image.src = this.imgSrc;
     }
 
+    public setMaxFrame(int) : void {
+        this.maxFrame = int;
+    }
+
+    public setAnimationSpd(int) : void{
+        this.animationSpeed = int;
+    }
+
     /**
      * changeY
      *

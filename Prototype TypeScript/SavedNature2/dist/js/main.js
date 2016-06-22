@@ -300,6 +300,12 @@ var GameObjects = (function () {
         this.imgSrc = src;
         this.image.src = this.imgSrc;
     };
+    GameObjects.prototype.setMaxFrame = function (int) {
+        this.maxFrame = int;
+    };
+    GameObjects.prototype.setAnimationSpd = function (int) {
+        this.animationSpeed = int;
+    };
     GameObjects.prototype.changeY = function (int) {
         this.directionY = int;
     };
@@ -506,6 +512,9 @@ var AssetsManager = (function () {
         this.lives = "images/interface/heart.png";
         this.bacteria = "images/enemy/bacteria.png";
         this.bacteriahit = "sound/kill3.mp3";
+        this.turdbullet = "images/turd.png";
+        this.bananabullet = "images/banana.png";
+        this.fishbullet = "images/fish.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -794,7 +803,7 @@ var JunkGenerator = (function () {
                         break;
                 }
             }
-            else if (this._game._collectCounter < 25 && this._game._collectCounter > 10) {
+            else if (this._game._collectCounter < 25 && this._game._collectCounter > 9) {
                 console.log("weinig bomen yo");
                 switch (random) {
                     case 1:
@@ -848,6 +857,7 @@ var JunkGenerator = (function () {
                         break;
                     case 4:
                         this.BGList.push(tree);
+                        this.objectList.push(bacteria);
                         break;
                     case 5:
                         this.BGList.push(bushJungle);
@@ -860,12 +870,15 @@ var JunkGenerator = (function () {
                         break;
                     case 8:
                         this.BGList.push(tree);
+                        this.objectList.push(coin);
                         break;
                     case 9:
                         this.BGList.push(treeLarge);
+                        this.objectList.push(coin);
                         break;
                     case 10:
                         this.BGList.push(bushJungle);
+                        this.objectList.push(coin);
                         break;
                 }
             }
@@ -965,7 +978,12 @@ var Bacteria = (function (_super) {
             }
         });
         sound.play('blast');
-        this._game._ui.loseLife();
+        if (gameObject instanceof polarBear) {
+            this._game._ui.loseLife();
+        }
+        else if (gameObject instanceof bullet) {
+            this._game._ui.addScore(5);
+        }
         this._game.deleteGO(this, null);
     };
     Bacteria.prototype.draw = function () {
@@ -1232,7 +1250,14 @@ var polarBear = (function (_super) {
                 this._game.setWorldSpeed(2);
                 break;
             case 70:
-                this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
+                switch (this._game.Level.getLevel()) {
+                    case 1:
+                        this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.bananabullet, x: this.getX() + 50, y: this.getY(), frameHeight: 34, frameWidth: 17.625, maxFrame: 7, animationSpeed: 10, speed: -2.5 }));
+                        break;
+                    case 2:
+                        this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.fishbullet, x: this.getX() + 50, y: this.getY(), frameHeight: 33, frameWidth: 39, speed: -2.5 }));
+                        break;
+                }
                 break;
             case 88:
                 _super.prototype.changeY.call(this, 0);

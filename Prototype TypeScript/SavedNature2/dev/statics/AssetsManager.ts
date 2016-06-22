@@ -7,6 +7,10 @@ class AssetsManager {
     public bacteria         = "images/enemy/bacteria.png";
     public bacteriahit         = "sound/kill3.mp3";
 
+    public turdbullet         = "images/turd.png";
+    public bananabullet         = "images/banana.png";
+    public fishbullet         = "images/fish.png";
+
     // ***************** Levels
     private desertBase      = "images/levels/desert/";
     private greenBase       = "images/levels/green/";

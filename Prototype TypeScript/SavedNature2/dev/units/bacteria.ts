@@ -35,7 +35,11 @@ class Bacteria extends GameObjects implements ICollidable,IDestructable{
 
             sound.play('blast');
 
-            this._game._ui.loseLife();
+            if(gameObject instanceof polarBear){
+                this._game._ui.loseLife();
+            } else if(gameObject instanceof bullet){
+                this._game._ui.addScore(5);
+            }
 
             this._game.deleteGO(this, null);
 
