@@ -345,15 +345,12 @@ class JunkGenerator {
                 break;
 
             }
-<<<<<<< Updated upstream
             } else if(this._game._collectCounter < 25 && this._game._collectCounter > 9) {
                 console.log("weinig bomen yo");
-                
-=======
+
         } else if(this._game._collectCounter < 20 && this._game._collectCounter > 10) {
                 console.log("weinig bomen");
 
->>>>>>> Stashed changes
              switch (random) {
                  case 1:
                     this.objectList.push(coin);

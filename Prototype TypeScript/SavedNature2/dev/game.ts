@@ -94,11 +94,9 @@ class Game {
         if(this.Level.getLevel() === 2){
             this.pos = this.pos - 3;
             this.context.fillStyle = "#F48024";
-<<<<<<< Updated upstream
-            this.context.fillText("LEVEL 2", this.pos, 100);            
-=======
+            this.context.fillText("LEVEL 2", this.pos, 100);
+
             this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);
->>>>>>> Stashed changes
         }
 
         this._ui.draw();
@@ -120,7 +118,7 @@ class Game {
         if (this.play == false) {
 
             switch(this.Level.getLevel()){
-                case 1: 
+                case 1:
                     var sound1 = new Howl({
                             urls: [this.assets.jungleBackground],
                             volume: 0.8,
@@ -128,11 +126,11 @@ class Game {
                             loop: true
                         }).play;
                     break;
-                case 2: {                 
+                case 2: {
                     var sound2 = new Howl({
                             urls: [this.assets.polarBackground],
                             volume: 0.8,
-                            autoplay: true, 
+                            autoplay: true,
                             loop: true
                         }).play;
                     break;

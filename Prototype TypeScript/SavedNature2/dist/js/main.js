@@ -108,6 +108,12 @@ var GameObjects = (function () {
         this.imgSrc = src;
         this.image.src = this.imgSrc;
     };
+    GameObjects.prototype.setMaxFrame = function (int) {
+        this.maxFrame = int;
+    };
+    GameObjects.prototype.setAnimationSpd = function (int) {
+        this.animationSpeed = int;
+    };
     GameObjects.prototype.changeY = function (int) {
         this.directionY = int;
     };
@@ -312,6 +318,7 @@ var Game = (function () {
         this.assets = new AssetsManager();
         this.WorldSpeed = 5;
         this.pos = 700;
+        this.play = false;
         this._collectCounter = 0;
         this.objectList = new Array();
         this.BGList = new Array();
@@ -343,6 +350,7 @@ var Game = (function () {
         if (this.Level.getLevel() === 2) {
             this.pos = this.pos - 3;
             this.context.fillStyle = "#F48024";
+            this.context.fillText("LEVEL 2", this.pos, 100);
             this.context.fillText("LEVEL 2 MADAFAKKA", this.pos, 100);
         }
         this._ui.draw();
@@ -353,6 +361,28 @@ var Game = (function () {
         this._pause = true;
     };
     Game.prototype.update = function () {
+        if (this.play == false) {
+            switch (this.Level.getLevel()) {
+                case 1:
+                    var sound1 = new Howl({
+                        urls: [this.assets.jungleBackground],
+                        volume: 0.8,
+                        autoplay: true,
+                        loop: true
+                    }).play;
+                    break;
+                case 2: {
+                    var sound2 = new Howl({
+                        urls: [this.assets.polarBackground],
+                        volume: 0.8,
+                        autoplay: true,
+                        loop: true
+                    }).play;
+                    break;
+                }
+            }
+            this.play = true;
+        }
         if (this._pause) {
         }
         else {
@@ -501,6 +531,11 @@ var AssetsManager = (function () {
         this.lives = "images/interface/heart.png";
         this.bacteria = "images/enemy/bacteria.png";
         this.bacteriahit = "sound/kill3.mp3";
+        this.polarBackground = "sound/background.ogg";
+        this.jungleBackground = "sound/Funk_Down.mp3";
+        this.turdbullet = "images/turd.png";
+        this.bananabullet = "images/banana.png";
+        this.fishbullet = "images/fish.png";
         this.desertBase = "images/levels/desert/";
         this.greenBase = "images/levels/green/";
         this.winterBase = "images/levels/winter/";
@@ -895,6 +930,9 @@ var JunkGenerator = (function () {
                         break;
                 }
             }
+            else if (this._game._collectCounter < 25 && this._game._collectCounter > 9) {
+                console.log("weinig bomen yo");
+            }
             else if (this._game._collectCounter < 20 && this._game._collectCounter > 10) {
                 console.log("weinig bomen");
                 switch (random) {
@@ -953,6 +991,7 @@ var JunkGenerator = (function () {
                         break;
                     case 4:
                         this.BGList.push(tree);
+                        this.objectList.push(bacteria);
                         break;
                     case 5:
                         this.BGList.push(bushJungle);
@@ -965,12 +1004,15 @@ var JunkGenerator = (function () {
                         break;
                     case 8:
                         this.BGList.push(tree);
+                        this.objectList.push(coin);
                         break;
                     case 9:
                         this.BGList.push(treeLarge);
+                        this.objectList.push(coin);
                         break;
                     case 10:
                         this.BGList.push(bushJungle);
+                        this.objectList.push(coin);
                         break;
                 }
             }
@@ -1070,7 +1112,12 @@ var Bacteria = (function (_super) {
             }
         });
         sound.play('blast');
-        this._game._ui.loseLife();
+        if (gameObject instanceof polarBear) {
+            this._game._ui.loseLife();
+        }
+        else if (gameObject instanceof bullet) {
+            this._game._ui.addScore(5);
+        }
         this._game.deleteGO(this, null);
     };
     Bacteria.prototype.draw = function () {
@@ -1337,7 +1384,14 @@ var polarBear = (function (_super) {
                 this._game.setWorldSpeed(2);
                 break;
             case 70:
-                this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.collectables.goldCoin, x: this.getX() + 50, y: this.getY(), frameHeight: 16, frameWidth: 16, maxFrame: 7, animationSpeed: 10, speed: -5 }));
+                switch (this._game.Level.getLevel()) {
+                    case 1:
+                        this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.bananabullet, x: this.getX() + 50, y: this.getY(), frameHeight: 34, frameWidth: 17.625, maxFrame: 7, animationSpeed: 10, speed: -2.5 }));
+                        break;
+                    case 2:
+                        this._game.objectList.push(new bullet(this._game, { imgSrc: this.asset.fishbullet, x: this.getX() + 50, y: this.getY(), frameHeight: 33, frameWidth: 39, speed: -2.5 }));
+                        break;
+                }
                 break;
             case 88:
                 _super.prototype.changeY.call(this, 0);
@@ -1439,7 +1493,7 @@ var polarBear = (function (_super) {
                 this._isJumping = false;
             }
             else if (dir === "t") {
-                this.velY *= -1;
+                this.velY = -this.speed * 2.8;
             }
         }
     };
